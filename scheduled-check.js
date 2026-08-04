@@ -127,5 +127,5 @@ exports.handler = async () => {
 };
 
 exports.config = {
-  schedule: '*/15 * * * *',
+  schedule: '* * * * *',
 };
