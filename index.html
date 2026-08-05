@@ -1647,6 +1647,13 @@
     cursor: pointer; transition: border-color 0.15s ease;
   }
   .mood-entry-card:active { border-color: var(--cyan); }
+  .clamp-text {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5;
+    overflow: hidden;
+  }
+  .clamp-expand-btn {
+    font-size: 10.5px; color: var(--cyan); text-decoration: underline; cursor: pointer; margin-top: 4px; display: inline-block;
+  }
   .mood-entry-card-time {
     font-family: "Orbitron", sans-serif; font-size: 9.5px; color: var(--cyan); margin-bottom: 3px;
   }
@@ -2289,7 +2296,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0804_AUTOSAVE_V223</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0805_NOTIFY_DEBUG_V225</div>
   <div class="cal-section" id="calSectionWrap">
     <div id="calMonthSection">
       <div class="cal-grid-shell">
@@ -7825,7 +7832,8 @@
             <span onclick="deleteMemento('${card.id}')" style="color:var(--ink-dim); font-size:13px; cursor:pointer; padding:2px 4px;">✕</span>
           </div>
         </div>
-        <div style="font-size:12.5px; color:var(--ink); line-height:1.6; white-space:pre-wrap;">${escapeHtml(card.text)}</div>
+        <div id="memText_${card.id}" class="clamp-text" style="font-size:12.5px; color:var(--ink); line-height:1.6; white-space:pre-wrap;">${escapeHtml(card.text)}</div>
+        <span class="clamp-expand-btn" onclick="document.getElementById('memText_${card.id}').classList.toggle('clamp-text'); this.textContent = this.textContent === '続きを読む' ? '短く表示' : '続きを読む';">続きを読む</span>
       </div>
     `;
     }).join('');
@@ -8195,14 +8203,16 @@
     const moodBlock = document.getElementById('dayDetailMood');
     if (moodEntries.length > 0) {
       moodBlock.style.display = 'block';
-      document.getElementById('dayDetailMoodText').innerHTML = moodEntries.map(entry => {
+      document.getElementById('dayDetailMoodText').innerHTML = moodEntries.map((entry, i) => {
         const imgs = (entry.images || []).map(src =>
           `<img src="${src}" style="width:56px; height:56px; object-fit:cover; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); margin-top:6px; margin-right:4px;">`
         ).join('');
         const moodEmoji = entry.mood && MOOD_TAG_EMOJI[entry.mood] ? MOOD_TAG_EMOJI[entry.mood] + ' ' : '';
+        const textId = `dayDetailMoodEntryText_${i}`;
         return `<div style="margin-bottom:10px;">
           <div style="font-family:'Orbitron',sans-serif; font-size:9.5px; color:var(--cyan); margin-bottom:2px;">${entry.time || ''}</div>
-          <div>${moodEmoji}${escapeHtml(entry.text || '')}</div>
+          <div id="${textId}" class="clamp-text">${moodEmoji}${escapeHtml(entry.text || '')}</div>
+          <span class="clamp-expand-btn" onclick="document.getElementById('${textId}').classList.toggle('clamp-text'); this.textContent = this.textContent === '続きを読む' ? '短く表示' : '続きを読む';">続きを読む</span>
           <div>${imgs}</div>
         </div>`;
       }).join('');
@@ -8820,16 +8830,22 @@
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       });
-      await fetch(`${NOTIFY_SERVER_URL}/.netlify/functions/subscribe`, {
+      const res = await fetch(`${NOTIFY_SERVER_URL}/.netlify/functions/subscribe`, {
         method: 'POST',
         body: JSON.stringify(subscription),
       });
+      const resText = await res.text();
+      if (!res.ok) {
+        // サーバー側が失敗を返したのに、今まで気づけていなかったので、ここではっきり表示する
+        alert(`サーバーへの登録に失敗しました(status:${res.status})\n\n${resText}`);
+        return;
+      }
       showToast(currentLang === 'en' ? '🔔 Notifications enabled' : '🔔 通知を有効にしました');
       syncRemindersToServer();
       pingNotifyServer();
     } catch (err) {
       console.error('通知登録に失敗', err);
-      showToast(currentLang === 'en' ? 'Failed to enable notifications' : '通知の設定に失敗しました');
+      alert('通知の設定に失敗しました:\n\n' + (err && err.message ? err.message : String(err)));
     }
   }
   // 現在この端末が通知を購読しているか確認し、していればそのendpoint(宛先の識別子)を返す
