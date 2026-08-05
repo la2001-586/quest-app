@@ -2296,7 +2296,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0805_NOTIFY_DEBUG_V225</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0806_AUDIO_FAILSAFE_V230</div>
   <div class="cal-section" id="calSectionWrap">
     <div id="calMonthSection">
       <div class="cal-grid-shell">
@@ -2639,18 +2639,6 @@
   </div>
 
   <div class="settings-group">
-    <div class="settings-label" data-i18n="tutorial_label">💡 使い方</div>
-    <button class="settings-btn" data-i18n="tutorial_btn" onclick="openTutorial()">チュートリアルを見る</button>
-  </div>
-
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="memento_label">📖 備忘録</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">1度書いたら、上書きされずに積み上がっていく記録です。今取り組んでいることや、一度きりの体験を、あとでいつでも見返せます。</div>
-    <div id="mementoCardList"></div>
-    <button class="add-task-btn" onclick="openAddMemento()">＋ 追加</button>
-  </div>
-
-  <div class="settings-group">
     <div class="settings-label" data-i18n="opt_appearance_label">見た目</div>
     <div class="settings-row">
       <span data-i18n="opt_theme_row">デザインテーマ</span>
@@ -2661,7 +2649,46 @@
     </div>
     <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_bgview_btn" onclick="enterBgViewMode()">🌌 背景だけを見る</button>
   </div>
-
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="opt_lang_label">言語</div>
+    <div class="settings-row">
+      <span>Language</span>
+      <div class="theme-switch">
+        <button class="lang-btn active" data-lang="ja" data-i18n="lang_ja_btn">日本語</button>
+        <button class="lang-btn" data-lang="en" data-i18n="lang_en_btn">English</button>
+      </div>
+    </div>
+  </div>
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="opt_sound_label">サウンド</div>
+    <div class="settings-row">
+      <span data-i18n="opt_sound_vol_row">効果音の音量</span>
+      <span id="volumeLabel" style="font-family:'Orbitron',sans-serif; font-size:12px; color:var(--cyan);">70%</span>
+    </div>
+    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" style="width:100%; margin-bottom:10px;">
+    <button class="settings-btn" data-i18n="opt_test_sound_btn" onclick="testSound()">🔊 音を試す</button>
+    <div class="settings-row">
+      <span data-i18n="opt_sound_toggle_row">効果音を鳴らす</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="soundToggle" checked>
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+  </div>
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="opt_boundary_label">1日の区切り</div>
+    <div class="settings-row">
+      <span data-i18n="opt_boundary_row">区切りの時刻</span>
+      <span id="boundaryHourLabel" style="font-family:'Orbitron',sans-serif; font-size:12px; color:var(--cyan);">午前4時</span>
+    </div>
+    <input type="range" class="volume-slider" id="boundaryHourSlider" min="0" max="8" value="4" style="width:100%; margin-bottom:6px;">
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6;" data-i18n="opt_boundary_desc">この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。</div>
+  </div>
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="focus_settings_label">全集中モード</div>
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="focus_settings_desc">期間を決めて、1つのことだけに深く向き合うモードです。その間、日課タスクは「今はやらなくていい」色で表示されます。</div>
+    <button class="settings-btn" id="focusModeBtn" data-i18n="focus_start_btn" onclick="openFocusModeModal()">🎯 全集中モードを始める</button>
+  </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="alarm_label">⏰ アラーム</div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを開いている間だけ、指定した時刻に音・振動でお知らせします。</div>
@@ -2673,7 +2700,6 @@
     </div>
     <button class="settings-btn" style="margin-top:8px;" data-i18n="alarm_set_btn" onclick="saveAlarmSettings()">この時刻に設定</button>
   </div>
-
   <div class="settings-group">
     <div class="settings-label" data-i18n="notify_label">🔔 通知(試験導入)</div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを閉じていても、時間が来たら通知でお知らせします。試験的な機能です。</div>
@@ -2697,45 +2723,20 @@
       </label>
     </div>
   </div>
-
   <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_lang_label">言語</div>
-    <div class="settings-row">
-      <span>Language</span>
-      <div class="theme-switch">
-        <button class="lang-btn active" data-lang="ja" data-i18n="lang_ja_btn">日本語</button>
-        <button class="lang-btn" data-lang="en" data-i18n="lang_en_btn">English</button>
-      </div>
-    </div>
+    <div class="settings-label" data-i18n="memento_label">📖 備忘録</div>
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">1度書いたら、上書きされずに積み上がっていく記録です。今取り組んでいることや、一度きりの体験を、あとでいつでも見返せます。</div>
+    <div id="mementoCardList"></div>
+    <button class="add-task-btn" onclick="openAddMemento()">＋ 追加</button>
   </div>
-
   <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_sound_label">サウンド</div>
-    <div class="settings-row">
-      <span data-i18n="opt_sound_vol_row">効果音の音量</span>
-      <span id="volumeLabel" style="font-family:'Orbitron',sans-serif; font-size:12px; color:var(--cyan);">70%</span>
-    </div>
-    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" style="width:100%; margin-bottom:10px;">
-    <button class="settings-btn" data-i18n="opt_test_sound_btn" onclick="testSound()">🔊 音を試す</button>
-    <div class="settings-row">
-      <span data-i18n="opt_sound_toggle_row">効果音を鳴らす</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="soundToggle" checked>
-        <span class="toggle-track"></span>
-      </label>
-    </div>
+    <div class="settings-label" data-i18n="opt_achievements_label">実績</div>
+    <button class="settings-btn" data-i18n="badge_list_settings_btn" onclick="openBadgeList()">🏅 実績バッジ一覧を見る</button>
   </div>
-
   <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_boundary_label">1日の区切り</div>
-    <div class="settings-row">
-      <span data-i18n="opt_boundary_row">区切りの時刻</span>
-      <span id="boundaryHourLabel" style="font-family:'Orbitron',sans-serif; font-size:12px; color:var(--cyan);">午前4時</span>
-    </div>
-    <input type="range" class="volume-slider" id="boundaryHourSlider" min="0" max="8" value="4" style="width:100%; margin-bottom:6px;">
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6;" data-i18n="opt_boundary_desc">この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。</div>
+    <div class="settings-label" data-i18n="tutorial_label">💡 使い方</div>
+    <button class="settings-btn" data-i18n="tutorial_btn" onclick="openTutorial()">チュートリアルを見る</button>
   </div>
-
   <div class="settings-group">
     <div class="settings-label" data-i18n="opt_data_label">データの管理</div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="opt_data_desc">経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。</div>
@@ -2747,7 +2748,11 @@
     <audio id="bgmAudioPlayer" loop preload="none"></audio>
     <div id="lastBackupInfo" style="font-size:10px; color:var(--ink-dim); margin-top:8px;"></div>
   </div>
-
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="opt_support_label">サポート</div>
+    <button class="settings-btn" data-i18n="opt_contact_btn" onclick="contactSupport()">運営に連絡する</button>
+    <button class="settings-btn" data-i18n="opt_policy_btn" onclick="showPolicy()">利用規約・プライバシー</button>
+  </div>
   <div class="settings-group" style="border: 1.5px dashed rgba(255,80,80,0.5);">
     <div class="settings-label" style="color:#FF5050;" data-i18n="dev_section_label">🛠️ 開発者用(本番公開前に削除)</div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="dev_desc">レベル解放演出(宇宙背景の見え方など)を確認するための検証用ボタンです。実際のユーザーには見せません。</div>
@@ -2758,23 +2763,6 @@
       <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" onclick="applyCyberDailyMood('vapor')">🌴 ウェイブ系</button>
     </div>
     <button class="settings-btn" style="border-color:#FF5050; color:#FF5050;" data-i18n="dev_reset_exp_btn" onclick="devResetExp()">🔄 検証用: EXPを0に戻す</button>
-  </div>
-
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_achievements_label">実績</div>
-    <button class="settings-btn" data-i18n="badge_list_settings_btn" onclick="openBadgeList()">🏅 実績バッジ一覧を見る</button>
-  </div>
-
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="focus_settings_label">全集中モード</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="focus_settings_desc">期間を決めて、1つのことだけに深く向き合うモードです。その間、日課タスクは「今はやらなくていい」色で表示されます。</div>
-    <button class="settings-btn" id="focusModeBtn" data-i18n="focus_start_btn" onclick="openFocusModeModal()">🎯 全集中モードを始める</button>
-  </div>
-
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_support_label">サポート</div>
-    <button class="settings-btn" data-i18n="opt_contact_btn" onclick="contactSupport()">運営に連絡する</button>
-    <button class="settings-btn" data-i18n="opt_policy_btn" onclick="showPolicy()">利用規約・プライバシー</button>
   </div>
 
   <div class="cal-note" data-i18n="opt_prototype_note">※ このページは見た目のみの試作（ハリボテ）です。実際の設定保存はこれから実装します。</div>
@@ -2813,21 +2801,19 @@
       </div>
     </div>
     <div id="dayDetailItems" style="font-size:12px; color:var(--ink-dim); line-height:1.7; text-align:left; background:rgba(255,255,255,0.03); border-radius:10px; padding:12px;"></div>
-    <div id="dayDetailMood" style="display:none; margin-top:10px; text-align:left; background:rgba(255,255,255,0.03); border-radius:10px; padding:12px;">
-      <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">気分日記</div>
-      <div id="dayDetailMoodText" style="font-size:12px; color:#fff; line-height:1.7; white-space:pre-wrap;"></div>
-      <div id="dayDetailMoodImages" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
-    </div>
     <div style="margin-top:14px; text-align:left;">
       <div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin-bottom:6px;">📅 予定</div>
       <div id="dayDetailEventsList"></div>
-      <div style="display:flex; gap:6px; margin-top:8px;">
-        <input type="time" id="dayDetailEventTime" onchange="autofillEventEndTime()" style="width:80px; flex-shrink:0; font-size:12px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-        <span style="align-self:center; color:var(--ink-dim); font-size:11px;">〜</span>
-        <input type="time" id="dayDetailEventEndTime" style="width:80px; flex-shrink:0; font-size:12px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-        <input type="text" id="dayDetailEventText" data-i18n-placeholder="event_placeholder" placeholder="予定を入力" style="flex:1; min-width:0; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;" onkeydown="if(event.key==='Enter') confirmAddDayEvent()">
+      <div style="display:flex; gap:6px; margin-top:8px; align-items:center;">
+        <input type="time" id="dayDetailEventTime" onchange="autofillEventEndTime()" style="width:62px; flex-shrink:0; font-size:11px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+        <span style="align-self:center; color:var(--ink-dim); font-size:10px;">〜</span>
+        <input type="time" id="dayDetailEventEndTime" style="width:62px; flex-shrink:0; font-size:11px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; color:var(--ink-dim); margin-left:4px;">
+          <input type="checkbox" id="dayDetailEventAllDay" onchange="document.getElementById('dayDetailEventTime').disabled = this.checked; document.getElementById('dayDetailEventEndTime').disabled = this.checked;"> 終日
+        </label>
       </div>
-      <div style="display:flex; gap:6px; margin-top:6px; align-items:center;">
+      <input type="text" id="dayDetailEventText" data-i18n-placeholder="event_placeholder" placeholder="予定を入力" style="width:100%; box-sizing:border-box; margin-top:6px; font-size:13px; padding:10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;" onkeydown="if(event.key==='Enter') confirmAddDayEvent()">
+      <div style="display:flex; gap:6px; margin-top:8px; align-items:center;">
         <select id="dayDetailEventRecur" style="flex-shrink:0; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
           <option value="">繰り返さない</option>
           <option value="daily">毎日</option>
@@ -2842,29 +2828,28 @@
           <span data-color="#E8FF4E" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#E8FF4E; cursor:pointer;" onclick="pickEventColor(this)"></span>
           <span data-color="#4EE8A0" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#4EE8A0; cursor:pointer;" onclick="pickEventColor(this)"></span>
         </div>
-        <button onclick="confirmAddDayEvent()" style="flex-shrink:0; margin-left:auto; padding:7px 14px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:12px;">＋追加</button>
       </div>
-      <div onclick="document.getElementById('dayDetailEventMoreOptions').classList.toggle('show')" style="font-size:10.5px; color:var(--ink-dim); margin-top:8px; cursor:pointer;">▾ 詳細オプション(場所・メモ・終日など)</div>
-      <div id="dayDetailEventMoreOptions" class="mood-tag-options" style="flex-direction:column; align-items:stretch; gap:6px; margin-top:6px;">
-        <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-dim);">
-          <input type="checkbox" id="dayDetailEventAllDay" onchange="document.getElementById('dayDetailEventTime').disabled = this.checked; document.getElementById('dayDetailEventEndTime').disabled = this.checked;"> 終日
-        </label>
-        <div style="display:flex; align-items:center; gap:6px;">
-          <span style="font-size:10.5px; color:var(--ink-dim); flex-shrink:0;">🔔リマインド</span>
-          <select id="dayDetailEventReminder" onchange="document.getElementById('dayDetailEventReminderCustom').style.display = (this.value === 'custom') ? 'inline-block' : 'none';" style="flex:1; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-            <option value="">なし</option>
-            <option value="10">10分前</option>
-            <option value="60">1時間前</option>
-            <option value="180">3時間前</option>
-            <option value="1440">1日前</option>
-            <option value="10080">1週間前</option>
-            <option value="custom">カスタム</option>
-          </select>
-          <input type="number" id="dayDetailEventReminderCustom" data-i18n-placeholder="reminder_custom_placeholder" placeholder="分前" min="1" style="display:none; width:60px; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-        </div>
-        <input type="text" id="dayDetailEventLocation" data-i18n-placeholder="location_placeholder" placeholder="場所" style="font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-        <textarea id="dayDetailEventNote" data-i18n-placeholder="note_placeholder" placeholder="メモ" style="font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; min-height:50px; font-family:inherit;"></textarea>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:8px;">
+        <span style="font-size:10.5px; color:var(--ink-dim); flex-shrink:0;">🔔リマインド</span>
+        <select id="dayDetailEventReminder" onchange="document.getElementById('dayDetailEventReminderCustom').style.display = (this.value === 'custom') ? 'inline-block' : 'none';" style="flex:1; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+          <option value="">なし</option>
+          <option value="10">10分前</option>
+          <option value="60">1時間前</option>
+          <option value="180">3時間前</option>
+          <option value="1440">1日前</option>
+          <option value="10080">1週間前</option>
+          <option value="custom">カスタム</option>
+        </select>
+        <input type="number" id="dayDetailEventReminderCustom" data-i18n-placeholder="reminder_custom_placeholder" placeholder="分前" min="1" style="display:none; width:60px; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
       </div>
+      <input type="text" id="dayDetailEventLocation" data-i18n-placeholder="location_placeholder" placeholder="場所(任意)" style="width:100%; box-sizing:border-box; margin-top:8px; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+      <textarea id="dayDetailEventNote" data-i18n-placeholder="note_placeholder" placeholder="メモ(任意)" style="width:100%; box-sizing:border-box; margin-top:6px; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; min-height:44px; font-family:inherit;"></textarea>
+      <button onclick="confirmAddDayEvent()" style="width:100%; box-sizing:border-box; margin-top:10px; padding:10px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:13px; font-weight:700;">＋追加</button>
+    </div>
+    <div id="dayDetailMood" style="display:none; margin-top:14px; text-align:left; background:rgba(255,255,255,0.03); border-radius:10px; padding:12px;">
+      <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">気分日記</div>
+      <div id="dayDetailMoodText" style="font-size:12px; color:#fff; line-height:1.7; white-space:pre-wrap;"></div>
+      <div id="dayDetailMoodImages" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
     </div>
     <button class="badge-close-btn" style="margin-top:16px; background:transparent; border:1.5px solid var(--cyan); color:var(--cyan);" onclick="copyDayForAIAnalysis()">🤖 この日をAI分析用にコピー</button>
     <button class="badge-close-btn" style="margin-top:8px;" data-i18n="btn_close" onclick="closeDayDetail()">閉じる</button>
@@ -3029,7 +3014,7 @@
   <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:22px; max-width:min(340px,88vw);" onclick="event.stopPropagation()">
     <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="memento_add_title">📖 備忘録を追加</div>
     <textarea id="mementoTextInput" placeholder="例: 富士登山に挑戦。5合目から山頂まで7時間かかった。" oninput="handleMementoDraftInput()" style="width:100%; box-sizing:border-box; min-height:120px; resize:vertical; background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.15); border-radius:10px; padding:12px; color:#fff; font-size:13px; line-height:1.7; font-family:inherit; margin-bottom:14px;"></textarea>
-    <button class="badge-close-btn" data-i18n="memento_save_btn" onclick="confirmAddMemento()">保存</button>
+    <button class="badge-close-btn" data-i18n="memento_save_btn" onclick="confirmAddMemento()" style="width:100%; box-sizing:border-box; font-weight:700;">保存</button>
   </div>
 </div>
 
@@ -3556,8 +3541,28 @@
   let currentBgmVariant = 'cyber'; // 'cyber' または 'fancy'(v30で追加、テーマ連動のBGM切替用)
   let legacySynthBgmMode = false; // true の間は、新しい実音源ではなく懐かしの合成音BGMを鳴らす(v94の隠しコマンドで切替)
 
+  // 音の再生に失敗しても、呼び出し元の本来の処理(画面切り替えなど)を絶対に止めないための「何もしない」代役
+  function makeSilentAudioStub() {
+    const noopNode = { connect: () => noopNode, start: () => {}, stop: () => {}, disconnect: () => {},
+      gain: { setValueAtTime: () => {}, exponentialRampToValueAtTime: () => {}, linearRampToValueAtTime: () => {}, value: 0 },
+      frequency: { setValueAtTime: () => {}, exponentialRampToValueAtTime: () => {}, linearRampToValueAtTime: () => {}, value: 0 },
+      type: 'sine' };
+    return {
+      state: 'closed', currentTime: 0, destination: noopNode,
+      createOscillator: () => noopNode, createGain: () => noopNode, createBiquadFilter: () => noopNode,
+      createBufferSource: () => noopNode, createStereoPanner: () => noopNode,
+      resume: () => Promise.resolve(), close: () => Promise.resolve(),
+    };
+  }
   function ensureAudioCtx() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx) {
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        console.error('AudioContextの作成に失敗、音無しで続行します', e);
+        audioCtx = makeSilentAudioStub();
+      }
+    }
     return audioCtx;
   }
 
@@ -3571,20 +3576,25 @@
   }
 
   function playUIClick() {
-    if (!soundOn) return;
-    const ctx = ensureAudioCtx();
-    if (ctx.state === 'suspended') { ctx.resume(); }
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(1200, now);
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.12 * masterVolume, now + 0.008);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.07);
+    try {
+      if (!soundOn) return;
+      const ctx = ensureAudioCtx();
+      if (ctx.state === 'suspended') { ctx.resume(); }
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1200, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.12 * masterVolume, now + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.07);
+    } catch (e) {
+      // 効果音の再生に失敗しても、本来のボタンの動作は絶対に止めない
+      console.error('playUIClick failed', e);
+    }
   }
 
   function playSelectSound() {
