@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
@@ -13,38 +13,47 @@
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
     --bg: #07080B;
     --panel: #0F1319;
-    --cyan: #2BC9CC;
-    --magenta: #E0357A;
-    --yellow: #D9E64A;
+    --cyan: #41B4B6;
+    --magenta: #CB4A7E;
+    --yellow: #CAD35D;
     --red: #C9283E;
     --ink: #CFE8E8;
     --ink-dim: #56676B;
-    --low: #2BC993;
-    --mid: #D9E64A;
-    --high: #E0357A;
+    --low: #41B38C;
+    --mid: #CAD35D;
+    --high: #CB4A7E;
+    --gold: #D4AF6A;
+  }
+  .premium-gold-text {
+    background: linear-gradient(120deg, #B8895A 0%, #E8CFA0 45%, #D4AF6A 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .premium-gold-rule {
+    height: 1px; background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+    opacity: 0.6; margin: 8px 0;
   }
 
   /* ================= シンプルテーマ(見た目切り替え) ================= */
   body.theme-simple {
     --bg: #F7F7F7;
     --panel: #FFFFFF;
-    --cyan: #06C755;
-    --magenta: #FF6B6B;
-    --yellow: #FFB800;
-    --red: #FF6B6B;
+    --cyan: #18B558;
+    --magenta: #F27878;
+    --yellow: #E8AE17;
+    --red: #F27878;
     --ink: #1E1E1E;
     --ink-dim: #8E8E93;
-    --low: #06C755;
-    --mid: #FFB800;
-    --high: #FF6B6B;
+    --low: #18B558;
+    --mid: #E8AE17;
+    --high: #F27878;
     background: var(--bg) !important;
-    font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif !important;
+    font-family: "Zen Maru Gothic", -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif !important;
   }
   body.theme-simple.theme-dark {
     --bg: #0E0E10;
@@ -96,7 +105,7 @@
     text-shadow: none; color: var(--ink); font-weight: 700; font-size: 18px;
   }
   body.theme-simple .sub::before { content: none; }
-  body.theme-simple * { font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif !important; }
+  body.theme-simple * { font-family: "Zen Maru Gothic", -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif !important; }
   body.theme-simple .home-bar,
   body.theme-simple .hud-header,
   body.theme-simple .item,
@@ -109,11 +118,13 @@
   body.theme-simple .unified-task-card,
   body.theme-simple .settings-group {
     background: #FFFFFF !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+    box-shadow: 0 8px 24px -6px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06) !important;
     border: none !important;
-    border-radius: 12px !important;
+    border-radius: 18px !important;
   }
-  body.theme-simple .item { border-left: 3px solid #E8E8E8 !important; border-radius: 10px !important; }
+  body.theme-simple .item { border-left: 6px solid #60D69F !important; border-radius: 14px !important; }
+  body.theme-simple .item.today-custom { border-left-color: rgba(255,138,92,0.5) !important; }
+  body.theme-simple .item.today-custom.done { border-left-color: #F0906B !important; }
   body.theme-simple .cal-day {
     background: #FAFAFB !important; border-color: #EAEAEA !important; color: #2A2A2E !important;
   }
@@ -144,7 +155,9 @@
     background: #1C1C1E !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
   }
-  body.theme-simple.theme-dark .item { border-left-color: #3A3A3C !important; }
+  body.theme-simple.theme-dark .item { border-left-color: #60D69F !important; }
+  body.theme-simple.theme-dark .item.today-custom { border-left-color: rgba(255,138,92,0.5) !important; }
+  body.theme-simple.theme-dark .item.today-custom.done { border-left-color: #F0906B !important; }
   body.theme-simple.theme-dark .check-box { border-color: #4A4A4C !important; }
   body.theme-simple .item.picked .check-box { background: var(--cyan) !important; border-color: var(--cyan) !important; box-shadow: none !important; }
   body.theme-simple .tab.active { background: var(--cyan) !important; color: #fff !important; box-shadow: none !important; }
@@ -297,6 +310,11 @@
 
   html {
     overscroll-behavior-x: none;
+  }
+  /* iOS Safariは、入力欄の文字サイズが16px未満だと、タップした瞬間に自動でズームしてしまう仕様がある。
+     見た目のサイズ感を大きく変えずに、この望まない自動ズームだけを防ぐ */
+  input, textarea, select {
+    font-size: 16px !important;
   }
   body {
     font-family: "Noto Sans JP", sans-serif;
@@ -721,7 +739,8 @@
   .pomodoro-controls { display: flex; gap: 6px; }
   .pomodoro-controls button {
     font-family: "Orbitron", sans-serif; font-size: 10px; padding: 7px 10px; border-radius: 8px;
-    border: 1.5px solid rgba(255,255,255,0.15); background: transparent; color: var(--ink-dim); cursor: pointer;
+    border: 1.5px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); color: var(--ink-dim); cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
   }
   .pomodoro-widget.running .pomodoro-time { color: var(--cyan); }
   .pomodoro-widget.break .pomodoro-time { color: var(--magenta); }
@@ -737,6 +756,7 @@
     aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
     background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px;
     font-size: 10px; color: var(--ink); cursor: pointer; text-align: center; line-height: 1.5; gap: 2px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.15);
   }
   .misc-grid-tile.info { cursor: default; font-size: 9px; }
   .misc-grid-tile.empty { border-style: dashed; opacity: 0.3; cursor: default; }
@@ -908,7 +928,16 @@
     background: linear-gradient(160deg, rgba(22,26,34,0.92), rgba(12,15,20,0.92));
     border: 1.5px solid rgba(255,255,255,0.14); border-radius: 20px;
     padding: 18px 16px 10px; margin-bottom: 4px;
+    position: relative; overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.3);
   }
+  .unified-task-card::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(160px 120px at 100% 0%, rgba(212,175,106,0.14), transparent 60%),
+      radial-gradient(160px 120px at 0% 100%, rgba(203,74,126,0.12), transparent 60%);
+  }
+  .unified-task-card > * { position: relative; z-index: 1; }
   body:not(.theme-simple):not(.theme-fancy) .unified-task-card,
   body:not(.theme-simple):not(.theme-fancy) #calSectionWrap,
   body:not(.theme-simple):not(.theme-fancy) .hud-clock-hero,
@@ -930,11 +959,11 @@
   }
   .today-tasks-header {
     display: flex; justify-content: space-between; align-items: center;
-    font-family: "Orbitron", sans-serif; font-size: 11.5px; color: #FF8A5C; font-weight: 700;
+    font-family: "Orbitron", sans-serif; font-size: 11.5px; color: #F0906B; font-weight: 700;
     margin-bottom: 8px; padding: 0 2px 6px; border-bottom: 1px dashed rgba(255,138,92,0.25);
   }
   .today-tasks-add-btn {
-    background: rgba(255,138,92,0.15); border: 1px solid rgba(255,138,92,0.5); color: #FF8A5C;
+    background: rgba(255,138,92,0.15); border: 1px solid rgba(255,138,92,0.5); color: #F0906B;
     border-radius: 8px; padding: 4px 10px; font-size: 10.5px; cursor: pointer;
   }
   .today-task-item {
@@ -947,7 +976,7 @@
     border: 1.5px solid rgba(255,138,92,0.6); display: flex; align-items: center; justify-content: center;
     font-size: 12px; color: transparent; background: rgba(255,138,92,0.05);
   }
-  .today-task-item.done .today-task-check { background: #FF8A5C; color: #2a1200; }
+  .today-task-item.done .today-task-check { background: #F0906B; color: #2a1200; }
   .today-task-item.done .today-task-text { text-decoration: line-through; opacity: 0.5; }
   .today-task-text { flex: 1; word-break: break-word; }
   .item.today-routine {
@@ -963,14 +992,14 @@
   .item.today-custom { border-left-color: rgba(255,138,92,0.5); cursor: default; }
   .item.today-custom .check-box { cursor: pointer; }
   .item.today-custom.done {
-    border-left-color: #FF8A5C;
+    border-left-color: #F0906B;
     background: linear-gradient(160deg, rgba(42,28,20,0.97), rgba(12,15,20,0.97));
     box-shadow:
       0 3px 0 rgba(30,15,0,0.5),
       0 0 14px rgba(255,138,92,0.3), 0 5px 12px rgba(0,0,0,0.4),
       inset 0 1px 0 rgba(255,255,255,0.1);
   }
-  .item.today-custom.done .check-box { background: #FF8A5C; border-color: #FF8A5C; color: var(--bg); }
+  .item.today-custom.done .check-box { background: #F0906B; border-color: #F0906B; color: var(--bg); }
   .item.today-custom.done .item-label { text-decoration: line-through; opacity: 0.6; }
   .today-group-divider {
     border-top: 1px solid rgba(255,255,255,0.14); margin: 4px 0 10px;
@@ -1060,6 +1089,7 @@
     background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(255,255,255,0.2);
     color: var(--ink-dim); font-size: 12.5px; font-weight: 700;
     border-radius: 12px; cursor: pointer; transition: all 0.15s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
   }
   .add-task-btn:active { background: rgba(43,201,204,0.08); border-color: var(--cyan); transform: scale(0.98); }
 
@@ -1087,6 +1117,7 @@
     background: rgba(255,255,255,0.06); border: 2px dashed rgba(255,255,255,0.2);
     font-family: "Orbitron", sans-serif; font-size: 11px; font-weight: 700; color: var(--ink-dim);
     transition: all 0.15s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
   }
   .drop-zone.active { background: rgba(43,201,204,0.2); border-color: var(--cyan); border-style: solid; color: #fff; transform: scale(1.06); }
   .drop-zone.zone-delete.active { background: rgba(224,53,122,0.2); border-color: var(--magenta); }
@@ -1098,16 +1129,23 @@
     touch-action: none;
     background: linear-gradient(160deg, rgba(26,30,38,0.97), rgba(11,14,19,0.97));
     border: 1.5px solid rgba(255,255,255,0.14); border-radius: 20px;
-    border-left: 4px solid rgba(255,255,255,0.2);
+    border-left: 8px solid #60D69F;
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.1),
-      0 1px 2px rgba(0,0,0,0.55),
-      0 3px 0 rgba(0,0,0,0.35),
-      0 8px 20px -4px rgba(0,0,0,0.5),
-      0 2px 6px rgba(0,0,0,0.35);
+      inset 0 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 0 rgba(0,0,0,0.35),
+      0 1px 2px rgba(0,0,0,0.4),
+      0 14px 32px -8px rgba(0,0,0,0.55),
+      0 4px 12px rgba(0,0,0,0.25);
     transition: border-color 0.15s ease, transform 0.12s cubic-bezier(.2,.9,.3,1), box-shadow 0.15s ease;
     position: relative;
     overflow: hidden;
+  }
+  /* ガラスの角に、周囲の光が透けて色づいているような、淡い色のにじみ(キーボード参考画像の質感) */
+  .item::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(120px 90px at 100% 0%, rgba(212,175,106,0.16), transparent 60%),
+      radial-gradient(120px 90px at 0% 100%, rgba(203,74,126,0.14), transparent 60%);
   }
   .item::after {
     content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
@@ -1466,11 +1504,20 @@
   #calSectionWrap {
     background: linear-gradient(160deg, rgba(22,26,34,0.92), rgba(12,15,20,0.92));
     border: 1.5px solid rgba(43,201,204,0.3); border-radius: 22px;
-    padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    padding: 16px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.3), 0 16px 36px -10px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.25);
+    margin-bottom: 14px;
+    position: relative; overflow: hidden;
   }
+  #calSectionWrap::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(160px 120px at 100% 0%, rgba(212,175,106,0.14), transparent 60%),
+      radial-gradient(160px 120px at 0% 100%, rgba(203,74,126,0.12), transparent 60%);
+  }
+  #calSectionWrap > * { position: relative; z-index: 1; }
   .cal-section-title {
     font-family: "Orbitron", sans-serif; font-size: 11px; color: var(--cyan);
-    letter-spacing: 0.06em; margin-bottom: 10px; padding-left: 2px;
+    letter-spacing: 0.16em; margin-bottom: 10px; padding-left: 2px;
   }
   .cal-summary-row {
     display: flex; gap: 8px; margin-bottom: 14px;
@@ -1654,6 +1701,19 @@
   .clamp-expand-btn {
     font-size: 10.5px; color: var(--cyan); text-decoration: underline; cursor: pointer; margin-top: 4px; display: inline-block;
   }
+  #tapGlow {
+    position: fixed; width: 10px; height: 10px; border-radius: 50%;
+    pointer-events: none; z-index: 99999; opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+    background: radial-gradient(circle, var(--tap-glow-color, rgba(43,201,204,0.55)) 0%, transparent 70%);
+  }
+  #tapGlow.bloom {
+    animation: tapGlowBloom 0.5s ease-out forwards;
+  }
+  @keyframes tapGlowBloom {
+    0% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(14); }
+  }
   .mood-entry-card-time {
     font-family: "Orbitron", sans-serif; font-size: 9.5px; color: var(--cyan); margin-bottom: 3px;
   }
@@ -1682,6 +1742,7 @@
     flex: 1; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700;
     background: rgba(255,255,255,0.05); border: 1.2px solid rgba(255,255,255,0.15);
     color: var(--ink-dim); cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 1px 2px rgba(0,0,0,0.15);
   }
   .mood-journal-btn.primary { background: var(--cyan); color: var(--bg); border-color: var(--cyan); }
   .mood-journal-btn:active { transform: scale(0.97); }
@@ -1734,6 +1795,7 @@
   .week-view-nav button {
     background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff;
     width: 28px; height: 28px; border-radius: 8px; font-size: 14px; cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.15);
   }
   .week-view-day {
     display: flex; align-items: flex-start; gap: 8px; padding: 7px 4px;
@@ -1797,6 +1859,7 @@
     flex: 1; min-width: 0; padding: 10px 4px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.15);
     background: rgba(255,255,255,0.03); color: var(--ink-dim); font-size: 12px; font-weight: 700; cursor: pointer;
     font-family: 'Orbitron', sans-serif; white-space: nowrap;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 2px rgba(0,0,0,0.15);
   }
   .cal-view-btn.active { border-color: var(--cyan); color: var(--cyan); background: rgba(43,201,204,0.08); }
   .cal-secondary-label {
@@ -1870,7 +1933,7 @@
   }
   .settings-label {
     font-family: "Orbitron", sans-serif; font-size: 10px; color: var(--cyan);
-    letter-spacing: 0.06em; margin-bottom: 10px;
+    letter-spacing: 0.16em; margin-bottom: 10px;
   }
   .settings-row {
     display: flex; justify-content: space-between; align-items: center;
@@ -1925,6 +1988,7 @@
     background: rgba(255,255,255,0.04); border: 1.2px solid rgba(255,255,255,0.12);
     color: var(--ink); font-size: 12.5px; font-weight: 600; padding: 11px 14px;
     border-radius: 10px; cursor: pointer; margin-bottom: 8px; transition: all 0.15s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), inset 0 0 0 1px rgba(255,255,255,0.03), 0 1px 2px rgba(0,0,0,0.15);
   }
   .settings-btn:last-child { margin-bottom: 0; }
   .settings-btn:active { background: rgba(43,201,204,0.1); transform: scale(0.98); }
@@ -1999,7 +2063,7 @@
   <filter id="neonBlur" x="-100%" y="-50%" width="300%" height="200%">
     <feGaussianBlur stdDeviation="1.6"/>
   </filter>
-<radialGradient id="streetGlow0" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFB65C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFB65C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow4" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow5" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow6" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow7" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow8" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFB65C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFB65C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow9" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow10" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFB65C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFB65C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow11" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow12" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow13" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow14" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow15" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow16" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow17" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow18" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow19" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow20" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow21" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFB65C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFB65C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow22" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow23" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8A5C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FF8A5C" stop-opacity="0"/></radialGradient>
+<radialGradient id="streetGlow0" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFB65C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFB65C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow4" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow5" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow6" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow7" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow8" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFB65C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFB65C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow9" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow10" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFB65C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFB65C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow11" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow12" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow13" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow14" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow15" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow16" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow17" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow18" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow19" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow20" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow21" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFB65C" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFB65C" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow22" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD27A" stop-opacity="0.9"/><stop offset="100%" stop-color="#FFD27A" stop-opacity="0"/></radialGradient><radialGradient id="streetGlow23" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0906B" stop-opacity="0.9"/><stop offset="100%" stop-color="#F0906B" stop-opacity="0"/></radialGradient>
 </defs>
 <rect id="citySkyRect" width="1200" height="1300" fill="url(#sky)"/>
 <g id="cyberClouds" opacity="0.18">
@@ -2296,7 +2360,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0806_AUDIO_FAILSAFE_V230</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_CAL_SWIPE_V248</div>
   <div class="cal-section" id="calSectionWrap">
     <div id="calMonthSection">
       <div class="cal-grid-shell">
@@ -2359,6 +2423,10 @@
 
     <div id="calAgendaSection" style="display:none;">
       <div class="week-view-shell" style="margin-bottom:10px;">
+        <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">📋 今週のまとめ(自動集計)</div>
+        <div id="weeklySummaryBox" style="font-size:12px; line-height:1.8; color:var(--ink);"></div>
+      </div>
+      <div class="week-view-shell" style="margin-bottom:10px;">
         <div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin-bottom:6px;">🗂 日付未定(いつかやる)</div>
         <div id="undatedTaskList"></div>
         <div style="display:flex; gap:6px; margin-top:8px;">
@@ -2401,7 +2469,7 @@
         </div>
         <div class="report-compare" id="reportCompare"></div>
         <div id="reportDayExtra" style="display:none; margin-top:12px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.1);">
-          <div style="font-size:12px; color:var(--yellow); margin-bottom:8px;" id="reportStreakLine">🔥 0日連続</div>
+          <div style="font-size:12px; margin-bottom:8px;" id="reportStreakLine"><span class="premium-gold-text">🔥 0日連続</span></div>
           <div style="font-size:11px; color:var(--cyan); text-decoration:underline; cursor:pointer;" onclick="openTodayCompletedModal()">✅ 今日完了した一覧を見る</div>
         </div>
       </div>
@@ -2551,13 +2619,12 @@
         </div>
         <div id="sleepDurationLabel" class="sleep-track-duration"></div>
       </div>
-      <textarea id="moodJournalText" class="mood-journal-textarea" data-i18n-placeholder="ph_mood_journal" placeholder="今日の気分、体調、頭に浮かんだこと。何でも自由に。" oninput="handleMoodJournalInput()"></textarea>
+      <textarea id="moodJournalText" class="mood-journal-textarea" data-i18n-placeholder="ph_mood_journal" placeholder="今日の気分、体調、頭に浮かんだこと。何でも自由に。" oninput="handleMoodJournalInput()" onblur="handleMoodJournalBlur()"></textarea>
       <div id="moodJournalImages" class="mood-journal-images"></div>
       <div class="mood-journal-actions">
         <button class="mood-journal-btn" data-i18n="mood_add_photo_btn" onclick="triggerMoodImageUpload()">📷 写真を追加</button>
         <button class="mood-journal-btn" onclick="copyForAIConsult()">🤖 AI相談用にコピー</button>
         <button class="mood-journal-btn" id="moodResetBtn" onclick="resetMoodCompose()" style="display:none;">🔄 リセット(新しく書く)</button>
-        <button class="mood-journal-btn primary" id="moodSaveBtn" data-i18n="mood_save_btn" onclick="saveMoodJournal()">保存する</button>
       </div>
       <input type="file" id="moodImageInput" accept="image/*" multiple style="display:none;">
       <div id="moodJournalSavedInfo" class="mood-journal-saved-info"></div>
@@ -2662,15 +2729,14 @@
   <div class="settings-group">
     <div class="settings-label" data-i18n="opt_sound_label">サウンド</div>
     <div class="settings-row">
-      <span data-i18n="opt_sound_vol_row">効果音の音量</span>
+      <span data-i18n="opt_sound_vol_row">BGM・効果音の音量</span>
       <span id="volumeLabel" style="font-family:'Orbitron',sans-serif; font-size:12px; color:var(--cyan);">70%</span>
     </div>
     <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" style="width:100%; margin-bottom:10px;">
-    <button class="settings-btn" data-i18n="opt_test_sound_btn" onclick="testSound()">🔊 音を試す</button>
     <div class="settings-row">
-      <span data-i18n="opt_sound_toggle_row">効果音を鳴らす</span>
+      <span>BGMを流す</span>
       <label class="toggle-switch">
-        <input type="checkbox" id="soundToggle" checked>
+        <input type="checkbox" id="bgmToggle" checked>
         <span class="toggle-track"></span>
       </label>
     </div>
@@ -2694,8 +2760,10 @@
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを開いている間だけ、指定した時刻に音・振動でお知らせします。</div>
     <div style="display:flex; gap:8px; align-items:center;">
       <input type="time" id="alarmTimeInput" style="flex:1; font-size:14px; padding:10px 8px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-      <label style="display:flex; align-items:center; gap:6px; font-size:12px; white-space:nowrap;">
-        <input type="checkbox" id="alarmEnabledToggle" onchange="saveAlarmSettings()"> 有効
+      <span style="font-size:11px; color:var(--ink-dim); flex-shrink:0;">有効</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="alarmEnabledToggle" onchange="saveAlarmSettings()">
+        <span class="toggle-track"></span>
       </label>
     </div>
     <button class="settings-btn" style="margin-top:8px;" data-i18n="alarm_set_btn" onclick="saveAlarmSettings()">この時刻に設定</button>
@@ -2707,19 +2775,31 @@
     <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
       <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
         <span data-i18n="notify_type_reminder">⏰ 予定のリマインド</span>
-        <input type="checkbox" id="notifyTypeReminder" checked onchange="saveNotificationPrefs()">
+        <span class="toggle-switch">
+          <input type="checkbox" id="notifyTypeReminder" checked onchange="saveNotificationPrefs()">
+          <span class="toggle-track"></span>
+        </span>
       </label>
       <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
         <span data-i18n="notify_type_morning">☀️ 朝の挨拶</span>
-        <input type="checkbox" id="notifyTypeMorning" checked onchange="saveNotificationPrefs()">
+        <span class="toggle-switch">
+          <input type="checkbox" id="notifyTypeMorning" checked onchange="saveNotificationPrefs()">
+          <span class="toggle-track"></span>
+        </span>
       </label>
       <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
         <span data-i18n="notify_type_absence">💤 休眠復帰の通知</span>
-        <input type="checkbox" id="notifyTypeAbsence" checked onchange="saveNotificationPrefs()">
+        <span class="toggle-switch">
+          <input type="checkbox" id="notifyTypeAbsence" checked onchange="saveNotificationPrefs()">
+          <span class="toggle-track"></span>
+        </span>
       </label>
       <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
         <span data-i18n="notify_type_overdue">🔁 やり忘れの再通知</span>
-        <input type="checkbox" id="notifyTypeOverdue" checked onchange="saveNotificationPrefs()">
+        <span class="toggle-switch">
+          <input type="checkbox" id="notifyTypeOverdue" checked onchange="saveNotificationPrefs()">
+          <span class="toggle-track"></span>
+        </span>
       </label>
     </div>
   </div>
@@ -2740,7 +2820,7 @@
   <div class="settings-group">
     <div class="settings-label" data-i18n="opt_data_label">データの管理</div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="opt_data_desc">経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。</div>
-    <button class="settings-btn" data-i18n="opt_view_data_btn" onclick="openDataViewer()">🔍 保存データを見る</button>
+    <button class="settings-btn" data-i18n="opt_view_data_btn" onclick="openDataViewer()">🔍 データを見る</button>
     <button class="settings-btn" data-i18n="opt_diagnostic_btn" onclick="runStorageDiagnostic()">🔧 保存機能を診断する</button>
     <button class="settings-btn" data-i18n="opt_export_btn" onclick="exportBackup()">⬇️ バックアップを書き出す</button>
     <button class="settings-btn" data-i18n="opt_import_btn" onclick="triggerImportBackup()">⬆️ バックアップから復元する</button>
@@ -2826,7 +2906,7 @@
           <span data-color="#2BC9CC" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#2BC9CC; cursor:pointer;" onclick="pickEventColor(this)"></span>
           <span data-color="#E0357A" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#E0357A; cursor:pointer;" onclick="pickEventColor(this)"></span>
           <span data-color="#E8FF4E" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#E8FF4E; cursor:pointer;" onclick="pickEventColor(this)"></span>
-          <span data-color="#4EE8A0" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#4EE8A0; cursor:pointer;" onclick="pickEventColor(this)"></span>
+          <span data-color="#60D69F" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#60D69F; cursor:pointer;" onclick="pickEventColor(this)"></span>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:6px; margin-top:8px;">
@@ -2858,7 +2938,7 @@
 
 <div class="grand-modal" id="dataViewerModal" onclick="closeDataViewer()">
   <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:26px 22px; max-width:min(360px,88vw); max-height:78vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="data_viewer_title">🔍 保存データを見る</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="data_viewer_title">🔍 データを見る</div>
 
     <div style="display:flex; gap:8px; margin-bottom:14px;">
       <div style="flex:1; background:rgba(255,255,255,0.04); border-radius:10px; padding:10px; text-align:center;">
@@ -2924,10 +3004,10 @@
 
 <div class="grand-modal" id="addTodayTaskModal" onclick="closeAddTodayTask()">
   <div class="modal-card" style="border:1.5px solid rgba(255,138,92,0.5); border-radius:18px; padding:26px 24px; max-width:min(320px,86vw); text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:#FF8A5C; font-weight:800; margin-bottom:6px;">📋 単発タスクを追加</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:#F0906B; font-weight:800; margin-bottom:6px;">📋 単発タスクを追加</div>
     <div style="font-size:10.5px; color:var(--ink-dim); margin-bottom:14px; line-height:1.6;" data-i18n="today_task_desc">今日〜数日のうちにやりたい、単発の用事を入れておけます。「今日のタスク」欄に、選んだ日課と一緒に並びます。</div>
     <input id="todayTaskInput" type="text" placeholder="例: 荷解き、匂い対策の掃除" onkeydown="if(event.key==='Enter') confirmAddTodayTask()" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:18px; box-sizing:border-box;">
-    <button class="badge-close-btn" style="width:100%; margin-top:0; border-color:#FF8A5C; color:#FF8A5C;" data-i18n="confirm_add_btn" onclick="confirmAddTodayTask()">追加する</button>
+    <button class="badge-close-btn" style="width:100%; margin-top:0; border-color:#F0906B; color:#F0906B;" data-i18n="confirm_add_btn" onclick="confirmAddTodayTask()">追加する</button>
     <button class="badge-close-btn" style="width:100%; margin-top:8px; background:transparent; border-color:rgba(255,255,255,0.15); color:var(--ink-dim);" data-i18n="cancel_btn" onclick="closeAddTodayTask()">キャンセル</button>
   </div>
 </div>
@@ -3101,6 +3181,8 @@
   </div>
 </div>
 
+<div id="tapGlow"></div>
+
 <div class="bg-view-overlay" id="bgViewOverlay" onclick="exitBgViewMode()">
   <div class="bg-view-time" id="bgViewTime">--:--</div>
   <div class="bg-view-hint" data-i18n="bg_view_hint">タップして戻る</div>
@@ -3233,7 +3315,7 @@
       opt_boundary_desc: 'この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。',
       opt_data_label: 'データの管理',
       opt_data_desc: '経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。',
-      opt_view_data_btn: '🔍 保存データを見る', opt_export_btn: '⬇️ バックアップを書き出す',
+      opt_view_data_btn: '🔍 データを見る', opt_export_btn: '⬇️ バックアップを書き出す',
       opt_import_btn: '⬆️ バックアップから復元する',
       opt_support_label: 'サポート', opt_contact_btn: '運営に連絡する', opt_policy_btn: '利用規約・プライバシー',
       opt_lang_label: '言語', lang_ja_btn: '日本語', lang_en_btn: 'English',
@@ -3270,7 +3352,7 @@
       focus_log_btn: '今日も向き合った', focus_log_done_btn: '✓ 今日は記録済み', focus_end_btn: '終了する',
       focus_subitem_section: '🔽 ゴールから逆算したステップ', focus_subitem_placeholder: '次にやる一歩を追加',
       focus_note_placeholder: '今日の一言(任意)', focus_note_save_btn: '保存',
-      data_viewer_title: '🔍 保存データを見る', data_viewer_recent_mood: '直近の気分日記',
+      data_viewer_title: '🔍 データを見る', data_viewer_recent_mood: '直近の気分日記',
       badge_list_title: '🏅 実績バッジ一覧', badge_list_settings_btn: '🏅 実績バッジ一覧を見る', badge_list_empty: 'まだ実績バッジがありません。実績データ照合から最初の1枚を発行してみましょう。',
       routine_stock_title: '📦 日課ストック',
       routine_stock_desc: '今は不要な日課をオフにして一覧から隠せます(削除はされません)。大会前だけ必要になるような日課も、ここから必要な時だけオンに戻せます。',
@@ -3968,6 +4050,84 @@
   }
   window.addEventListener('click', initAudioOnce, { once: true });
   window.addEventListener('touchstart', initAudioOnce, { once: true });
+
+  // キーボードが出た際、iOSが勝手に画面をスクロールさせようとする動きを、可能な限り打ち消す
+  // (iOS Safariは、interactive-widgetというCSSの正攻法を、2026年現在もまだ実装していないため、
+  //  JS側で「入力中は、スクロール位置を強制的に固定し続ける」という力技で対応する)
+  if (window.visualViewport) {
+    let scrollLockActive = false;
+    let scrollLockValue = 0;
+    let scrollLockRAF = null;
+
+    function scrollLockTick() {
+      if (!scrollLockActive) return;
+      if (window.scrollY !== scrollLockValue) window.scrollTo(0, scrollLockValue);
+      scrollLockRAF = requestAnimationFrame(scrollLockTick);
+    }
+    document.addEventListener('focusin', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        scrollLockValue = window.scrollY;
+        scrollLockActive = true;
+        if (!scrollLockRAF) scrollLockRAF = requestAnimationFrame(scrollLockTick);
+      }
+    });
+    document.addEventListener('focusout', () => {
+      scrollLockActive = false;
+      if (scrollLockRAF) { cancelAnimationFrame(scrollLockRAF); scrollLockRAF = null; }
+    });
+  }
+
+  // ---- タップした場所から、色がフワッと広がる演出 ----
+  function triggerTapGlow(x, y, color) {
+    const glow = document.getElementById('tapGlow');
+    if (!glow) return;
+    glow.classList.remove('bloom');
+    glow.style.setProperty('--tap-glow-color', color || 'rgba(224,53,122,0.5)');
+    glow.style.left = x + 'px';
+    glow.style.top = y + 'px';
+    // アニメーションを毎回頭から再生させるため、一度クラスを外してから再度付け直す
+    void glow.offsetWidth;
+    glow.classList.add('bloom');
+  }
+  document.addEventListener('pointerdown', (e) => {
+    const target = e.target.closest('button, .home-tab, .item, .tab, .misc-grid-tile, .theme-btn, .cal-view-btn, .clamp-expand-btn, [onclick]');
+    if (!target) return;
+    triggerTapGlow(e.clientX, e.clientY);
+  }, { passive: true });
+
+  // ---- カレンダー内での左右スワイプ: 月→週→日を切り替える ----
+  (function setupCalSwipe() {
+    const wrap = document.getElementById('calSectionWrap');
+    if (!wrap) return;
+    const VIEW_ORDER = ['month', 'week', 'day'];
+    let touchStartX = 0, touchStartY = 0, swiping = false;
+
+    wrap.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      swiping = true;
+    }, { passive: true });
+
+    wrap.addEventListener('touchend', (e) => {
+      if (!swiping) return;
+      swiping = false;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      // 横方向にはっきり動いた時だけスワイプとみなす(縦スクロールとの誤反応を避ける)
+      if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+
+      const activeBtn = wrap.querySelector('.cal-view-btn.active');
+      const currentView = activeBtn ? activeBtn.dataset.view : 'month';
+      const idx = VIEW_ORDER.indexOf(currentView);
+      if (idx === -1) return; // 予定一覧・検索・レポートなど、対象外の画面ではスワイプ切り替えしない
+
+      let nextIdx = idx;
+      if (dx < 0 && idx < VIEW_ORDER.length - 1) nextIdx = idx + 1; // 左スワイプ → 次(月→週→日)
+      if (dx > 0 && idx > 0) nextIdx = idx - 1; // 右スワイプ → 前
+      if (nextIdx !== idx) switchCalView(VIEW_ORDER[nextIdx]);
+    }, { passive: true });
+  })();
 
   // アプリを完全には閉じず、他アプリを触ってから戻ってきた時、BGMが止まっていれば「続きから」再開する
   // (startRealBgmを曲切替時以外はcurrentTimeを触らない仕様に直したので、ここで呼んでも頭に戻らない)
@@ -7198,6 +7358,13 @@
       saveMoodJournal(true); // 自動保存扱い(ボタンの「保存しました」演出は省略)
     }, 2000);
   }
+  function handleMoodJournalBlur() {
+    // 手動保存ボタンが無いので、入力欄から離れた瞬間、2秒待たずに即座に保存する
+    clearTimeout(moodJournalAutosaveTimer);
+    const text = document.getElementById('moodJournalText').value;
+    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag) return;
+    saveMoodJournal(true);
+  }
   async function saveMoodJournal(isAutosave) {
     const key = logicalDateKey(trustedNow);
     const text = document.getElementById('moodJournalText').value;
@@ -7288,7 +7455,7 @@
     document.getElementById('calAgendaSection').style.display = (view === 'agenda') ? 'block' : 'none';
     document.getElementById('calSearchSection').style.display = (view === 'search') ? 'block' : 'none';
     document.getElementById('calReportSection').style.display = (view === 'report') ? 'block' : 'none';
-    if (view === 'agenda') { renderAgendaList(); renderUndatedTasks(); }
+    if (view === 'agenda') { renderAgendaList(); renderUndatedTasks(); renderWeeklySummary(); }
     if (view === 'report') renderReport(currentReportPeriod);
     if (view === 'day') renderDayView();
   }
@@ -7398,7 +7565,10 @@
       if (period === 'day') {
         const streak = calculateStreak();
         const streakEl = document.getElementById('reportStreakLine');
-        if (streakEl) streakEl.textContent = (streak > 0) ? `🔥 ${streak}${isEn ? '-day streak' : '日連続'}` : (isEn ? '🌱 Start today' : '🌱 今日からまた始めよう');
+        if (streakEl) {
+          const label = (streak > 0) ? `🔥 ${streak}${isEn ? '-day streak' : '日連続'}` : (isEn ? '🌱 Start today' : '🌱 今日からまた始めよう');
+          streakEl.innerHTML = (streak > 0) ? `<span class="premium-gold-text">${label}</span>` : `<span style="color:var(--ink-dim);">${label}</span>`;
+        }
       }
     }
   }
@@ -7425,6 +7595,59 @@
     textEl.value = '';
     renderUndatedTasks();
     playUIClick();
+  }
+
+  function renderWeeklySummary() {
+    const box = document.getElementById('weeklySummaryBox');
+    if (!box) return;
+    const today = new Date();
+    const todayKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    // 今週(日曜始まり)の範囲を計算
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    // ①今週残っている予定を集める
+    const weekEvents = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate() + i);
+      const key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      if (d < today && key !== todayKey) continue; // 今週の、今日以降だけを対象にする
+      eventsForDate(key).forEach(ev => {
+        const isDone = ev.recurrence ? (ev.doneOccurrences || []).includes(key) : ev.done;
+        if (!isDone) weekEvents.push({ key, ev, d: new Date(d) });
+      });
+    }
+    weekEvents.sort((a, b) => a.d - b.d);
+
+    // ②今週の活動実績(EXP・活動日数)を集計
+    let weekExp = 0, weekActiveDays = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate() + i);
+      if (d > today) break;
+      const key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      const rec = (key === todayKey) ? { exp: currentTodayExp || 0, count: picked.size } : dailyHistory[key];
+      if (rec && rec.count > 0) { weekActiveDays++; weekExp += rec.exp || 0; }
+    }
+
+    // ③放置されている「日付未定」タスクの件数
+    const undatedCount = scheduledEvents.filter(e => !e.dateKey && !e.done).length;
+
+    const lines = [];
+    lines.push(`<div>🗓 今週の残り予定: <b>${weekEvents.length}件</b></div>`);
+    if (weekEvents.length > 0) {
+      const next = weekEvents[0];
+      const label = next.key === todayKey ? '今日' : `${next.d.getMonth() + 1}/${next.d.getDate()}`;
+      lines.push(`<div style="font-size:11px; color:var(--ink-dim); margin-left:14px;">→ 直近: ${label} ${next.ev.time || ''} ${escapeHtml(next.ev.text)}</div>`);
+    }
+    lines.push(`<div>📈 今週の活動: <b>${weekActiveDays}日 / EXP ${Math.round(weekExp)}</b></div>`);
+    if (undatedCount > 0) {
+      lines.push(`<div>🗂 日付未定のまま: <b>${undatedCount}件</b></div>`);
+    }
+    box.innerHTML = lines.join('');
   }
 
   function renderAgendaList() {
@@ -8349,15 +8572,9 @@
   logDebug('volumeSliderEl 取得: ' + (volumeSliderEl ? 'OK' : '見つかりません!'));
   volumeSliderEl.addEventListener('input', handleVolumeChange);
   volumeSliderEl.addEventListener('change', handleVolumeChange);
-  document.getElementById('soundToggle').addEventListener('change', (e) => {
-    soundOn = e.target.checked;
-    bgmOn = e.target.checked;
-    if (bgmOn) { playThemeBGM(); playUIClick(); } else { pauseThemeBGM(0.6); }
+  document.getElementById('bgmToggle').addEventListener('change', (e) => {
+    toggleBGM(e.target.checked);
   });
-  function testSound() {
-    ensureAudioCtx();
-    playSelectSound();
-  }
 
   // ---- 1日の区切り時刻の設定 ----
   function updateBoundaryHourLabel(hour) {
