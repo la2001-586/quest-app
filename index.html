@@ -1894,10 +1894,13 @@
     position: fixed; right: 0; top: 50%; transform: translateY(-50%);
     background: linear-gradient(160deg, rgba(24,28,36,0.97), rgba(12,15,20,0.97));
     border: 1.5px solid rgba(255,255,255,0.15); border-right: none;
-    border-radius: 12px 0 0 12px; padding: 12px 6px; font-size: 10px; color: var(--cyan);
+    border-radius: 12px 0 0 12px; padding: 14px 4px; font-size: 10px; color: var(--cyan);
     line-height: 1.4; text-align: center; z-index: 60; cursor: pointer;
     box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+    width: 26px; box-sizing: content-box;
+    touch-action: none; user-select: none; -webkit-user-select: none;
   }
+  #quickMemoTab.dragging { transition: none; opacity: 0.85; }
   #quickMemoPanel {
     position: fixed; right: -100%; top: 12%; bottom: 12%; width: min(280px, 78vw);
     background: linear-gradient(160deg, rgba(24,28,36,0.98), rgba(12,15,20,0.98));
@@ -1971,6 +1974,18 @@
   }
 
   .toggle-switch { position: relative; width: 40px; height: 22px; display: inline-block; }
+  .alarm-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 2px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .alarm-row:last-child { border-bottom: none; }
+  .alarm-row-info { cursor: pointer; flex: 1; min-width: 0; }
+  .alarm-row-time {
+    font-family: "Orbitron", sans-serif; font-size: 30px; font-weight: 800; color: var(--ink); line-height: 1.1;
+  }
+  .alarm-row.disabled .alarm-row-time, .alarm-row.disabled .alarm-row-sub { opacity: 0.4; }
+  .alarm-row-sub { font-size: 11px; color: var(--ink-dim); margin-top: 2px; }
+  .alarm-empty-hint { font-size: 11px; color: var(--ink-dim); text-align: center; padding: 14px 0; }
   .toggle-switch input { opacity: 0; width: 0; height: 0; }
   .toggle-track {
     position: absolute; inset: 0; background: rgba(255,255,255,0.12);
@@ -2360,7 +2375,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_CAL_SWIPE_V248</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_MEMOTAB_DRAG_V253</div>
   <div class="cal-section" id="calSectionWrap">
     <div id="calMonthSection">
       <div class="cal-grid-shell">
@@ -2702,7 +2717,6 @@
       <span class="level">SETTINGS</span>
     </div>
     <h1 data-i18n="opt_title">オプション</h1>
-    <div class="sub" data-i18n="opt_sub">見た目と音、運営への連絡</div>
   </div>
 
   <div class="settings-group">
@@ -2758,15 +2772,8 @@
   <div class="settings-group">
     <div class="settings-label" data-i18n="alarm_label">⏰ アラーム</div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを開いている間だけ、指定した時刻に音・振動でお知らせします。</div>
-    <div style="display:flex; gap:8px; align-items:center;">
-      <input type="time" id="alarmTimeInput" style="flex:1; font-size:14px; padding:10px 8px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-      <span style="font-size:11px; color:var(--ink-dim); flex-shrink:0;">有効</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="alarmEnabledToggle" onchange="saveAlarmSettings()">
-        <span class="toggle-track"></span>
-      </label>
-    </div>
-    <button class="settings-btn" style="margin-top:8px;" data-i18n="alarm_set_btn" onclick="saveAlarmSettings()">この時刻に設定</button>
+    <div id="alarmListBox"></div>
+    <button class="settings-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋ アラームを追加</button>
   </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="notify_label">🔔 通知(試験導入)</div>
@@ -3098,7 +3105,22 @@
   </div>
 </div>
 
-<div id="quickMemoTab" onclick="toggleQuickMemo()">📝<br>メモ</div>
+<div class="grand-modal" id="alarmEditorModal" onclick="closeAlarmEditor()">
+  <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:22px; max-width:min(340px,88vw);" onclick="event.stopPropagation()">
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--cyan); font-weight:800; margin-bottom:16px; text-align:center;">⏰ アラーム</div>
+    <input type="time" id="alarmEditorTime" style="width:100%; box-sizing:border-box; font-size:40px; text-align:center; padding:14px 8px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; font-family:'Orbitron',sans-serif; margin-bottom:16px;">
+    <div style="font-size:10.5px; color:var(--ink-dim); margin-bottom:6px;">繰り返し</div>
+    <div id="alarmEditorDays" style="display:flex; justify-content:space-between; gap:4px; margin-bottom:16px;"></div>
+    <div style="font-size:10.5px; color:var(--ink-dim); margin-bottom:6px;">ラベル</div>
+    <input type="text" id="alarmEditorLabel" placeholder="アラーム" style="width:100%; box-sizing:border-box; font-size:13px; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:18px;">
+    <button class="badge-close-btn" onclick="confirmAlarmEditor()" style="width:100%; box-sizing:border-box; font-weight:700;">保存</button>
+    <button class="badge-close-btn" id="alarmEditorDeleteBtn" onclick="deleteAlarmFromEditor()" style="width:100%; box-sizing:border-box; margin-top:8px; border-color:var(--magenta); color:var(--magenta); display:none;">削除</button>
+    <button class="badge-close-btn" onclick="closeAlarmEditor()" style="width:100%; box-sizing:border-box; margin-top:8px; background:transparent; border-color:rgba(255,255,255,0.15); color:var(--ink-dim);">キャンセル</button>
+  </div>
+</div>
+
+
+<div id="quickMemoTab">📝<br>メモ</div>
 <div id="quickMemoPanel">
   <div class="quick-memo-header">
     <span>📝 メモ</span>
@@ -4125,7 +4147,7 @@
       let nextIdx = idx;
       if (dx < 0 && idx < VIEW_ORDER.length - 1) nextIdx = idx + 1; // 左スワイプ → 次(月→週→日)
       if (dx > 0 && idx > 0) nextIdx = idx - 1; // 右スワイプ → 前
-      if (nextIdx !== idx) switchCalView(VIEW_ORDER[nextIdx]);
+      if (nextIdx !== idx) switchCalView(VIEW_ORDER[nextIdx], dx < 0 ? 'left' : 'right');
     }, { passive: true });
   })();
 
@@ -4192,9 +4214,11 @@
     }
   }
 
-  // ---- アラーム(アプリを開いている間だけ) ----
-  let alarmSettings = { time: null, enabled: false };
-  let alarmFiredAtMinute = null; // 同じ分の間に何度も鳴らないようにする
+  // ---- アラーム(アプリを開いている間だけ。iPhone純正アラームに近いUI・複数登録対応) ----
+  let alarms = []; // [{ id, time, label, enabled, repeatDays: [0-6のうち選んだ曜日。空なら「1回だけ」] }]
+  let alarmFiredAtMinute = {}; // { [alarmId]: "HH:MM" } 同じ分の間に何度も鳴らないようにする
+  let editingAlarmId = null;
+  const ALARM_DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
 
   function tickClock() {
     // ネット時刻の取得に成功していれば「取得時刻+経過時間」、失敗していれば単純に端末の現在時刻を使う
@@ -4213,42 +4237,116 @@
     }
     const bgEl = document.getElementById('bgViewTime');
     if (bgEl) bgEl.textContent = `${hh}:${mm}`;
-    checkAlarm(hh, mm);
+    checkAlarms(hh, mm, displayNow.getDay());
   }
   setInterval(tickClock, 1000);
   tickClock();
 
   async function loadAlarmSettings() {
     try {
-      const saved = await window.storage.get('quest-alarm-v1');
-      if (saved && saved.value) alarmSettings = JSON.parse(saved.value);
-    } catch (e) {}
-    const timeEl = document.getElementById('alarmTimeInput');
-    const enabledEl = document.getElementById('alarmEnabledToggle');
-    if (timeEl && alarmSettings.time) timeEl.value = alarmSettings.time;
-    if (enabledEl) enabledEl.checked = !!alarmSettings.enabled;
+      const saved = await window.storage.get('quest-alarms-v2');
+      if (saved && saved.value) alarms = JSON.parse(saved.value);
+    } catch (e) { alarms = []; }
+    renderAlarmList();
   }
-  async function saveAlarmSettings() {
-    const timeEl = document.getElementById('alarmTimeInput');
-    const enabledEl = document.getElementById('alarmEnabledToggle');
-    alarmSettings = { time: timeEl.value || null, enabled: enabledEl.checked };
-    try { await window.storage.set('quest-alarm-v1', JSON.stringify(alarmSettings)); } catch (e) {}
-    showToast(alarmSettings.enabled && alarmSettings.time
-      ? (currentLang === 'en' ? `⏰ Set for ${alarmSettings.time}` : `⏰ ${alarmSettings.time}に設定しました`)
-      : (currentLang === 'en' ? 'Alarm disabled' : 'アラームを無効にしました'));
+  async function persistAlarms() {
+    try { await window.storage.set('quest-alarms-v2', JSON.stringify(alarms)); } catch (e) {}
   }
-  function checkAlarm(hh, mm) {
-    if (!alarmSettings.enabled || !alarmSettings.time) return;
+  function renderAlarmList() {
+    const box = document.getElementById('alarmListBox');
+    if (!box) return;
+    if (alarms.length === 0) {
+      box.innerHTML = `<div class="alarm-empty-hint">まだアラームがありません</div>`;
+      return;
+    }
+    const sorted = [...alarms].sort((a, b) => a.time.localeCompare(b.time));
+    box.innerHTML = sorted.map(a => {
+      const subLabel = a.repeatDays.length > 0
+        ? a.repeatDays.slice().sort().map(d => ALARM_DAY_LABELS[d]).join('')
+        : (a.label || '1回のみ');
+      return `
+      <div class="alarm-row${a.enabled ? '' : ' disabled'}">
+        <div class="alarm-row-info" onclick="openAlarmEditor('${a.id}')">
+          <div class="alarm-row-time">${a.time}</div>
+          <div class="alarm-row-sub">${escapeHtml(subLabel)}</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" ${a.enabled ? 'checked' : ''} onchange="toggleAlarmEnabled('${a.id}', this.checked)">
+          <span class="toggle-track"></span>
+        </label>
+      </div>`;
+    }).join('');
+  }
+  function toggleAlarmEnabled(id, enabled) {
+    const a = alarms.find(x => x.id === id);
+    if (!a) return;
+    a.enabled = enabled;
+    persistAlarms();
+    renderAlarmList();
+  }
+  function openAlarmEditor(id) {
+    editingAlarmId = id;
+    const a = id ? alarms.find(x => x.id === id) : null;
+    document.getElementById('alarmEditorTime').value = a ? a.time : '07:00';
+    document.getElementById('alarmEditorLabel').value = a ? (a.label || '') : '';
+    const daysBox = document.getElementById('alarmEditorDays');
+    const selectedDays = a ? a.repeatDays : [];
+    daysBox.innerHTML = ALARM_DAY_LABELS.map((label, i) => `
+      <span data-day="${i}" onclick="this.classList.toggle('picked')" class="alarm-day-btn${selectedDays.includes(i) ? ' picked' : ''}"
+        style="flex:1; text-align:center; padding:8px 0; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); font-size:12px; cursor:pointer; ${selectedDays.includes(i) ? 'background:var(--cyan); color:var(--bg); border-color:var(--cyan);' : 'color:var(--ink-dim);'}"
+        >${label}</span>
+    `).join('');
+    document.getElementById('alarmEditorDeleteBtn').style.display = id ? 'block' : 'none';
+    document.getElementById('alarmEditorModal').classList.add('show');
+    playUIClick();
+  }
+  function closeAlarmEditor() {
+    document.getElementById('alarmEditorModal').classList.remove('show');
+    playUIClick();
+  }
+  function confirmAlarmEditor() {
+    const time = document.getElementById('alarmEditorTime').value;
+    if (!time) return;
+    const label = document.getElementById('alarmEditorLabel').value.trim();
+    const repeatDays = Array.from(document.querySelectorAll('#alarmEditorDays .alarm-day-btn.picked')).map(el => parseInt(el.dataset.day, 10));
+    if (editingAlarmId) {
+      const a = alarms.find(x => x.id === editingAlarmId);
+      if (a) { a.time = time; a.label = label; a.repeatDays = repeatDays; }
+    } else {
+      alarms.push({ id: 'alarm_' + Date.now(), time, label, enabled: true, repeatDays });
+    }
+    persistAlarms();
+    renderAlarmList();
+    closeAlarmEditor();
+  }
+  function deleteAlarmFromEditor() {
+    if (!editingAlarmId) return;
+    alarms = alarms.filter(x => x.id !== editingAlarmId);
+    persistAlarms();
+    renderAlarmList();
+    closeAlarmEditor();
+  }
+  function checkAlarms(hh, mm, dayOfWeek) {
     const current = `${hh}:${mm}`;
-    if (current !== alarmSettings.time) { alarmFiredAtMinute = null; return; }
-    if (alarmFiredAtMinute === current) return; // この分は既に鳴らした
-    alarmFiredAtMinute = current;
-    fireAlarm();
+    alarms.forEach(a => {
+      if (!a.enabled || a.time !== current) return;
+      if (a.repeatDays.length > 0 && !a.repeatDays.includes(dayOfWeek)) return;
+      if (alarmFiredAtMinute[a.id] === current) return; // この分は既に鳴らした
+      alarmFiredAtMinute[a.id] = current;
+      fireAlarm(a);
+      if (a.repeatDays.length === 0) {
+        // 「1回だけ」のアラームは、鳴らした後は自動でオフにする(純正アラームと同じ挙動)
+        a.enabled = false;
+        persistAlarms();
+        renderAlarmList();
+      }
+    });
   }
-  function fireAlarm() {
+  function fireAlarm(alarm) {
     playPomodoroAlarm(); // 既存のはっきりした通知音を流用
     if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 300]);
-    showToast(currentLang === 'en' ? "⏰ It's alarm time" : '⏰ アラームの時刻です');
+    const label = alarm && alarm.label ? alarm.label : (currentLang === 'en' ? 'Alarm' : 'アラーム');
+    showToast(`⏰ ${label}`);
   }
 
   // ---- ポモドーロタイマー ----
@@ -7047,21 +7145,98 @@
     const el = document.getElementById('calSectionWrap');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  function goToPage(pageName, scrollToId) {
+  // 2枚の画面を、同時に逆方向へスライドさせる、連続性のある切り替え(汎用)
+  function animateSlideTransition(fromEl, toEl, direction, onDone) {
+    const dir = (direction === 'left') ? 1 : -1; // 左スワイプ: 新画面は右から、旧画面は左へ
+    [fromEl, toEl].forEach(el => {
+      el.style.position = 'fixed';
+      el.style.top = '0'; el.style.left = '0'; el.style.width = '100%';
+      el.style.maxHeight = '100vh'; el.style.overflowY = 'auto';
+      el.style.transition = 'none';
+    });
+    fromEl.style.zIndex = '20';
+    toEl.style.zIndex = '21';
+    toEl.style.display = 'block';
+    toEl.style.transform = `translateX(${dir * 100}%)`;
+    fromEl.style.transform = 'translateX(0)';
+    void toEl.offsetWidth; // reflow
+    fromEl.style.transition = 'transform 0.32s cubic-bezier(.22,.61,.36,1)';
+    toEl.style.transition = 'transform 0.32s cubic-bezier(.22,.61,.36,1)';
+    requestAnimationFrame(() => {
+      fromEl.style.transform = `translateX(${-dir * 100}%)`;
+      toEl.style.transform = 'translateX(0)';
+    });
+    setTimeout(() => {
+      [fromEl, toEl].forEach(el => {
+        el.style.position = ''; el.style.top = ''; el.style.left = ''; el.style.width = '';
+        el.style.maxHeight = ''; el.style.overflowY = ''; el.style.transition = '';
+        el.style.transform = ''; el.style.zIndex = ''; el.style.display = '';
+      });
+      if (onDone) onDone();
+    }, 340);
+  }
+
+  let pageTransitionInProgress = false;
+  function goToPage(pageName, scrollToId, direction) {
+    if (pageTransitionInProgress) return; // 前の切り替えアニメーションが終わるまで、次の操作は受け付けない
     playUIClick();
     document.querySelectorAll('.home-tab').forEach(t => t.classList.toggle('active', t.dataset.page === pageName));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
-    document.getElementById('page-' + pageName).classList.add('show');
+    const targetPage = document.getElementById('page-' + pageName);
+    const currentPage = document.querySelector('.page.show');
+
+    if (direction && currentPage && currentPage !== targetPage) {
+      pageTransitionInProgress = true;
+      animateSlideTransition(currentPage, targetPage, direction, () => {
+        currentPage.classList.remove('show');
+        targetPage.classList.add('show');
+        pageTransitionInProgress = false;
+      });
+    } else {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
+      targetPage.classList.add('show');
+    }
     if (scrollToId) {
       setTimeout(() => {
         const el = document.getElementById(scrollToId);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 50);
+      }, 360);
     }
   }
   document.querySelectorAll('.home-tab').forEach(tab => {
     tab.onclick = () => goToPage(tab.dataset.page);
   });
+
+  // ---- 画面のどこでも(カレンダー内を除く)左右スワイプで、タスク⇔オプションを切り替える ----
+  (function setupPageSwipe() {
+    const PAGE_ORDER = ['task', 'settings'];
+    let touchStartX = 0, touchStartY = 0, swiping = false;
+
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      if (e.target.closest('#calSectionWrap')) return; // カレンダー内は、別のスワイプ(月/週/日)が担当するので対象外
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      swiping = true;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      if (!swiping) return;
+      swiping = false;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+
+      const activeTab = document.querySelector('.home-tab.active');
+      const currentPage = activeTab ? activeTab.dataset.page : 'task';
+      const idx = PAGE_ORDER.indexOf(currentPage);
+      if (idx === -1) return;
+
+      let nextIdx = idx;
+      if (dx < 0 && idx < PAGE_ORDER.length - 1) nextIdx = idx + 1;
+      if (dx > 0 && idx > 0) nextIdx = idx - 1;
+      if (nextIdx !== idx) goToPage(PAGE_ORDER[nextIdx], null, dx < 0 ? 'left' : 'right');
+    }, { passive: true });
+  })();
 
   // ---- カレンダーページ(試作:枠のみ描画。実データ連携は今後) ----
 
@@ -7446,18 +7621,62 @@
     }).join('');
   }
 
-  function switchCalView(view) {
+  // カレンダーの各表示(月/週/日など)を、calSectionWrapという枠の中だけで、同時に逆方向スライドさせる版
+  function animateCalSlideTransition(fromEl, toEl, direction, onDone) {
+    const dir = (direction === 'left') ? 1 : -1;
+    [fromEl, toEl].forEach(el => {
+      el.style.position = 'absolute';
+      el.style.top = '0'; el.style.left = '0'; el.style.width = '100%';
+      el.style.transition = 'none';
+    });
+    fromEl.style.zIndex = '2';
+    toEl.style.zIndex = '3';
+    toEl.style.display = 'block';
+    toEl.style.transform = `translateX(${dir * 100}%)`;
+    fromEl.style.transform = 'translateX(0)';
+    void toEl.offsetWidth;
+    fromEl.style.transition = 'transform 0.3s cubic-bezier(.22,.61,.36,1)';
+    toEl.style.transition = 'transform 0.3s cubic-bezier(.22,.61,.36,1)';
+    requestAnimationFrame(() => {
+      fromEl.style.transform = `translateX(${-dir * 100}%)`;
+      toEl.style.transform = 'translateX(0)';
+    });
+    setTimeout(() => {
+      fromEl.style.position = ''; fromEl.style.top = ''; fromEl.style.left = ''; fromEl.style.width = '';
+      fromEl.style.transition = ''; fromEl.style.transform = ''; fromEl.style.zIndex = '';
+      toEl.style.position = ''; toEl.style.top = ''; toEl.style.left = ''; toEl.style.width = '';
+      toEl.style.transition = ''; toEl.style.transform = ''; toEl.style.zIndex = '';
+      if (onDone) onDone();
+    }, 320);
+  }
+
+  let calTransitionInProgress = false;
+  function switchCalView(view, direction) {
+    if (calTransitionInProgress) return;
     playUIClick();
     document.querySelectorAll('.cal-view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
-    document.getElementById('calMonthSection').style.display = (view === 'month') ? 'block' : 'none';
-    document.getElementById('calWeekSection').style.display = (view === 'week') ? 'block' : 'none';
-    document.getElementById('calDaySection').style.display = (view === 'day') ? 'block' : 'none';
-    document.getElementById('calAgendaSection').style.display = (view === 'agenda') ? 'block' : 'none';
-    document.getElementById('calSearchSection').style.display = (view === 'search') ? 'block' : 'none';
-    document.getElementById('calReportSection').style.display = (view === 'report') ? 'block' : 'none';
-    if (view === 'agenda') { renderAgendaList(); renderUndatedTasks(); renderWeeklySummary(); }
-    if (view === 'report') renderReport(currentReportPeriod);
-    if (view === 'day') renderDayView();
+    const sectionIds = { month: 'calMonthSection', week: 'calWeekSection', day: 'calDaySection', agenda: 'calAgendaSection', search: 'calSearchSection', report: 'calReportSection' };
+    const targetEl = document.getElementById(sectionIds[view]);
+    const currentEl = Object.values(sectionIds).map(id => document.getElementById(id)).find(el => el && el.style.display !== 'none');
+
+    function finalizeContentUpdates() {
+      if (view === 'agenda') { renderAgendaList(); renderUndatedTasks(); renderWeeklySummary(); }
+      if (view === 'report') renderReport(currentReportPeriod);
+      if (view === 'day') renderDayView();
+    }
+
+    if (direction && currentEl && currentEl !== targetEl) {
+      calTransitionInProgress = true;
+      animateCalSlideTransition(currentEl, targetEl, direction, () => {
+        currentEl.style.display = 'none';
+        finalizeContentUpdates();
+        calTransitionInProgress = false;
+      });
+    } else {
+      Object.values(sectionIds).forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+      targetEl.style.display = 'block';
+      finalizeContentUpdates();
+    }
   }
   let currentReportPeriod = 'day';
   function switchReportPeriod(period) {
@@ -8016,6 +8235,88 @@
     playUIClick();
     document.getElementById('quickMemoPanel').classList.toggle('show');
   }
+
+  // ---- メモタブ: iPhoneのピクチャインピクチャのように、自由な位置にドラッグでき、離すと左右どちらかの端にくっつく ----
+  (function setupQuickMemoTabDrag() {
+    const tab = document.getElementById('quickMemoTab');
+    if (!tab) return;
+    let startX = 0, startY = 0, startTop = 0, dragging = false, moved = false;
+
+    async function loadTabPosition() {
+      try {
+        const saved = await window.storage.get('quest-memotab-pos-v1');
+        if (saved && saved.value) {
+          const { topPercent, side } = JSON.parse(saved.value);
+          tab.style.top = topPercent + '%';
+          tab.style.transform = 'translateY(-50%)';
+          if (side === 'left') {
+            tab.style.left = '0'; tab.style.right = 'auto';
+            tab.style.borderRadius = '0 12px 12px 0';
+            tab.style.borderLeft = 'none'; tab.style.borderRight = '1.5px solid rgba(255,255,255,0.15)';
+          }
+        }
+      } catch (e) {}
+    }
+    loadTabPosition();
+
+    function onPointerDown(e) {
+      dragging = true; moved = false;
+      startX = e.clientX; startY = e.clientY;
+      startTop = tab.getBoundingClientRect().top;
+      tab.classList.add('dragging');
+    }
+    function onPointerMove(e) {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) moved = true;
+      if (!moved) return;
+      let newTop = startTop + dy;
+      newTop = Math.max(8, Math.min(window.innerHeight - tab.offsetHeight - 8, newTop));
+      tab.style.top = newTop + 'px';
+      tab.style.transform = 'none';
+      // ドラッグ中は、指の左右の位置に応じて、そのままついてくるようにする
+      const centerX = e.clientX;
+      if (centerX < window.innerWidth / 2) {
+        tab.style.left = '0'; tab.style.right = 'auto';
+      } else {
+        tab.style.left = 'auto'; tab.style.right = '0';
+      }
+    }
+    async function onPointerUp() {
+      if (!dragging) return;
+      dragging = false;
+      tab.classList.remove('dragging');
+      if (!moved) {
+        // 動いていなければ、ただのタップとして扱う
+        toggleQuickMemo();
+        return;
+      }
+      // 離した位置から、近い方の端(左右)にスナップさせる
+      const rect = tab.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const side = centerX < window.innerWidth / 2 ? 'left' : 'right';
+      const topPercent = ((rect.top + rect.height / 2) / window.innerHeight) * 100;
+      tab.style.transition = 'left 0.25s ease, right 0.25s ease';
+      if (side === 'left') {
+        tab.style.left = '0'; tab.style.right = 'auto';
+        tab.style.borderRadius = '0 12px 12px 0';
+        tab.style.borderLeft = 'none'; tab.style.borderRight = '1.5px solid rgba(255,255,255,0.15)';
+      } else {
+        tab.style.left = 'auto'; tab.style.right = '0';
+        tab.style.borderRadius = '12px 0 0 12px';
+        tab.style.borderRight = 'none'; tab.style.borderLeft = '1.5px solid rgba(255,255,255,0.15)';
+      }
+      setTimeout(() => { tab.style.transition = ''; }, 260);
+      try {
+        await window.storage.set('quest-memotab-pos-v1', JSON.stringify({ topPercent, side }));
+      } catch (e) {}
+    }
+
+    tab.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+  })();
 
   // ---- 備忘録カード: メモと違い、保存すると新しいカードとして積み上がっていく長期記録 ----
   let mementoCards = [];
