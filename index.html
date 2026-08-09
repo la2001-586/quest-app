@@ -285,7 +285,7 @@
     box-shadow:
       0 3px 0 rgba(90,70,0,0.5),
       0 0 18px rgba(232,144,31,0.45), 0 5px 12px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.1) !important;
+      inset 0 0.47px 0 0 rgba(255,255,255,0.45), inset 0 3px 4px -3px rgba(0,0,0,0.35) !important;
   }
   body.focus-active .home-tab.active {
     background: rgba(232,144,31,0.16) !important;
@@ -742,7 +742,7 @@
   .pomodoro-controls button {
     font-family: "Orbitron", sans-serif; font-size: 10px; padding: 7px 10px; border-radius: 8px;
     border: 1.5px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); color: var(--ink-dim); cursor: pointer;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35);
   }
   .pomodoro-widget.running .pomodoro-time { color: var(--cyan); }
   .pomodoro-widget.break .pomodoro-time { color: var(--magenta); }
@@ -758,7 +758,7 @@
     aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
     background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px;
     font-size: 10px; color: var(--ink); cursor: pointer; text-align: center; line-height: 1.5; gap: 2px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.15);
   }
   .misc-grid-tile.info { cursor: default; font-size: 9px; }
   .misc-grid-tile.empty { border-style: dashed; opacity: 0.3; cursor: default; }
@@ -833,7 +833,7 @@
     box-shadow:
       0 4px 0 rgba(120,100,10,0.35),
       0 6px 14px rgba(0,0,0,0.45),
-      inset 0 1px 0 rgba(255,255,255,0.15),
+      inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35),
       inset 0 0 12px rgba(232,255,78,0.06);
   }
   .streak-badge {
@@ -894,7 +894,7 @@
     box-shadow:
       0 1px 0 rgba(120,100,10,0.35),
       0 2px 6px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.1),
+      inset 0 0.47px 0 0 rgba(255,255,255,0.45), inset 0 3px 4px -3px rgba(0,0,0,0.35),
       inset 0 0 16px rgba(232,255,78,0.15);
   }
 
@@ -931,13 +931,13 @@
     border: 1.5px solid rgba(255,255,255,0.14); border-radius: 20px;
     padding: 18px 16px 10px; margin-bottom: 4px;
     position: relative; overflow: hidden;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.3);
+    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(0,0,0,0.3);
   }
   .unified-task-card::before {
     content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
     background:
-      radial-gradient(160px 120px at 100% 0%, rgba(212,175,106,0.14), transparent 60%),
-      radial-gradient(160px 120px at 0% 100%, rgba(203,74,126,0.12), transparent 60%);
+      radial-gradient(70px 50px at 100% 0%, rgba(212,175,106,0.1), transparent 70%),
+      radial-gradient(70px 50px at 0% 100%, rgba(203,74,126,0.08), transparent 70%);
   }
   .unified-task-card > * { position: relative; z-index: 1; }
   body:not(.theme-simple):not(.theme-fancy) .unified-task-card,
@@ -1027,7 +1027,7 @@
     box-shadow:
       0 3px 0 rgba(0,30,15,0.5),
       0 0 14px rgba(43,201,147,0.3), 0 5px 12px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.1);
+      inset 0 0.47px 0 0 rgba(255,255,255,0.45), inset 0 3px 4px -3px rgba(0,0,0,0.35);
     cursor: pointer;
   }
   .item.today-routine .check-box { background: var(--low); border-color: var(--low); color: var(--bg); }
@@ -1039,7 +1039,7 @@
     box-shadow:
       0 3px 0 rgba(30,15,0,0.5),
       0 0 14px rgba(255,138,92,0.3), 0 5px 12px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.1);
+      inset 0 0.47px 0 0 rgba(255,255,255,0.45), inset 0 3px 4px -3px rgba(0,0,0,0.35);
   }
   .item.today-custom.done .check-box { background: #F0906B; border-color: #F0906B; color: var(--bg); }
   .item.today-custom.done .item-label { text-decoration: line-through; opacity: 0.6; }
@@ -1131,7 +1131,7 @@
     background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(255,255,255,0.2);
     color: var(--ink-dim); font-size: 18px; font-weight: 900; line-height: 1;
     border-radius: 12px; cursor: pointer; transition: all 0.15s ease;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.5), inset 0 3px 4px -3px rgba(0,0,0,0.35);
   }
   .add-task-btn:active { background: rgba(43,201,204,0.08); border-color: var(--cyan); transform: scale(0.98); }
 
@@ -1159,7 +1159,7 @@
     background: rgba(255,255,255,0.06); border: 2px dashed rgba(255,255,255,0.2);
     font-family: "Orbitron", sans-serif; font-size: 11px; font-weight: 700; color: var(--ink-dim);
     transition: all 0.15s ease;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35);
   }
   .drop-zone.active { background: rgba(43,201,204,0.2); border-color: var(--cyan); border-style: solid; color: #fff; transform: scale(1.06); }
   .drop-zone.zone-delete.active { background: rgba(224,53,122,0.2); border-color: var(--magenta); }
@@ -1173,8 +1173,6 @@
     border: 1.5px solid rgba(255,255,255,0.14); border-radius: 20px;
     border-left: 8px solid #60D69F;
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.22),
-      inset 0 -1px 0 rgba(0,0,0,0.35),
       0 1px 2px rgba(0,0,0,0.4),
       0 14px 32px -8px rgba(0,0,0,0.55),
       0 4px 12px rgba(0,0,0,0.25);
@@ -1182,12 +1180,14 @@
     position: relative;
     overflow: hidden;
   }
-  /* ガラスの角に、周囲の光が透けて色づいているような、淡い色のにじみ(キーボード参考画像の質感) */
+  /* ガラスの角に、周囲の光が透けて色づいているような、淡い色のにじみ(キーボード参考画像の質感)
+     +上端は白い光沢から自然に影へ、下端は影から自然に馴染むよう、なめらかなグラデーションで繋げる */
   .item::before {
     content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
     background:
-      radial-gradient(120px 90px at 100% 0%, rgba(212,175,106,0.16), transparent 60%),
-      radial-gradient(120px 90px at 0% 100%, rgba(203,74,126,0.14), transparent 60%);
+      radial-gradient(50px 40px at 100% 0%, rgba(212,175,106,0.12), transparent 70%),
+      radial-gradient(50px 40px at 0% 100%, rgba(203,74,126,0.1), transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.08) 4%, transparent 12%, transparent 88%, rgba(0,0,0,0.22) 100%);
   }
   .item::after {
     content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
@@ -1210,7 +1210,7 @@
     box-shadow:
       0 3px 0 rgba(0,30,32,0.5),
       0 0 18px rgba(43,201,204,0.4), 0 5px 12px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.1);
+      inset 0 0.47px 0 0 rgba(255,255,255,0.45), inset 0 3px 4px -3px rgba(0,0,0,0.35);
     animation: itemHit 0.32s cubic-bezier(.34,1.5,.4,1);
   }
   @keyframes itemHit {
@@ -1296,7 +1296,7 @@
   .badge-modal-card {
     background: linear-gradient(160deg, rgba(32,34,20,0.98) 0%, rgba(15,19,25,0.98) 60%); border: 3px solid var(--yellow); border-radius: 22px;
     padding: 44px 34px; text-align: center; width: min(340px, 88vw);
-    box-shadow: 0 0 0 2px rgba(232,255,78,0.25), 0 0 70px rgba(232,255,78,0.45), 0 25px 60px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.1);
+    box-shadow: 0 0 0 2px rgba(232,255,78,0.25), 0 0 70px rgba(232,255,78,0.45), 0 25px 60px rgba(0,0,0,0.65), inset 0 0.47px 0 0 rgba(255,255,255,0.45), inset 0 3px 4px -3px rgba(0,0,0,0.35);
     animation: badgeRise 0.55s cubic-bezier(.2,0,.1,1);
     position: relative;
   }
@@ -1546,15 +1546,15 @@
   #calSectionWrap {
     background: linear-gradient(160deg, rgba(22,26,34,0.92), rgba(12,15,20,0.92));
     border: 1.5px solid rgba(43,201,204,0.3); border-radius: 22px;
-    padding: 16px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.3), 0 16px 36px -10px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.25);
+    padding: 16px; box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(0,0,0,0.3), 0 16px 36px -10px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.25);
     margin-bottom: 14px;
     position: relative; overflow: hidden;
   }
   #calSectionWrap::before {
     content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
     background:
-      radial-gradient(160px 120px at 100% 0%, rgba(212,175,106,0.14), transparent 60%),
-      radial-gradient(160px 120px at 0% 100%, rgba(203,74,126,0.12), transparent 60%);
+      radial-gradient(70px 50px at 100% 0%, rgba(212,175,106,0.1), transparent 70%),
+      radial-gradient(70px 50px at 0% 100%, rgba(203,74,126,0.08), transparent 70%);
   }
   #calSectionWrap > * { position: relative; z-index: 1; }
   .cal-section-title {
@@ -1781,7 +1781,7 @@
     flex: 1; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700;
     background: rgba(255,255,255,0.05); border: 1.2px solid rgba(255,255,255,0.15);
     color: var(--ink-dim); cursor: pointer;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.15);
   }
   .mood-journal-btn.primary { background: var(--cyan); color: var(--bg); border-color: var(--cyan); }
   .mood-journal-btn:active { transform: scale(0.97); }
@@ -1834,7 +1834,7 @@
   .week-view-nav button {
     background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff;
     width: 28px; height: 28px; border-radius: 8px; font-size: 14px; cursor: pointer;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.15);
   }
   .week-view-day {
     display: flex; align-items: flex-start; gap: 8px; padding: 7px 4px;
@@ -1898,7 +1898,7 @@
     flex: 1; min-width: 0; padding: 10px 4px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.15);
     background: rgba(255,255,255,0.03); color: var(--ink-dim); font-size: 12px; font-weight: 700; cursor: pointer;
     font-family: 'Orbitron', sans-serif; white-space: nowrap;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.15);
   }
   .cal-view-btn.active { border-color: var(--cyan); color: var(--cyan); background: rgba(43,201,204,0.08); }
   .cal-secondary-label {
@@ -1982,6 +1982,11 @@
     padding: 8px 0; font-size: 13px; color: var(--ink);
   }
   .settings-row + .settings-row { border-top: 1px solid rgba(255,255,255,0.06); }
+  .pin-toggle-btn {
+    font-size: 15px; cursor: pointer; opacity: 0.3; filter: grayscale(1);
+    transition: all 0.15s ease; padding: 2px 4px;
+  }
+  .pin-toggle-btn.pinned { opacity: 1; filter: none; }
 
   .theme-switch { display: flex; gap: 6px; }
   .theme-btn, .lang-btn {
@@ -2042,7 +2047,7 @@
     background: rgba(255,255,255,0.04); border: 1.2px solid rgba(255,255,255,0.12);
     color: var(--ink); font-size: 12.5px; font-weight: 600; padding: 11px 14px;
     border-radius: 10px; cursor: pointer; margin-bottom: 8px; transition: all 0.15s ease;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), inset 0 0 0 1px rgba(255,255,255,0.03), 0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.03), 0 1px 2px rgba(0,0,0,0.15);
   }
   .settings-btn:last-child { margin-bottom: 0; }
   .settings-btn:active { background: rgba(43,201,204,0.1); transform: scale(0.98); }
@@ -2414,7 +2419,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_TRIPLE_UPDATE_V260</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_GRADIENT_BEVEL_V268</div>
   <div class="app-group-label">📅 カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div id="calMonthSection">
@@ -2692,19 +2697,28 @@
   </div>
 
   <div class="app-group-label">✨ その他</div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="focus_settings_label">全集中モード</div>
+  <div class="settings-group" id="otherWrapFocus">
+    <div class="settings-row" style="margin-bottom:0;">
+      <div class="settings-label" style="margin-bottom:0;" data-i18n="focus_settings_label">全集中モード</div>
+      <span class="pin-toggle-btn" onclick="pinOtherItem('focus')">📌</span>
+    </div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="focus_settings_desc">期間を決めて、1つのことだけに深く向き合うモードです。その間、日課タスクは「今はやらなくていい」色で表示されます。</div>
     <button class="settings-btn" id="focusModeBtn" data-i18n="focus_start_btn" onclick="openFocusModeModal()">🎯 全集中モードを始める</button>
   </div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="alarm_label">⏰ アラーム</div>
+  <div class="settings-group" id="otherWrapAlarm">
+    <div class="settings-row" style="margin-bottom:0;">
+      <div class="settings-label" style="margin-bottom:0;" data-i18n="alarm_label">⏰ アラーム</div>
+      <span class="pin-toggle-btn" onclick="pinOtherItem('alarm')">📌</span>
+    </div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを開いている間だけ、指定した時刻に音・振動でお知らせします。</div>
     <div id="alarmListBox"></div>
     <button class="add-task-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋</button>
   </div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="memento_label">📖 備忘録</div>
+  <div class="settings-group" id="otherWrapMemento">
+    <div class="settings-row" style="margin-bottom:0;">
+      <div class="settings-label" style="margin-bottom:0;" data-i18n="memento_label">📖 備忘録</div>
+      <span class="pin-toggle-btn" onclick="pinOtherItem('memento')">📌</span>
+    </div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">1度書いたら、上書きされずに積み上がっていく記録です。今取り組んでいることや、一度きりの体験を、あとでいつでも見返せます。</div>
     <div id="mementoCardList"></div>
     <button class="add-task-btn" onclick="openAddMemento()">＋</button>
@@ -3056,7 +3070,9 @@
     <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;" data-i18n="new_routine_emoji_label">絵文字（任意）</div>
     <input id="addTaskEmoji" type="text" maxlength="4" placeholder="🎯" style="width:56px; text-align:center; font-size:20px; padding:8px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px;">
     <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;" data-i18n="new_routine_name_label">日課名</div>
-    <input id="addTaskLabel" type="text" data-i18n-placeholder="ph_add_task_label" placeholder="例: ヨガ、日記を書く" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:18px; box-sizing:border-box;">
+    <input id="addTaskLabel" type="text" data-i18n-placeholder="ph_add_task_label" placeholder="例: ヨガ、日記を書く" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px; box-sizing:border-box;">
+    <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">時刻（任意・毎日この時間にやる場合）</div>
+    <input id="addTaskTime" type="time" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:18px; box-sizing:border-box;">
     <button class="badge-close-btn" style="width:100%; margin-top:0;" data-i18n="confirm_add_btn" onclick="confirmAddTask()">追加する</button>
     <button class="badge-close-btn" style="width:100%; margin-top:8px; background:transparent; border-color:rgba(255,255,255,0.15); color:var(--ink-dim);" data-i18n="cancel_btn" onclick="closeAddTask()">キャンセル</button>
   </div>
@@ -3131,9 +3147,9 @@
       <div class="misc-grid-tile" data-i18n="misc_proof_tile" onclick="triggerBadgeUpload()">📷<br>実績照合</div>
       <div class="misc-grid-tile" id="restDayBtn" data-i18n="misc_restday_tile" onclick="useRestDay()">😮‍💨<br>サボる</div>
       <div class="misc-grid-tile" id="surpriseDrawBtn" style="display:none;" data-i18n="misc_surprise_tile" onclick="manualDrawSurpriseQuest()">🎲<br>臨時クエスト</div>
-      <div class="misc-grid-tile empty"></div>
-      <div class="misc-grid-tile empty"></div>
-      <div class="misc-grid-tile empty"></div>
+      <div class="misc-grid-tile" id="miscTileFocus" style="display:none;" onclick="unpinOtherItem('focus')">🎯<br>全集中</div>
+      <div class="misc-grid-tile" id="miscTileAlarm" style="display:none;" onclick="unpinOtherItem('alarm')">⏰<br>アラーム</div>
+      <div class="misc-grid-tile" id="miscTileMemento" style="display:none;" onclick="unpinOtherItem('memento')">📖<br>備忘録</div>
       <div class="misc-grid-tile empty"></div>
     </div>
   </div>
@@ -4295,6 +4311,47 @@
   setInterval(tickClock, 1000);
   tickClock();
 
+  // ---- 「その他」項目(全集中・アラーム・備忘録)を、常時表示するか、グリッドに格納するか ----
+  let otherPinState = { focus: false, alarm: true, memento: true }; // 初期値: 全集中は格納、他は常時表示
+  async function loadOtherPinState() {
+    try {
+      const saved = await window.storage.get('quest-other-pin-v1');
+      if (saved && saved.value) otherPinState = { ...otherPinState, ...JSON.parse(saved.value) };
+    } catch (e) {}
+    applyOtherPinState();
+  }
+  async function saveOtherPinState() {
+    try { await window.storage.set('quest-other-pin-v1', JSON.stringify(otherPinState)); } catch (e) {}
+  }
+  function applyOtherPinState() {
+    const map = { focus: ['otherWrapFocus', 'miscTileFocus'], alarm: ['otherWrapAlarm', 'miscTileAlarm'], memento: ['otherWrapMemento', 'miscTileMemento'] };
+    Object.keys(map).forEach(key => {
+      const [wrapId, tileId] = map[key];
+      const pinned = otherPinState[key];
+      const wrapEl = document.getElementById(wrapId);
+      const tileEl = document.getElementById(tileId);
+      if (wrapEl) wrapEl.style.display = pinned ? 'block' : 'none';
+      if (tileEl) tileEl.style.display = pinned ? 'none' : 'flex';
+      const btn = wrapEl ? wrapEl.querySelector('.pin-toggle-btn') : null;
+      if (btn) btn.classList.toggle('pinned', pinned);
+    });
+  }
+  function pinOtherItem(key) {
+    playUIClick();
+    otherPinState[key] = !otherPinState[key];
+    saveOtherPinState();
+    applyOtherPinState();
+  }
+  function unpinOtherItem(key) {
+    // グリッドのタイルをタップすると、一旦メイン画面に呼び戻す(すぐ使えるようにするため)
+    playUIClick();
+    otherPinState[key] = true;
+    saveOtherPinState();
+    applyOtherPinState();
+    closeMiscGrid();
+    goToPage('task', 'otherWrap' + key.charAt(0).toUpperCase() + key.slice(1));
+  }
+
   async function loadAlarmSettings() {
     try {
       const saved = await window.storage.get('quest-alarms-v2');
@@ -5094,6 +5151,7 @@
     addTaskTargetLevel = level;
     document.getElementById('addTaskEmoji').value = '';
     document.getElementById('addTaskLabel').value = '';
+    document.getElementById('addTaskTime').value = '';
     document.getElementById('addTaskModal').classList.add('show');
     playUIClick();
   }
@@ -5103,6 +5161,7 @@
   function confirmAddTask() {
     const label = document.getElementById('addTaskLabel').value.trim();
     const emoji = document.getElementById('addTaskEmoji').value.trim();
+    const time = document.getElementById('addTaskTime').value;
     if (!label) {
       showToast('タスク名を入力してください');
       return;
@@ -5112,6 +5171,14 @@
       label, emoji: emoji || '📌', level: addTaskTargetLevel, tag: 'カスタム',
     };
     taskList.push(newTask);
+    if (time) {
+      // 日課に時刻を設定した場合、独自の通知経路は作らず、既存のカレンダー(毎日の繰り返し予定)にそのまま繋げる。
+      // これで、リマインド設定・完了の連動も、カレンダーの予定と同じ仕組みがそのまま使える。
+      const todayKey = logicalDateKey(trustedNow);
+      addScheduledEvent(todayKey, time, `${emoji || '📌'} ${label}`, 'daily', null, {
+        linkedTaskKey: `${newTask.level}|${newTask.label}`,
+      });
+    }
     saveTasks();
     renderAllTasks();
     updateSummary();
@@ -5504,6 +5571,7 @@
     await loadNotificationPrefs();
     loadWeather();
     await loadAlarmSettings();
+    await loadOtherPinState();
     try {
       const savedBgmOn = await window.storage.get('quest-bgm-on-v1');
       if (savedBgmOn && savedBgmOn.value === '0') {
@@ -7397,7 +7465,7 @@
 
   function renderMoodJournalUI() {
     editingMoodEntryId = null;
-    document.getElementById('moodJournalText').value = '■今日の目標\n\n\n■今日の振り返り\n\n\n■その他\n\n';
+    document.getElementById('moodJournalText').value = '◇今日の目標\n\n\n◇今日の振り返り\n\n\n◇その他\n\n';
     currentMoodImages = [];
     renderMoodImageThumbs();
     moodLastSavedText = '';
@@ -8417,6 +8485,7 @@
           <span style="font-size:9.5px; color:var(--ink-dim); font-family:'Orbitron',sans-serif;">${dateLabel}</span>
           <div style="display:flex; gap:10px; align-items:center;">
             <span onclick="toggleMementoFavorite('${card.id}')" style="font-size:14px; cursor:pointer; color:${card.favorite ? 'var(--yellow)' : 'var(--ink-dim)'};">${card.favorite ? '★' : '☆'}</span>
+            <span onclick="openEditMemento('${card.id}')" style="color:var(--ink-dim); font-size:12px; cursor:pointer; padding:2px 4px;">✎</span>
             <span onclick="deleteMemento('${card.id}')" style="color:var(--ink-dim); font-size:13px; cursor:pointer; padding:2px 4px;">✕</span>
           </div>
         </div>
@@ -8442,8 +8511,10 @@
     saveMementoCards();
     renderMementoCards();
   }
+  let editingMementoId = null;
   async function openAddMemento() {
     playUIClick();
+    editingMementoId = null;
     const textEl = document.getElementById('mementoTextInput');
     let draft = '';
     try {
@@ -8453,8 +8524,17 @@
     textEl.value = draft;
     document.getElementById('mementoModal').classList.add('show');
   }
+  function openEditMemento(id) {
+    playUIClick();
+    const card = mementoCards.find(c => c.id === id);
+    if (!card) return;
+    editingMementoId = id;
+    document.getElementById('mementoTextInput').value = card.text;
+    document.getElementById('mementoModal').classList.add('show');
+  }
   let mementoDraftSaveTimer = null;
   function handleMementoDraftInput() {
+    if (editingMementoId) return; // 編集中は下書き保存の対象外(元カードを直接上書きしないため)
     clearTimeout(mementoDraftSaveTimer);
     mementoDraftSaveTimer = setTimeout(async () => {
       try { await window.storage.set('quest-memento-draft-v1', document.getElementById('mementoTextInput').value); } catch (e) {}
@@ -8462,11 +8542,21 @@
   }
   function closeAddMemento() {
     playUIClick();
+    editingMementoId = null;
     document.getElementById('mementoModal').classList.remove('show');
   }
   async function confirmAddMemento() {
     const text = document.getElementById('mementoTextInput').value.trim();
     if (!text) return;
+    if (editingMementoId) {
+      const card = mementoCards.find(c => c.id === editingMementoId);
+      if (card) card.text = text;
+      saveMementoCards();
+      renderMementoCards();
+      closeAddMemento();
+      showToast('📖 更新しました');
+      return;
+    }
     mementoCards.push({ id: 'mem_' + Date.now(), text, createdAt: Date.now(), favorite: false });
     saveMementoCards();
     mementoPage = 0;
