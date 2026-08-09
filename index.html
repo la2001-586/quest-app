@@ -980,6 +980,15 @@
     text-shadow: 0 0 8px rgba(255,138,92,0.4);
   }
   .folder-panel { display: none; }
+  /* アプリを構成する「機能群」を、見た目にもはっきり分けるための見出し(カレンダー・タスク管理・日記・その他) */
+  .app-group-label {
+    display: flex; align-items: center; gap: 6px;
+    font-family: "Orbitron", sans-serif; font-size: 9.5px; letter-spacing: 0.14em;
+    color: var(--ink-dim); margin: 22px 2px 8px; opacity: 0.75;
+  }
+  .app-group-label:first-child { margin-top: 0; }
+  .app-group-label::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+  body.theme-simple .app-group-label::after { background: rgba(0,0,0,0.08); }
   .folder-panel.show { display: block; }
   body.theme-simple .folder-tab {
     background: #EDEDEF; color: #8E8E93; border-color: transparent;
@@ -1120,7 +1129,7 @@
   .add-task-btn {
     display: block; width: 100%; margin-top: 6px; padding: 12px;
     background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(255,255,255,0.2);
-    color: var(--ink-dim); font-size: 12.5px; font-weight: 700;
+    color: var(--ink-dim); font-size: 18px; font-weight: 900; line-height: 1;
     border-radius: 12px; cursor: pointer; transition: all 0.15s ease;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
   }
@@ -1708,13 +1717,24 @@
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
   }
   .cal-section-title-row .cal-section-title { margin-bottom: 0; }
-  .mood-status-badge {
-    font-family: "Orbitron", sans-serif; font-size: 9.5px; font-weight: 700;
-    padding: 3px 10px; border-radius: 999px; transition: all 0.2s ease;
+  /* 日記右上の、コンパクトな写真アップロード欄(未設定時はアイコン、設定後はサムネイル) */
+  .mood-journal-images-top {
+    display: flex; gap: 4px; flex-shrink: 0; cursor: pointer;
   }
-  .mood-status-badge.saved { background: rgba(43,201,204,0.15); color: var(--cyan); }
-  .mood-status-badge.unsaved { background: rgba(217,230,74,0.15); color: var(--yellow); }
-  .mood-status-badge.empty { background: rgba(255,255,255,0.06); color: var(--ink-dim); }
+  .mood-photo-upload-icon {
+    width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.05); border: 1.5px dashed rgba(255,255,255,0.2); font-size: 15px;
+  }
+  .mood-journal-thumb-top {
+    position: relative; width: 36px; height: 36px; border-radius: 8px; overflow: hidden;
+    border: 1.5px solid rgba(255,255,255,0.15);
+  }
+  .mood-journal-thumb-top img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mood-journal-thumb-top .remove-btn {
+    position: absolute; top: -1px; right: -1px; width: 14px; height: 14px; border-radius: 50%;
+    background: rgba(0,0,0,0.75); color: #fff; border: none; font-size: 9px; line-height: 1;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
 
   .mood-journal-btn.primary.just-saved {
     background: var(--low) !important; color: #fff !important; border-color: var(--low) !important;
@@ -1756,20 +1776,6 @@
   }
   .mood-entry-card-meta { font-size: 9.5px; color: var(--ink-dim); margin-top: 3px; }
 
-  .mood-journal-images {
-    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;
-  }
-  .mood-journal-images:empty { display: none; }
-  .mood-journal-thumb {
-    position: relative; width: 64px; height: 64px; border-radius: 8px; overflow: hidden;
-    border: 1.5px solid rgba(255,255,255,0.15);
-  }
-  .mood-journal-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .mood-journal-thumb .remove-btn {
-    position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%;
-    background: rgba(0,0,0,0.7); color: #fff; border: none; font-size: 11px; line-height: 1;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
   .mood-journal-actions { display: flex; gap: 8px; }
   .mood-journal-btn {
     flex: 1; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700;
@@ -2408,7 +2414,8 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_SIMPLE_VISIBILITY_V256</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_TRIPLE_UPDATE_V260</div>
+  <div class="app-group-label">📅 カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div id="calMonthSection">
       <div class="cal-grid-shell">
@@ -2464,7 +2471,7 @@
           <span style="align-self:center; color:var(--ink-dim); font-size:11px;">〜</span>
           <input type="time" id="dayViewEventEndTime" style="width:80px; flex-shrink:0; font-size:12px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
           <input type="text" id="dayViewEventText" data-i18n-placeholder="event_placeholder" placeholder="予定を入力" style="flex:1; min-width:0; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;" onkeydown="if(event.key==='Enter') confirmAddDayViewEvent()">
-          <button onclick="confirmAddDayViewEvent()" style="flex-shrink:0; padding:8px 12px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:12px;">＋</button>
+          <button onclick="confirmAddDayViewEvent()" style="flex-shrink:0; padding:8px 12px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:16px; font-weight:900;">＋</button>
         </div>
       </div>
     </div>
@@ -2479,7 +2486,7 @@
         <div id="undatedTaskList"></div>
         <div style="display:flex; gap:6px; margin-top:8px;">
           <input type="text" id="undatedTaskText" data-i18n-placeholder="undated_task_placeholder" placeholder="日付を決めず追加" style="flex:1; min-width:0; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;" onkeydown="if(event.key==='Enter') confirmAddUndatedTask()">
-          <button onclick="confirmAddUndatedTask()" style="flex-shrink:0; padding:8px 12px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:12px;">＋</button>
+          <button onclick="confirmAddUndatedTask()" style="flex-shrink:0; padding:8px 12px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:16px; font-weight:900;">＋</button>
         </div>
       </div>
       <div class="week-view-shell">
@@ -2605,6 +2612,7 @@
   <input type="file" id="badgeImageInput" accept="image/*" style="display:none;">
 
   <!-- ================= 今日限定の単発タスク(v62で追加) ================= -->
+  <div class="app-group-label">✅ タスク管理</div>
   <div id="tabsPanelsWrap" class="unified-task-card">
   <div class="folder-tab-row">
     <div class="folder-tab active" id="folderTabTask" onclick="switchTaskRoutineFolder('task')">📋 タスク</div>
@@ -2613,7 +2621,7 @@
 
   <div id="folderPanelTask" class="folder-panel show">
     <div id="todayTasksList"></div>
-    <button class="add-task-btn" data-i18n="today_tasks_add_btn" onclick="openAddTodayTask()">＋ 追加</button>
+    <button class="add-task-btn" onclick="openAddTodayTask()">＋</button>
   </div>
 
   <div id="folderPanelRoutine" class="folder-panel">
@@ -2629,29 +2637,30 @@
   <div class="panel show" id="panel-low" data-lv="low">
     <div class="combo-hint" id="comboHint-low"></div>
     <div id="list-low"></div>
-    <button class="add-task-btn" data-i18n="add_task_btn" onclick="openAddTask('low')">＋ 追加</button>
+    <button class="add-task-btn" onclick="openAddTask('low')">＋</button>
   </div>
 
   <div class="panel" id="panel-mid" data-lv="mid">
     <div class="combo-hint" id="comboHint-mid"></div>
     <div id="list-mid"></div>
-    <button class="add-task-btn" data-i18n="add_task_btn" onclick="openAddTask('mid')">＋ 追加</button>
+    <button class="add-task-btn" onclick="openAddTask('mid')">＋</button>
   </div>
 
   <div class="panel" id="panel-high" data-lv="high">
     <div class="combo-hint" id="comboHint-high"></div>
     <div id="list-high"></div>
-    <button class="add-task-btn" data-i18n="add_task_btn" onclick="openAddTask('high')">＋ 追加</button>
+    <button class="add-task-btn" onclick="openAddTask('high')">＋</button>
   </div>
   </div>
   </div>
 
-  <div class="cal-section" style="margin-top:20px;">
+  <div class="app-group-label">📔 日記</div>
+  <div class="cal-section" style="margin-top:0;">
     <div id="moodEntryList" class="mood-entry-list"></div>
     <div class="mood-journal-shell" id="moodComposeShell">
-      <div class="cal-section-title-row" style="margin-bottom:8px;">
+      <div class="cal-section-title-row" style="margin-bottom:8px; align-items:flex-start;">
         <div class="cal-section-title" style="font-size:11px;" data-i18n="mood_journal_title">今日の気分日記</div>
-        <span id="moodStatusBadge" class="mood-status-badge saved" style="font-size:9px;">保存済み</span>
+        <div id="moodJournalImages" class="mood-journal-images-top" onclick="triggerMoodImageUpload()"></div>
       </div>
       <div class="mood-tag-row" id="moodTagRow">
         <button class="mood-tag-toggle" id="moodTagToggle" onclick="toggleMoodTagPicker()" data-i18n="mood_tag_default">🙂 気分を記録</button>
@@ -2673,15 +2682,32 @@
         <div id="sleepDurationLabel" class="sleep-track-duration"></div>
       </div>
       <textarea id="moodJournalText" class="mood-journal-textarea" data-i18n-placeholder="ph_mood_journal" placeholder="今日の気分、体調、頭に浮かんだこと。何でも自由に。" oninput="handleMoodJournalInput()" onblur="handleMoodJournalBlur()"></textarea>
-      <div id="moodJournalImages" class="mood-journal-images"></div>
       <div class="mood-journal-actions">
-        <button class="mood-journal-btn" data-i18n="mood_add_photo_btn" onclick="triggerMoodImageUpload()">📷 写真を追加</button>
-        <button class="mood-journal-btn" onclick="copyForAIConsult()">🤖 AI相談用にコピー</button>
+        <button class="mood-journal-btn" onclick="copyForAIConsult()">📋 コピー</button>
         <button class="mood-journal-btn" id="moodResetBtn" onclick="resetMoodCompose()" style="display:none;">🔄 リセット(新しく書く)</button>
       </div>
       <input type="file" id="moodImageInput" accept="image/*" multiple style="display:none;">
       <div id="moodJournalSavedInfo" class="mood-journal-saved-info"></div>
     </div>
+  </div>
+
+  <div class="app-group-label">✨ その他</div>
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="focus_settings_label">全集中モード</div>
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="focus_settings_desc">期間を決めて、1つのことだけに深く向き合うモードです。その間、日課タスクは「今はやらなくていい」色で表示されます。</div>
+    <button class="settings-btn" id="focusModeBtn" data-i18n="focus_start_btn" onclick="openFocusModeModal()">🎯 全集中モードを始める</button>
+  </div>
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="alarm_label">⏰ アラーム</div>
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを開いている間だけ、指定した時刻に音・振動でお知らせします。</div>
+    <div id="alarmListBox"></div>
+    <button class="add-task-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋</button>
+  </div>
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="memento_label">📖 備忘録</div>
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">1度書いたら、上書きされずに積み上がっていく記録です。今取り組んでいることや、一度きりの体験を、あとでいつでも見返せます。</div>
+    <div id="mementoCardList"></div>
+    <button class="add-task-btn" onclick="openAddMemento()">＋</button>
   </div>
 
 </div>
@@ -2803,17 +2829,6 @@
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6;" data-i18n="opt_boundary_desc">この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。</div>
   </div>
   <div class="settings-group">
-    <div class="settings-label" data-i18n="focus_settings_label">全集中モード</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="focus_settings_desc">期間を決めて、1つのことだけに深く向き合うモードです。その間、日課タスクは「今はやらなくていい」色で表示されます。</div>
-    <button class="settings-btn" id="focusModeBtn" data-i18n="focus_start_btn" onclick="openFocusModeModal()">🎯 全集中モードを始める</button>
-  </div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="alarm_label">⏰ アラーム</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを開いている間だけ、指定した時刻に音・振動でお知らせします。</div>
-    <div id="alarmListBox"></div>
-    <button class="settings-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋ アラームを追加</button>
-  </div>
-  <div class="settings-group">
     <div class="settings-label" data-i18n="notify_label">🔔 通知(試験導入)</div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを閉じていても、時間が来たら通知でお知らせします。試験的な機能です。</div>
     <div class="settings-row">
@@ -2853,12 +2868,6 @@
         </span>
       </label>
     </div>
-  </div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="memento_label">📖 備忘録</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">1度書いたら、上書きされずに積み上がっていく記録です。今取り組んでいることや、一度きりの体験を、あとでいつでも見返せます。</div>
-    <div id="mementoCardList"></div>
-    <button class="add-task-btn" onclick="openAddMemento()">＋ 追加</button>
   </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="opt_achievements_label">実績</div>
@@ -2975,7 +2984,7 @@
       </div>
       <input type="text" id="dayDetailEventLocation" data-i18n-placeholder="location_placeholder" placeholder="場所(任意)" style="width:100%; box-sizing:border-box; margin-top:8px; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
       <textarea id="dayDetailEventNote" data-i18n-placeholder="note_placeholder" placeholder="メモ(任意)" style="width:100%; box-sizing:border-box; margin-top:6px; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; min-height:44px; font-family:inherit;"></textarea>
-      <button onclick="confirmAddDayEvent()" style="width:100%; box-sizing:border-box; margin-top:10px; padding:10px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:13px; font-weight:700;">＋追加</button>
+      <button onclick="confirmAddDayEvent()" style="width:100%; box-sizing:border-box; margin-top:10px; padding:10px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:16px; font-weight:900;">＋</button>
     </div>
     <div id="dayDetailMood" style="display:none; margin-top:14px; text-align:left; background:rgba(255,255,255,0.03); border-radius:10px; padding:12px;">
       <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">気分日記</div>
@@ -7158,11 +7167,22 @@
     const el = document.getElementById('hudWeather');
     if (!el) return;
     try {
-      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`);
-      const data = await res.json();
+      const [weatherRes, geoRes] = await Promise.all([
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,precipitation&timezone=auto`),
+        fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${currentLang === 'en' ? 'en' : 'ja'}`).catch(() => null),
+      ]);
+      const data = await weatherRes.json();
       const temp = Math.round(data.current.temperature_2m);
+      const precip = data.current.precipitation || 0;
       const emoji = WEATHER_CODE_EMOJI[data.current.weather_code] || '🌡️';
-      el.innerHTML = `${emoji} ${temp}°C`;
+      let locationLabel = '';
+      if (geoRes && geoRes.ok) {
+        const geoData = await geoRes.json();
+        locationLabel = geoData.city || geoData.locality || '';
+      }
+      const precipText = precip > 0 ? ` ・☔${precip}mm` : '';
+      const locText = locationLabel ? `${locationLabel} ・ ` : '';
+      el.innerHTML = `${locText}${emoji} ${temp}°C${precipText}`;
     } catch (e) {
       el.innerHTML = `<span class="weather-loc-btn" onclick="requestWeatherLocation()">${currentLang === 'en' ? '🌡️ Retry Weather' : '🌡️ 天気を再取得'}</span>`;
     }
@@ -7385,7 +7405,6 @@
     document.getElementById('moodJournalSavedInfo').textContent = '';
     document.getElementById('moodResetBtn').style.display = 'none';
     renderMoodEntryList();
-    updateMoodStatus();
   }
 
   const MOOD_TAG_EMOJI = { good: '😊', neutral: '😐', bad: '😞' };
@@ -7453,7 +7472,6 @@
     moodLastSavedText = entry.text || '';
     moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
     document.getElementById('moodResetBtn').style.display = 'block';
-    updateMoodStatus();
     playUIClick();
     document.getElementById('moodComposeShell').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -7472,49 +7490,28 @@
     moodLastSavedImagesJson = '[]';
     document.getElementById('moodResetBtn').style.display = 'none';
     document.getElementById('moodJournalSavedInfo').textContent = '';
-    updateMoodStatus();
     showToast('新しい記録として書けます');
   }
 
-  function updateMoodStatus() {
-    const textarea = document.getElementById('moodJournalText');
-    const badge = document.getElementById('moodStatusBadge');
-    const currentText = textarea.value;
-    const currentImagesJson = JSON.stringify(currentMoodImages);
-    const hasContent = currentText.trim() || currentMoodImages.length > 0;
-    const isDirty = currentText !== moodLastSavedText || currentImagesJson !== moodLastSavedImagesJson;
-
-    const isEn = (currentLang === 'en');
-    if (!hasContent) {
-      textarea.classList.remove('unsaved');
-      badge.textContent = isEn ? 'Not written yet' : '未記入';
-      badge.className = 'mood-status-badge empty';
-    } else if (isDirty) {
-      textarea.classList.add('unsaved');
-      badge.textContent = isEn ? '● Unsaved changes' : '● 未保存の変更あり';
-      badge.className = 'mood-status-badge unsaved';
-    } else {
-      textarea.classList.remove('unsaved');
-      badge.textContent = isEn ? '✓ Saved' : '✓ 保存済み';
-      badge.className = 'mood-status-badge saved';
-    }
-  }
-  document.getElementById('moodJournalText').addEventListener('input', updateMoodStatus);
 
   function renderMoodImageThumbs() {
     const el = document.getElementById('moodJournalImages');
+    if (currentMoodImages.length === 0) {
+      el.innerHTML = `<div class="mood-photo-upload-icon">📷</div>`;
+      return;
+    }
     el.innerHTML = currentMoodImages.map((src, i) => `
-      <div class="mood-journal-thumb">
+      <div class="mood-journal-thumb-top">
         <img src="${src}">
-        <button class="remove-btn" onclick="removeMoodImage(${i})">✕</button>
+        <button class="remove-btn" onclick="event.stopPropagation(); removeMoodImage(${i})">✕</button>
       </div>
     `).join('');
-    updateMoodStatus();
   }
 
   function removeMoodImage(idx) {
     currentMoodImages.splice(idx, 1);
     renderMoodImageThumbs();
+    handleMoodJournalBlur(); // 画像の増減も、すぐ自動保存に反映させる
   }
 
   function triggerMoodImageUpload() {
@@ -7583,7 +7580,6 @@
   }
   let moodJournalAutosaveTimer = null;
   function handleMoodJournalInput() {
-    updateMoodStatus();
     clearTimeout(moodJournalAutosaveTimer);
     moodJournalAutosaveTimer = setTimeout(() => {
       const text = document.getElementById('moodJournalText').value;
@@ -7631,7 +7627,6 @@
 
     moodLastSavedText = text;
     moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
-    updateMoodStatus();
     renderMoodEntryList();
     document.getElementById('moodResetBtn').style.display = 'block';
 
@@ -8490,9 +8485,11 @@
   // ---- チュートリアル(手動呼び出し。開発中に毎回自動表示されるとだるいので、設定ページから任意のタイミングで見る形にする) ----
   const TUTORIAL_STEPS_JA = [
     '📍 記録のある日をタップすると、その日の詳細が見られます。',
+    '🤖 日記の「コピー」ボタンで、記録をAIに相談しやすい形でコピーできます。お気に入りのAIチャットに貼り付けて、率直な感想をもらってみましょう。',
   ];
   const TUTORIAL_STEPS_EN = [
     '📍 Tap a day with a record to see its details.',
+    "🤖 The diary's Copy button copies your entry in a format that's easy to share with an AI. Paste it into your favorite AI chat for an honest take.",
   ];
   let tutorialStepIndex = 0;
   function openMiscGrid() {
