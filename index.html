@@ -160,6 +160,8 @@
   body.theme-simple.theme-dark .item.today-custom.done { border-left-color: #F0906B !important; }
   body.theme-simple.theme-dark .check-box { border-color: #4A4A4C !important; }
   body.theme-simple .item.picked .check-box { background: var(--cyan) !important; border-color: var(--cyan) !important; box-shadow: none !important; }
+  body.theme-simple .toggle-track { background: #D8D8DC !important; border-color: rgba(0,0,0,0.08) !important; }
+  body.theme-simple .toggle-switch input:checked + .toggle-track { background: var(--cyan) !important; }
   body.theme-simple .tab.active { background: var(--cyan) !important; color: #fff !important; box-shadow: none !important; }
   body.theme-simple .proof-btn { color: var(--cyan) !important; border-radius: 12px !important; }
   body.theme-simple .home-tab.active { color: var(--cyan) !important; background: rgba(6,199,85,0.08) !important; }
@@ -957,6 +959,37 @@
     font-family: "Orbitron", sans-serif; font-size: 11px; color: var(--ink-dim);
     margin: 18px 0 10px; padding-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1);
   }
+  /* クリアファイルの見出しタブのような、手前(選択中)と奥(非選択)で高さ・色に差をつけた切り替えタブ */
+  .folder-tab-row {
+    display: flex; margin-bottom: -1px; position: relative; z-index: 1;
+  }
+  .folder-tab {
+    flex: 0 0 38%; text-align: center; padding: 9px 6px 8px;
+    font-family: "Orbitron", sans-serif; font-size: 11.5px; font-weight: 700;
+    border-radius: 12px 12px 0 0; cursor: pointer;
+    background: rgba(255,255,255,0.03); color: var(--ink-dim);
+    border: 1.5px solid rgba(255,255,255,0.1); border-bottom: none;
+    transform: translateY(4px);
+    transition: all 0.18s ease;
+  }
+  .folder-tab + .folder-tab { margin-left: -10px; flex: 0 0 45%; }
+  .folder-tab.active {
+    background: linear-gradient(160deg, rgba(26,30,38,0.97), rgba(11,14,19,0.97));
+    color: #F0906B; border-color: rgba(255,138,92,0.4);
+    transform: translateY(0); z-index: 2; position: relative;
+    text-shadow: 0 0 8px rgba(255,138,92,0.4);
+  }
+  .folder-panel { display: none; }
+  .folder-panel.show { display: block; }
+  body.theme-simple .folder-tab {
+    background: #EDEDEF; color: #8E8E93; border-color: transparent;
+  }
+  body.theme-simple .folder-tab.active {
+    background: #FFFFFF; color: #F0784A; border-color: transparent;
+    text-shadow: none; box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  }
+  body.theme-simple.theme-dark .folder-tab { background: #2C2C2E; color: #8E8E93; }
+  body.theme-simple.theme-dark .folder-tab.active { background: #1C1C1E; color: #F0784A; }
   .today-tasks-header {
     display: flex; justify-content: space-between; align-items: center;
     font-family: "Orbitron", sans-serif; font-size: 11.5px; color: #F0906B; font-weight: 700;
@@ -2375,7 +2408,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_MEMOTAB_DRAG_V253</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_SIMPLE_VISIBILITY_V256</div>
   <div class="cal-section" id="calSectionWrap">
     <div id="calMonthSection">
       <div class="cal-grid-shell">
@@ -2573,16 +2606,20 @@
 
   <!-- ================= 今日限定の単発タスク(v62で追加) ================= -->
   <div id="tabsPanelsWrap" class="unified-task-card">
-  <div class="today-tasks-header">
-    <span data-i18n="today_tasks_header">📋 今日のタスク</span>
-  </div>
-  <div id="todayTasksList"></div>
-  <button class="add-task-btn" data-i18n="today_tasks_add_btn" onclick="openAddTodayTask()">＋ 追加</button>
-
-  <div class="unified-card-divider">
-    <span data-i18n="routine_stock_title" style="cursor:pointer;" onclick="openRoutineStock()">📦 日課</span>
+  <div class="folder-tab-row">
+    <div class="folder-tab active" id="folderTabTask" onclick="switchTaskRoutineFolder('task')">📋 タスク</div>
+    <div class="folder-tab" id="folderTabRoutine" onclick="switchTaskRoutineFolder('routine')">📦 日課</div>
   </div>
 
+  <div id="folderPanelTask" class="folder-panel show">
+    <div id="todayTasksList"></div>
+    <button class="add-task-btn" data-i18n="today_tasks_add_btn" onclick="openAddTodayTask()">＋ 追加</button>
+  </div>
+
+  <div id="folderPanelRoutine" class="folder-panel">
+  <div style="text-align:right; margin-bottom:6px;">
+    <span style="font-size:10.5px; color:var(--ink-dim); text-decoration:underline; cursor:pointer;" onclick="openRoutineStock()">📦 日課ストックを見る</span>
+  </div>
   <div class="tabs" id="tabs">
     <div class="tab active" data-lv="low" data-i18n="tab_low">軽量級</div>
     <div class="tab" data-lv="mid" data-i18n="tab_mid">中量級</div>
@@ -2605,6 +2642,7 @@
     <div class="combo-hint" id="comboHint-high"></div>
     <div id="list-high"></div>
     <button class="add-task-btn" data-i18n="add_task_btn" onclick="openAddTask('high')">＋ 追加</button>
+  </div>
   </div>
   </div>
 
@@ -2778,7 +2816,13 @@
   <div class="settings-group">
     <div class="settings-label" data-i18n="notify_label">🔔 通知(試験導入)</div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを閉じていても、時間が来たら通知でお知らせします。試験的な機能です。</div>
-    <button class="settings-btn" data-i18n="notify_enable_btn" onclick="enablePushNotifications()">通知を有効にする</button>
+    <div class="settings-row">
+      <span data-i18n="notify_enable_btn">通知を有効にする</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="notifyEnabledToggle" onchange="handleNotifyEnabledToggle(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
     <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
       <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
         <span data-i18n="notify_type_reminder">⏰ 予定のリマインド</span>
@@ -5451,6 +5495,14 @@
     await loadNotificationPrefs();
     loadWeather();
     await loadAlarmSettings();
+    try {
+      const savedBgmOn = await window.storage.get('quest-bgm-on-v1');
+      if (savedBgmOn && savedBgmOn.value === '0') {
+        bgmOn = false;
+        const bgmToggleEl = document.getElementById('bgmToggle');
+        if (bgmToggleEl) bgmToggleEl.checked = false;
+      }
+    } catch (e) {}
     await loadMementoCards();
     loadTodaySleepUI();
     renderStreakBadge();
@@ -6316,6 +6368,13 @@
   }
 
   // ---- 日課ストック(v62で追加): 今は不要な日課をオフにして一覧から隠す ----
+  function switchTaskRoutineFolder(which) {
+    playUIClick();
+    document.getElementById('folderTabTask').classList.toggle('active', which === 'task');
+    document.getElementById('folderTabRoutine').classList.toggle('active', which === 'routine');
+    document.getElementById('folderPanelTask').classList.toggle('show', which === 'task');
+    document.getElementById('folderPanelRoutine').classList.toggle('show', which === 'routine');
+  }
   function openRoutineStock() {
     playUIClick();
     renderRoutineStockList();
@@ -8873,8 +8932,9 @@
   logDebug('volumeSliderEl 取得: ' + (volumeSliderEl ? 'OK' : '見つかりません!'));
   volumeSliderEl.addEventListener('input', handleVolumeChange);
   volumeSliderEl.addEventListener('change', handleVolumeChange);
-  document.getElementById('bgmToggle').addEventListener('change', (e) => {
+  document.getElementById('bgmToggle').addEventListener('change', async (e) => {
     toggleBGM(e.target.checked);
+    try { await window.storage.set('quest-bgm-on-v1', e.target.checked ? '1' : '0'); } catch (err) {}
   });
 
   // ---- 1日の区切り時刻の設定 ----
@@ -9303,9 +9363,15 @@
   // 通知機能の土台(v1): Service Workerを登録しておく。実際の通知はサーバー側の準備ができ次第
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js').then(() => {
+      navigator.serviceWorker.register('service-worker.js').then(async () => {
         pingNotifyServer();
         syncRemindersToServer();
+        // 既に購読済みなら、トグルを最初からオンにしておく
+        try {
+          const sub = await getCurrentPushSubscription();
+          const toggleEl = document.getElementById('notifyEnabledToggle');
+          if (toggleEl) toggleEl.checked = !!sub;
+        } catch (e) {}
       }).catch((e) => {
         console.error('Service Worker登録に失敗', e);
       });
@@ -9346,12 +9412,29 @@
     try { await window.storage.set('quest-notify-prefs-v1', JSON.stringify(notificationPrefs)); } catch (e) {}
     syncRemindersToServer(); // 設定変更を、サーバー側にも反映する
   }
+  async function handleNotifyEnabledToggle(checked) {
+    if (checked) {
+      const ok = await enablePushNotifications();
+      if (!ok) document.getElementById('notifyEnabledToggle').checked = false; // 失敗したら、トグルを元(オフ)に戻す
+    } else {
+      await disablePushNotifications();
+    }
+  }
+  async function disablePushNotifications() {
+    try {
+      const sub = await getCurrentPushSubscription();
+      if (sub) await sub.unsubscribe();
+      showToast(currentLang === 'en' ? 'Notifications disabled' : '通知を無効にしました');
+    } catch (err) {
+      console.error('通知解除に失敗', err);
+    }
+  }
   async function enablePushNotifications() {
     try {
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') {
         showToast(currentLang === 'en' ? 'Notification permission was not granted' : '通知の許可が得られませんでした');
-        return;
+        return false;
       }
       const reg = await navigator.serviceWorker.ready;
       const subscription = await reg.pushManager.subscribe({
@@ -9366,14 +9449,16 @@
       if (!res.ok) {
         // サーバー側が失敗を返したのに、今まで気づけていなかったので、ここではっきり表示する
         alert(`サーバーへの登録に失敗しました(status:${res.status})\n\n${resText}`);
-        return;
+        return false;
       }
       showToast(currentLang === 'en' ? '🔔 Notifications enabled' : '🔔 通知を有効にしました');
       syncRemindersToServer();
       pingNotifyServer();
+      return true;
     } catch (err) {
       console.error('通知登録に失敗', err);
       alert('通知の設定に失敗しました:\n\n' + (err && err.message ? err.message : String(err)));
+      return false;
     }
   }
   // 現在この端末が通知を購読しているか確認し、していればそのendpoint(宛先の識別子)を返す
