@@ -1131,7 +1131,6 @@
     background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(255,255,255,0.2);
     color: var(--ink-dim); font-size: 18px; font-weight: 900; line-height: 1;
     border-radius: 12px; cursor: pointer; transition: all 0.15s ease;
-    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.5), inset 0 3px 4px -3px rgba(0,0,0,0.35);
   }
   .add-task-btn:active { background: rgba(43,201,204,0.08); border-color: var(--cyan); transform: scale(0.98); }
 
@@ -1164,6 +1163,14 @@
   .drop-zone.active { background: rgba(43,201,204,0.2); border-color: var(--cyan); border-style: solid; color: #fff; transform: scale(1.06); }
   .drop-zone.zone-delete.active { background: rgba(224,53,122,0.2); border-color: var(--magenta); }
 
+  /* ---- スワイプで削除(iOSメール等の定石: 左スワイプで赤いゴミ箱が現れ、指を離すと開いた状態で固定、タップで削除) ---- */
+  .swipe-del-wrap { position: relative; overflow: hidden; border-radius: 20px; margin-bottom: 9px; }
+  .swipe-del-wrap .item, .swipe-del-wrap .alarm-row { margin-bottom: 0; touch-action: pan-y; }
+  .swipe-del-trash {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 76px;
+    background: #E5484D; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 22px; cursor: pointer; z-index: 0;
+  }
   .item {
     display: flex; align-items: center; gap: 10px;
     padding: 13px 12px; margin-bottom: 9px; cursor: pointer; user-select: none;
@@ -1754,6 +1761,13 @@
   .clamp-expand-btn {
     font-size: 10.5px; color: var(--cyan); text-decoration: underline; cursor: pointer; margin-top: 4px; display: inline-block;
   }
+  .save-flourish-icon {
+    position: fixed; bottom: 90px; right: 16px; font-size: 26px;
+    opacity: 0; transform: translateY(6px) scale(0.85); pointer-events: none; z-index: 9998;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  }
+  .save-flourish-icon.show { opacity: 1; transform: translateY(0) scale(1); }
   #tapGlow {
     position: fixed; width: 10px; height: 10px; border-radius: 50%;
     pointer-events: none; z-index: 99999; opacity: 0;
@@ -2419,7 +2433,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_GRADIENT_BEVEL_V268</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_SEARCH_SVG_ICON_V278</div>
   <div class="app-group-label">📅 カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div id="calMonthSection">
@@ -2500,10 +2514,14 @@
     </div>
 
     <div id="calSearchSection" style="display:none;">
-      <input type="text" id="calSearchInput" placeholder="キーワードで予定・記録を検索" data-i18n-placeholder="cal_search_placeholder" oninput="runCalSearch()" style="width:100%; box-sizing:border-box; font-size:13px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:10px;">
-      <div class="week-view-shell">
-        <div id="calSearchResults"><div class="week-view-empty" data-i18n="cal_search_prompt">キーワードを入力してください</div></div>
+      <div style="position:relative;">
+        <svg style="position:absolute; left:14px; top:50%; transform:translateY(-50%); pointer-events:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="10.5" cy="10.5" r="6.5"></circle>
+          <line x1="20" y1="20" x2="15.3" y2="15.3"></line>
+        </svg>
+        <input type="text" id="calSearchInput" placeholder="" data-i18n-placeholder="cal_search_placeholder" oninput="runCalSearch()" style="width:100%; box-sizing:border-box; font-size:14px; padding:13px 16px 13px 38px; border-radius:999px; border:1.5px solid rgba(255,255,255,0.18); background:linear-gradient(160deg, rgba(24,28,36,0.97), rgba(12,15,20,0.97)); color:#fff; margin-bottom:10px;">
       </div>
+      <div id="calSearchResults"></div>
     </div>
 
     <div id="calReportSection" style="display:none;">
@@ -2578,6 +2596,20 @@
       <div class="hud-time" id="clockTime">--:--:--</div>
       <div class="hud-weather" id="hudWeather" onclick="event.stopPropagation();"></div>
     </div>
+    <div class="hud-agent-row">
+      <div class="hud-agent-eye" id="hudAgentEye" onclick="pokeAgentEye()">
+        <div class="agent-eye-ring-outer"></div>
+        <div class="agent-eye-ring-mid"></div>
+        <div class="agent-eye-core"></div>
+      </div>
+      <div class="hud-cal-link" onclick="scrollToCalendarTop()">
+        <div>
+          <div id="hudCalToday" style="font-size:13px;">--</div>
+          <div id="hudCalEventCount" style="color:var(--ink-dim); font-size:10px; margin-top:2px;"></div>
+        </div>
+        <span style="margin-left:auto; color:var(--ink-dim); font-size:16px;">›</span>
+      </div>
+    </div>
     <div class="pomodoro-widget" id="pomodoroWidget">
       <div class="pomodoro-phase" id="pomodoroPhase">🍅 ポモドーロ</div>
       <div class="pomodoro-time" id="pomodoroTime">25:00</div>
@@ -2587,21 +2619,6 @@
       </div>
     </div>
     <div class="hud-misc-tile" data-i18n="misc_other_tile" onclick="openMiscGrid()">⋯ その他</div>
-  </div>
-
-  <div class="hud-agent-row">
-    <div class="hud-agent-eye" id="hudAgentEye" onclick="pokeAgentEye()">
-      <div class="agent-eye-ring-outer"></div>
-      <div class="agent-eye-ring-mid"></div>
-      <div class="agent-eye-core"></div>
-    </div>
-    <div class="hud-cal-link" onclick="scrollToCalendarTop()">
-      <div>
-        <div id="hudCalToday" style="font-size:13px;">--</div>
-        <div id="hudCalEventCount" style="color:var(--ink-dim); font-size:10px; margin-top:2px;"></div>
-      </div>
-      <span style="margin-left:auto; color:var(--ink-dim); font-size:16px;">›</span>
-    </div>
   </div>
 
   <div class="surprise-quest-banner" id="surpriseQuestBanner" style="display:none;">
@@ -2726,15 +2743,8 @@
 
 </div>
 
-<div class="summary-bar">
-  <div class="summary-card" id="summaryCard">
-    <div class="summary-text">SELECTED: <b id="summaryCount">0</b></div>
-    <button class="clear-btn" onclick="clearAll()">RESET</button>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
-<div id="debugLog" style="position:fixed; bottom:76px; left:8px; right:8px; z-index:50; font-family:monospace; font-size:10px; color:#0f0; background:rgba(0,0,0,0.7); padding:4px 8px; border-radius:6px; display:none; max-height:60px; overflow-y:auto;"></div>
+<div id="debugLog" style="position:fixed; bottom:76px; left:8px; right:8px; z-index:50; font-family:monospace; font-size:10px; color:#0f0; background:rgba(0,0,0,0.25); padding:4px 8px; border-radius:6px; display:none; max-height:60px; overflow-y:auto;"></div>
 
 <div class="screen-flash" id="screenFlash"></div>
 <div class="grand-modal" id="grandModal">
@@ -2884,23 +2894,8 @@
     </div>
   </div>
   <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_achievements_label">実績</div>
-    <button class="settings-btn" data-i18n="badge_list_settings_btn" onclick="openBadgeList()">🏅 実績バッジ一覧を見る</button>
-  </div>
-  <div class="settings-group">
     <div class="settings-label" data-i18n="tutorial_label">💡 使い方</div>
     <button class="settings-btn" data-i18n="tutorial_btn" onclick="openTutorial()">チュートリアルを見る</button>
-  </div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_data_label">データの管理</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="opt_data_desc">経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。</div>
-    <button class="settings-btn" data-i18n="opt_view_data_btn" onclick="openDataViewer()">🔍 データを見る</button>
-    <button class="settings-btn" data-i18n="opt_diagnostic_btn" onclick="runStorageDiagnostic()">🔧 保存機能を診断する</button>
-    <button class="settings-btn" data-i18n="opt_export_btn" onclick="exportBackup()">⬇️ バックアップを書き出す</button>
-    <button class="settings-btn" data-i18n="opt_import_btn" onclick="triggerImportBackup()">⬆️ バックアップから復元する</button>
-    <input type="file" id="backupFileInput" accept="application/json" style="display:none;">
-    <audio id="bgmAudioPlayer" loop preload="none"></audio>
-    <div id="lastBackupInfo" style="font-size:10px; color:var(--ink-dim); margin-top:8px;"></div>
   </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="opt_support_label">サポート</div>
@@ -2917,6 +2912,13 @@
       <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" onclick="applyCyberDailyMood('vapor')">🌴 ウェイブ系</button>
     </div>
     <button class="settings-btn" style="border-color:#FF5050; color:#FF5050;" data-i18n="dev_reset_exp_btn" onclick="devResetExp()">🔄 検証用: EXPを0に戻す</button>
+    <div class="settings-row" style="margin-top:10px;">
+      <span style="color:#FF5050; font-size:12px;">デバッグログ表示(最終的には削除予定)</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="debugLogToggle" checked onchange="handleDebugLogToggle(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
   </div>
 
   <div class="cal-note" data-i18n="opt_prototype_note">※ このページは見た目のみの試作（ハリボテ）です。実際の設定保存はこれから実装します。</div>
@@ -3045,9 +3047,25 @@
   <div class="modal-card" style="border:1.5px solid rgba(232,255,78,0.4); border-radius:18px; padding:26px 22px; max-width:min(360px,88vw); max-height:78vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
     <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--yellow); font-weight:800; margin-bottom:14px;" data-i18n="badge_list_title">🏅 実績バッジ一覧</div>
     <div id="badgeListBody" style="font-size:12px; color:#ddd; line-height:1.8;"></div>
-    <button class="badge-close-btn" style="margin-top:18px;" data-i18n="btn_close" onclick="closeBadgeList()">閉じる</button>
+    <button class="settings-btn" style="margin-top:14px;" data-i18n="misc_proof_tile_full" onclick="triggerBadgeUpload()">📷 実績を写真で照合する</button>
+    <button class="badge-close-btn" style="margin-top:10px;" data-i18n="btn_close" onclick="closeBadgeList()">閉じる</button>
   </div>
 </div>
+
+<div class="grand-modal" id="dataManageModal" onclick="closeDataManageModal()">
+  <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:26px 22px; max-width:min(340px,88vw); text-align:left;" onclick="event.stopPropagation()">
+    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:6px;">💾 データの管理</div>
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:14px;" data-i18n="opt_data_desc">経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。</div>
+    <button class="settings-btn" data-i18n="opt_view_data_btn" onclick="openDataViewer()">🔍 データを見る</button>
+    <button class="settings-btn" data-i18n="opt_diagnostic_btn" onclick="runStorageDiagnostic()">🔧 保存機能を診断する</button>
+    <button class="settings-btn" data-i18n="opt_export_btn" onclick="exportBackup()">⬇️ バックアップを書き出す</button>
+    <button class="settings-btn" data-i18n="opt_import_btn" onclick="triggerImportBackup()">⬆️ バックアップから復元する</button>
+    <input type="file" id="backupFileInput" accept="application/json" style="display:none;">
+    <div id="lastBackupInfo" style="font-size:10px; color:var(--ink-dim); margin-top:8px;"></div>
+    <button class="badge-close-btn" style="margin-top:14px; width:100%; box-sizing:border-box;" data-i18n="btn_close" onclick="closeDataManageModal()">閉じる</button>
+  </div>
+</div>
+<audio id="bgmAudioPlayer" loop preload="none"></audio>
 
 <div class="grand-modal" id="focusModeModal" onclick="closeFocusModeModal()">
   <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:26px 22px; max-width:min(340px,88vw); text-align:left;" onclick="event.stopPropagation()">
@@ -3144,13 +3162,13 @@
       <div class="misc-grid-tile info">
         <span class="hud-sel" id="pickCountBadge">SEL:0</span>
       </div>
-      <div class="misc-grid-tile" data-i18n="misc_proof_tile" onclick="triggerBadgeUpload()">📷<br>実績照合</div>
+      <div class="misc-grid-tile" onclick="openBadgeList()">🏅<br>実績</div>
       <div class="misc-grid-tile" id="restDayBtn" data-i18n="misc_restday_tile" onclick="useRestDay()">😮‍💨<br>サボる</div>
       <div class="misc-grid-tile" id="surpriseDrawBtn" style="display:none;" data-i18n="misc_surprise_tile" onclick="manualDrawSurpriseQuest()">🎲<br>臨時クエスト</div>
       <div class="misc-grid-tile" id="miscTileFocus" style="display:none;" onclick="unpinOtherItem('focus')">🎯<br>全集中</div>
       <div class="misc-grid-tile" id="miscTileAlarm" style="display:none;" onclick="unpinOtherItem('alarm')">⏰<br>アラーム</div>
       <div class="misc-grid-tile" id="miscTileMemento" style="display:none;" onclick="unpinOtherItem('memento')">📖<br>備忘録</div>
-      <div class="misc-grid-tile empty"></div>
+      <div class="misc-grid-tile" onclick="openDataManageModal()">💾<br>データ</div>
     </div>
   </div>
 </div>
@@ -3256,7 +3274,6 @@
   <div class="drop-zone" data-zone="low" data-i18n="drop_zone_low">🌿<br>軽量級</div>
   <div class="drop-zone" data-zone="mid" data-i18n="drop_zone_mid">⚙️<br>中量級</div>
   <div class="drop-zone" data-zone="high" data-i18n="drop_zone_high">🔥<br>重量級</div>
-  <div class="drop-zone zone-delete" data-zone="delete" data-i18n="drop_zone_delete">🗑️<br>削除</div>
 </div>
 <div class="drag-ghost" id="dragGhost"></div>
 
@@ -3492,7 +3509,7 @@
       drop_zone_low: '🌿<br>軽量級', drop_zone_mid: '⚙️<br>中量級', drop_zone_high: '🔥<br>重量級', drop_zone_delete: '🗑️<br>削除',
       bg_view_hint: 'タップして戻る',
       cal_secondary_other: 'その他',
-      cal_search_placeholder: 'キーワードで予定・記録を検索', cal_search_prompt: 'キーワードを入力してください',
+      cal_search_placeholder: '', cal_search_prompt: '',
       cal_search_no_results: '見つかりませんでした',
       stat_selected_count: '選択件数', stat_gained_exp: '獲得EXP', stat_active_days: '記録日数',
       stat_mood_count: '気分日記の件数', stat_task_total: 'タスク総数',
@@ -3606,7 +3623,7 @@
       drop_zone_low: '🌿<br>Light', drop_zone_mid: '⚙️<br>Medium', drop_zone_high: '🔥<br>Heavy', drop_zone_delete: '🗑️<br>Delete',
       bg_view_hint: 'Tap to return',
       cal_secondary_other: 'Other',
-      cal_search_placeholder: 'Search events and records by keyword', cal_search_prompt: 'Enter a keyword',
+      cal_search_placeholder: '', cal_search_prompt: '',
       cal_search_no_results: 'No results found',
       stat_selected_count: 'Selected', stat_gained_exp: 'EXP Gained', stat_active_days: 'Active Days',
       stat_mood_count: 'Mood Entries', stat_task_total: 'Total Tasks',
@@ -3741,11 +3758,27 @@
 
   // 汎用UIクリック音(タブ切り替え、設定操作など「押したことが分かる」ための短い音)
   // ---- デバッグログ(操作が実際に発火しているか画面上で確認するための表示) ----
+  let debugLogEnabled = true; // 開発者用オプションのトグルで切り替え。読み込み時にloadOtherPinState等と同じタイミングで復元される
   function logDebug(msg) {
+    if (!debugLogEnabled) return;
     const el = document.getElementById('debugLog');
     el.style.display = 'block';
     const time = new Date().toLocaleTimeString('ja-JP', { hour12: false });
     el.innerHTML = `[${time}] ${msg}<br>` + el.innerHTML;
+  }
+  async function loadDebugLogPref() {
+    try {
+      const saved = await window.storage.get('quest-debuglog-on-v1');
+      if (saved && saved.value === '0') debugLogEnabled = false;
+    } catch (e) {}
+    const toggleEl = document.getElementById('debugLogToggle');
+    if (toggleEl) toggleEl.checked = debugLogEnabled;
+    if (!debugLogEnabled) document.getElementById('debugLog').style.display = 'none';
+  }
+  async function handleDebugLogToggle(checked) {
+    debugLogEnabled = checked;
+    if (!checked) document.getElementById('debugLog').style.display = 'none';
+    try { await window.storage.set('quest-debuglog-on-v1', checked ? '1' : '0'); } catch (e) {}
   }
 
   function playUIClick() {
@@ -4169,6 +4202,63 @@
   }
 
   // ---- タップした場所から、色がフワッと広がる演出 ----
+  // スワイプ削除の対象カードを、削除ボタン付きの外枠でラップするための共通ヘルパー
+  // (確認ダイアログは、ここではなく、渡された削除関数の側で出す想定。誤って二重に出さないよう、ここでは挟まない)
+  function wrapForSwipeDelete(innerHtml, deleteJsCall) {
+    return `<div class="swipe-del-wrap">
+      <div class="swipe-del-trash" onclick="${deleteJsCall}">🗑️</div>
+      ${innerHtml}
+    </div>`;
+  }
+  // 1つの外枠(wrap)に対して、指の動きに追従するスワイプ削除を取り付ける
+  function initSwipeDelete(wrapEl) {
+    if (!wrapEl || wrapEl.dataset.swipeInit) return;
+    wrapEl.dataset.swipeInit = '1';
+    const contentEl = wrapEl.querySelector('.item, .alarm-row');
+    if (!contentEl) return;
+    const TRASH_WIDTH = 76;
+    let startX = 0, startY = 0, currentX = 0, dragging = false, axisLocked = null;
+
+    function setX(x, animate) {
+      contentEl.style.transition = animate ? 'transform 0.2s ease' : 'none';
+      contentEl.style.transform = `translateX(${x}px)`;
+    }
+    contentEl.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      currentX = wrapEl.classList.contains('swipe-open') ? -TRASH_WIDTH : 0;
+      dragging = true; axisLocked = null;
+    }, { passive: true });
+    contentEl.addEventListener('touchmove', (e) => {
+      if (!dragging) return;
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      if (axisLocked === null) axisLocked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      if (axisLocked === 'y') return; // 縦方向の動きは、通常のスクロールに譲る
+      let x = currentX + dx;
+      x = Math.max(-TRASH_WIDTH - 10, Math.min(0, x));
+      setX(x, false);
+    }, { passive: true });
+    contentEl.addEventListener('touchend', () => {
+      if (!dragging) return;
+      dragging = false;
+      if (axisLocked !== 'x') return;
+      const finalX = parseFloat((contentEl.style.transform.match(/-?\d+\.?\d*/) || [0])[0]) || 0;
+      if (finalX < -TRASH_WIDTH / 2) {
+        setX(-TRASH_WIDTH, true);
+        wrapEl.classList.add('swipe-open');
+      } else {
+        setX(0, true);
+        wrapEl.classList.remove('swipe-open');
+      }
+    });
+  }
+  function initAllSwipeDelete(containerEl) {
+    if (!containerEl) return;
+    containerEl.querySelectorAll('.swipe-del-wrap').forEach(initSwipeDelete);
+  }
+
   function triggerTapGlow(x, y, color) {
     const glow = document.getElementById('tapGlow');
     if (!glow) return;
@@ -4374,7 +4464,7 @@
       const subLabel = a.repeatDays.length > 0
         ? a.repeatDays.slice().sort().map(d => ALARM_DAY_LABELS[d]).join('')
         : (a.label || '1回のみ');
-      return `
+      const inner = `
       <div class="alarm-row${a.enabled ? '' : ' disabled'}">
         <div class="alarm-row-info" onclick="openAlarmEditor('${a.id}')">
           <div class="alarm-row-time">${a.time}</div>
@@ -4385,7 +4475,15 @@
           <span class="toggle-track"></span>
         </label>
       </div>`;
+      return wrapForSwipeDelete(inner, `deleteAlarmDirect('${a.id}')`);
     }).join('');
+    initAllSwipeDelete(box);
+  }
+  function deleteAlarmDirect(id) {
+    if (!confirm(currentLang === 'en' ? 'Delete this alarm?' : 'このアラームを削除しますか？')) return;
+    alarms = alarms.filter(x => x.id !== id);
+    persistAlarms();
+    renderAlarmList();
   }
   function toggleAlarmEnabled(id, enabled) {
     const a = alarms.find(x => x.id === id);
@@ -4911,6 +5009,13 @@
     taskList.filter(task => task.active !== false).forEach(task => {
       totalItemCount++;
       const key = `${task.level}|${task.label}`;
+      const wrap = document.createElement('div');
+      wrap.className = 'swipe-del-wrap';
+      const trash = document.createElement('div');
+      trash.className = 'swipe-del-trash';
+      trash.textContent = '🗑️';
+      trash.onclick = () => deleteTask(task.id);
+      wrap.appendChild(trash);
       const div = document.createElement('div');
       div.className = 'item';
       if (picked.has(key)) div.classList.add('picked');
@@ -4940,7 +5045,9 @@
         openNoteEditor(task.id);
       };
       attachDragHandlers(div, task);
-      document.getElementById(`list-${task.level}`).appendChild(div);
+      wrap.appendChild(div);
+      document.getElementById(`list-${task.level}`).appendChild(wrap);
+      initSwipeDelete(wrap);
     });
   }
 
@@ -5074,9 +5181,7 @@
       document.querySelectorAll('.drop-zone').forEach(zone => zone.classList.remove('active'));
       logDebug(`ドロップ座標(${Math.round(e.clientX)},${Math.round(e.clientY)}) → 判定ゾーン: ${targetZone || 'なし'}`);
 
-      if (targetZone === 'delete') {
-        deleteTask(task.id);
-      } else if (targetZone && ['low', 'mid', 'high'].includes(targetZone) && targetZone !== task.level) {
+      if (targetZone && ['low', 'mid', 'high'].includes(targetZone) && targetZone !== task.level) {
         moveTaskToLevel(task.id, targetZone);
       } else if (!targetZone) {
         // ゾーン外に落とされた場合: ドラッグ中にDOM上で並び替えた順序を、実データ(taskList)にも反映する
@@ -5126,6 +5231,7 @@
   }
 
   function deleteTask(taskId) {
+    if (!confirm(currentLang === 'en' ? 'Delete this?' : 'これを削除しますか？')) return;
     const idx = taskList.findIndex(t => t.id === taskId);
     if (idx === -1) return;
     const removed = taskList[idx];
@@ -5218,6 +5324,7 @@
   // ---- データのバックアップ・復元(ストレージが万一消えても手元のファイルから戻せるように) ----
   function openBadgeList() {
     playUIClick();
+    closeMiscGrid();
     const body = document.getElementById('badgeListBody');
     if (badgeHistory.length === 0) {
       body.innerHTML = `<div style="color:var(--ink-dim);">${t('badge_list_empty')}</div>`;
@@ -5349,6 +5456,15 @@
     alert(lines.join('\n'));
   }
 
+  function openDataManageModal() {
+    playUIClick();
+    closeMiscGrid();
+    document.getElementById('dataManageModal').classList.add('show');
+  }
+  function closeDataManageModal() {
+    playUIClick();
+    document.getElementById('dataManageModal').classList.remove('show');
+  }
   async function openDataViewer() {
     playUIClick();
     try {
@@ -5572,6 +5688,7 @@
     loadWeather();
     await loadAlarmSettings();
     await loadOtherPinState();
+    await loadDebugLogPref();
     try {
       const savedBgmOn = await window.storage.get('quest-bgm-on-v1');
       if (savedBgmOn && savedBgmOn.value === '0') {
@@ -5803,8 +5920,6 @@
   function updateSummaryInner() {
     const count = picked.size;
     document.getElementById('pickCountBadge').textContent = `SEL:${count}`;
-    document.getElementById('summaryCount').textContent = count;
-    document.getElementById('summaryCard').classList.toggle('show', count > 0);
 
     let todayExp = 0;
     picked.forEach(key => { todayExp += wobbleFor(key, EXP_BASE[key.split('|')[0]]); });
@@ -6218,7 +6333,7 @@
       const carryLabel = t.carriedFrom
         ? (currentLang === 'en' ? ` (carried over, missed ${formatShortDate(t.carriedFrom)})` : `(未完了${formatShortDate(t.carriedFrom)}から持ち越し)`)
         : '';
-      return `
+      const inner = `
       <div class="item today-custom${t.done ? ' done' : ''}">
         <div class="check-box" onclick="toggleTodayTask('${t.id}')">✓</div>
         <div class="item-main" onclick="toggleTodayTask('${t.id}')">
@@ -6227,9 +6342,9 @@
             <span class="item-label">${escapeHtml(t.text)}${carryLabel ? ` <span class="today-task-carry-tag">${escapeHtml(carryLabel)}</span>` : ''}</span>
           </div>
         </div>
-        <button class="item-note-btn" onclick="deleteTodayTask('${t.id}')">✕</button>
       </div>
     `;
+      return wrapForSwipeDelete(inner, `deleteTodayTask('${t.id}')`);
     }).join('');
     const scheduledHtml = todaysScheduled.map(ev => {
       const isDone = ev.recurrence ? (ev.doneOccurrences || []).includes(todayKey) : ev.done;
@@ -6261,6 +6376,7 @@
     `;
     }).join('');
     el.innerHTML = overdueHtml + scheduledHtml + customHtml;
+    initAllSwipeDelete(el);
   }
   function openAddTodayTask() {
     playUIClick();
@@ -7711,7 +7827,25 @@
     }
 
     document.getElementById('moodJournalSavedInfo').textContent =
-      `${currentLang === 'en' ? 'Saved' : '保存済み'}: ${new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}${isAutosave ? (currentLang === 'en' ? ' (auto)' : '(自動)') : ''}`;
+      `💾 ${currentLang === 'en' ? 'Saved' : '保存済み'}: ${new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}${isAutosave ? (currentLang === 'en' ? ' (auto)' : '(自動)') : ''}`;
+    showSaveFlourish();
+  }
+  // 保存された瞬間、💾を画面の端にふわっと出して、視覚的にも「保存された」と分かりやすくする
+  let saveFlourishTimer = null;
+  function showSaveFlourish() {
+    let el = document.getElementById('saveFlourishIcon');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'saveFlourishIcon';
+      el.className = 'save-flourish-icon';
+      el.textContent = '💾';
+      document.body.appendChild(el);
+    }
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+    clearTimeout(saveFlourishTimer);
+    saveFlourishTimer = setTimeout(() => el.classList.remove('show'), 1200);
   }
 
   function renderExpChart() {
@@ -8027,7 +8161,7 @@
     const q = document.getElementById('calSearchInput').value.trim().toLowerCase();
     const resultsEl = document.getElementById('calSearchResults');
     if (!q) {
-      resultsEl.innerHTML = `<div class="week-view-empty">${currentLang === 'en' ? 'Enter a keyword' : 'キーワードを入力してください'}</div>`;
+      resultsEl.innerHTML = '';
       return;
     }
     const results = [];
