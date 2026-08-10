@@ -1165,7 +1165,7 @@
 
   /* ---- スワイプで削除(iOSメール等の定石: 左スワイプで赤いゴミ箱が現れ、指を離すと開いた状態で固定、タップで削除) ---- */
   .swipe-del-wrap { position: relative; overflow: hidden; border-radius: 20px; margin-bottom: 9px; }
-  .swipe-del-wrap .item, .swipe-del-wrap .alarm-row { margin-bottom: 0; touch-action: pan-y; }
+  .swipe-del-wrap .item, .swipe-del-wrap .alarm-row { margin-bottom: 0; touch-action: pan-y !important; }
   .swipe-del-trash {
     position: absolute; top: 0; right: 0; bottom: 0; width: 76px;
     background: #E5484D; display: flex; align-items: center; justify-content: center;
@@ -1721,26 +1721,40 @@
   .mood-journal-textarea::placeholder { color: rgba(255,255,255,0.28); }
 
   .cal-section-title-row {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;
   }
-  .cal-section-title-row .cal-section-title { margin-bottom: 0; }
-  /* 日記右上の、コンパクトな写真アップロード欄(未設定時はアイコン、設定後はサムネイル) */
+  .cal-section-title-row .cal-section-title { margin-bottom: 0; padding-top: 8px; }
+  /* 日記右上の、正方形の写真アップロード欄(未設定時はアイコン、設定後はサムネイル)。
+     点線の証明写真機っぽい見た目をやめ、アプリ全体で使っているガラス風カードの質感に統一した。
+     カード上辺・右辺からの距離が揃うよう、margin-top/right を同じ値にしている */
   .mood-journal-images-top {
-    display: flex; gap: 4px; flex-shrink: 0; cursor: pointer;
+    display: flex; gap: 6px; flex-shrink: 0; cursor: pointer; margin-top: 24px; margin-right: 24px;
   }
   .mood-photo-upload-icon {
-    width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.05); border: 1.5px dashed rgba(255,255,255,0.2); font-size: 15px;
+    width: 72px; height: 72px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.35), 0 4px 10px rgba(0,0,0,0.25);
   }
   .mood-journal-thumb-top {
-    position: relative; width: 36px; height: 36px; border-radius: 8px; overflow: hidden;
-    border: 1.5px solid rgba(255,255,255,0.15);
+    position: relative; width: 72px; height: 72px; border-radius: 14px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.35), 0 4px 10px rgba(0,0,0,0.25);
   }
   .mood-journal-thumb-top img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .mood-journal-thumb-top .remove-btn {
-    position: absolute; top: -1px; right: -1px; width: 14px; height: 14px; border-radius: 50%;
-    background: rgba(0,0,0,0.75); color: #fff; border: none; font-size: 9px; line-height: 1;
+    position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(0,0,0,0.75); color: #fff; border: none; font-size: 11px; line-height: 1;
     cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  /* シンプルテーマ(白背景)では、上のダークテーマ向けの薄い白では見えなくなるため、濃い色に上書きする */
+  body.theme-simple:not(.theme-dark) .mood-photo-upload-icon {
+    background: linear-gradient(160deg, #FFFFFF, #F4F4F5); border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  body.theme-simple:not(.theme-dark) .mood-photo-upload-icon svg { stroke: rgba(0,0,0,0.4) !important; }
+  body.theme-simple:not(.theme-dark) .mood-journal-thumb-top {
+    border-color: rgba(0,0,0,0.1); box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   }
 
   .mood-journal-btn.primary.just-saved {
@@ -2433,8 +2447,8 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_SEARCH_SVG_ICON_V278</div>
-  <div class="app-group-label">📅 カレンダー</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_TASK_SWIPE_FIX_V279</div>
+  <div class="app-group-label" data-i18n="group_calendar">📅 カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div id="calMonthSection">
       <div class="cal-grid-shell">
@@ -2496,11 +2510,11 @@
     </div>
 
     <div id="calAgendaSection" style="display:none;">
-      <div class="week-view-shell" style="margin-bottom:10px;">
+      <div style="margin-bottom:14px;">
         <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">📋 今週のまとめ(自動集計)</div>
         <div id="weeklySummaryBox" style="font-size:12px; line-height:1.8; color:var(--ink);"></div>
       </div>
-      <div class="week-view-shell" style="margin-bottom:10px;">
+      <div style="margin-bottom:14px;">
         <div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin-bottom:6px;">🗂 日付未定(いつかやる)</div>
         <div id="undatedTaskList"></div>
         <div style="display:flex; gap:6px; margin-top:8px;">
@@ -2508,9 +2522,7 @@
           <button onclick="confirmAddUndatedTask()" style="flex-shrink:0; padding:8px 12px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:16px; font-weight:900;">＋</button>
         </div>
       </div>
-      <div class="week-view-shell">
-        <div id="agendaList"></div>
-      </div>
+      <div id="agendaList"></div>
     </div>
 
     <div id="calSearchSection" style="display:none;">
@@ -2634,11 +2646,11 @@
   <input type="file" id="badgeImageInput" accept="image/*" style="display:none;">
 
   <!-- ================= 今日限定の単発タスク(v62で追加) ================= -->
-  <div class="app-group-label">✅ タスク管理</div>
+  <div class="app-group-label" data-i18n="group_task">✅ タスク管理</div>
   <div id="tabsPanelsWrap" class="unified-task-card">
   <div class="folder-tab-row">
-    <div class="folder-tab active" id="folderTabTask" onclick="switchTaskRoutineFolder('task')">📋 タスク</div>
-    <div class="folder-tab" id="folderTabRoutine" onclick="switchTaskRoutineFolder('routine')">📦 日課</div>
+    <div class="folder-tab active" id="folderTabTask" data-i18n="folder_tab_task" onclick="switchTaskRoutineFolder('task')">📋 タスク</div>
+    <div class="folder-tab" id="folderTabRoutine" data-i18n="folder_tab_routine" onclick="switchTaskRoutineFolder('routine')">📦 日課</div>
   </div>
 
   <div id="folderPanelTask" class="folder-panel show">
@@ -2676,7 +2688,7 @@
   </div>
   </div>
 
-  <div class="app-group-label">📔 日記</div>
+  <div class="app-group-label" data-i18n="group_diary">📔 日記</div>
   <div class="cal-section" style="margin-top:0;">
     <div id="moodEntryList" class="mood-entry-list"></div>
     <div class="mood-journal-shell" id="moodComposeShell">
@@ -2713,7 +2725,7 @@
     </div>
   </div>
 
-  <div class="app-group-label">✨ その他</div>
+  <div class="app-group-label" data-i18n="group_other">✨ その他</div>
   <div class="settings-group" id="otherWrapFocus">
     <div class="settings-row" style="margin-bottom:0;">
       <div class="settings-label" style="margin-bottom:0;" data-i18n="focus_settings_label">全集中モード</div>
@@ -3185,9 +3197,10 @@
 </div>
 
 <div class="grand-modal" id="mementoModal" onclick="closeAddMemento()">
-  <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:22px; max-width:min(340px,88vw);" onclick="event.stopPropagation()">
+  <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:22px; max-width:min(340px,88vw); max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
     <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="memento_add_title">📖 備忘録を追加</div>
-    <textarea id="mementoTextInput" placeholder="例: 富士登山に挑戦。5合目から山頂まで7時間かかった。" oninput="handleMementoDraftInput()" style="width:100%; box-sizing:border-box; min-height:120px; resize:vertical; background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.15); border-radius:10px; padding:12px; color:#fff; font-size:13px; line-height:1.7; font-family:inherit; margin-bottom:14px;"></textarea>
+    <input type="text" id="mementoTitleInput" placeholder="題名(任意)" data-i18n-placeholder="memento_title_ph" oninput="handleMementoDraftInput()" style="width:100%; box-sizing:border-box; font-size:14px; font-weight:700; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:8px;">
+    <textarea id="mementoTextInput" placeholder="例: 富士登山に挑戦。5合目から山頂まで7時間かかった。" oninput="handleMementoDraftInput()" style="width:100%; box-sizing:border-box; min-height:280px; resize:vertical; background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.15); border-radius:10px; padding:12px; color:#fff; font-size:13px; line-height:1.7; font-family:inherit; margin-bottom:14px;"></textarea>
     <button class="badge-close-btn" data-i18n="memento_save_btn" onclick="confirmAddMemento()" style="width:100%; box-sizing:border-box; font-weight:700;">保存</button>
   </div>
 </div>
@@ -3423,6 +3436,9 @@
       opt_boundary_desc: 'この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。',
       opt_data_label: 'データの管理',
       opt_data_desc: '経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。',
+      group_calendar: '📅 カレンダー', group_task: '✅ タスク管理', group_diary: '📔 日記', group_other: '✨ その他',
+      folder_tab_task: '📋 タスク', folder_tab_routine: '📦 日課',
+      memento_title_ph: '題名(任意)',
       opt_view_data_btn: '🔍 データを見る', opt_export_btn: '⬇️ バックアップを書き出す',
       opt_import_btn: '⬆️ バックアップから復元する',
       opt_support_label: 'サポート', opt_contact_btn: '運営に連絡する', opt_policy_btn: '利用規約・プライバシー',
@@ -3537,6 +3553,9 @@
       opt_boundary_desc: 'Activity before this time is logged as the previous day. 4–5 AM suits night owls; midnight suits early sleepers.',
       opt_data_label: 'Data Management',
       opt_data_desc: 'Save your XP, history, and task list together as one file. It\u2019s a good idea to back up occasionally in case you switch devices or lose data.',
+      group_calendar: '📅 Calendar', group_task: '✅ Tasks', group_diary: '📔 Diary', group_other: '✨ Other',
+      folder_tab_task: '📋 Tasks', folder_tab_routine: '📦 Routines',
+      memento_title_ph: 'Title (optional)',
       opt_view_data_btn: '🔍 View Saved Data', opt_export_btn: '⬇️ Export Backup',
       opt_import_btn: '⬆️ Restore from Backup',
       opt_support_label: 'Support', opt_contact_btn: 'Contact Support', opt_policy_btn: 'Terms & Privacy',
@@ -4175,13 +4194,15 @@
   window.addEventListener('click', initAudioOnce, { once: true });
   window.addEventListener('touchstart', initAudioOnce, { once: true });
 
-  // キーボードが出た際、iOSが勝手に画面をスクロールさせようとする動きを、可能な限り打ち消す
-  // (iOS Safariは、interactive-widgetというCSSの正攻法を、2026年現在もまだ実装していないため、
-  //  JS側で「入力中は、スクロール位置を強制的に固定し続ける」という力技で対応する)
+  // キーボードが出た瞬間、iOSが勝手に画面をジャンプさせようとする動きだけを打ち消す
+  // (以前は、入力中ずっとロックし続けていたため、長い文章を書いていて、今書いている行が
+  //  キーボードの下に隠れても、スクロールして追いかけられない不具合があった。
+  //  「出た瞬間の、望まないジャンプ」だけを短時間打ち消し、その後は普通にスクロールできるようにする)
   if (window.visualViewport) {
     let scrollLockActive = false;
     let scrollLockValue = 0;
     let scrollLockRAF = null;
+    let scrollLockTimeout = null;
 
     function scrollLockTick() {
       if (!scrollLockActive) return;
@@ -4193,10 +4214,17 @@
         scrollLockValue = window.scrollY;
         scrollLockActive = true;
         if (!scrollLockRAF) scrollLockRAF = requestAnimationFrame(scrollLockTick);
+        clearTimeout(scrollLockTimeout);
+        scrollLockTimeout = setTimeout(() => {
+          // キーボードが出きった頃合いで、ロックを解除し、以降は自由にスクロールできるようにする
+          scrollLockActive = false;
+          if (scrollLockRAF) { cancelAnimationFrame(scrollLockRAF); scrollLockRAF = null; }
+        }, 400);
       }
     });
     document.addEventListener('focusout', () => {
       scrollLockActive = false;
+      clearTimeout(scrollLockTimeout);
       if (scrollLockRAF) { cancelAnimationFrame(scrollLockRAF); scrollLockRAF = null; }
     });
   }
@@ -7681,7 +7709,12 @@
   function renderMoodImageThumbs() {
     const el = document.getElementById('moodJournalImages');
     if (currentMoodImages.length === 0) {
-      el.innerHTML = `<div class="mood-photo-upload-icon">📷</div>`;
+      el.innerHTML = `<div class="mood-photo-upload-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"></path>
+          <circle cx="12" cy="13.5" r="3.5"></circle>
+        </svg>
+      </div>`;
       return;
     }
     el.innerHTML = currentMoodImages.map((src, i) => `
@@ -8623,7 +8656,7 @@
             <span onclick="deleteMemento('${card.id}')" style="color:var(--ink-dim); font-size:13px; cursor:pointer; padding:2px 4px;">✕</span>
           </div>
         </div>
-        <div id="memText_${card.id}" class="clamp-text" style="font-size:12.5px; color:var(--ink); line-height:1.6; white-space:pre-wrap;">${escapeHtml(card.text)}</div>
+        <div id="memText_${card.id}" class="clamp-text" style="font-size:12.5px; color:var(--ink); line-height:1.6; white-space:pre-wrap;">${card.title ? `<div style="font-weight:700; font-size:13.5px; margin-bottom:4px;">${escapeHtml(card.title)}</div>` : ''}${escapeHtml(card.text)}</div>
         <span class="clamp-expand-btn" onclick="document.getElementById('memText_${card.id}').classList.toggle('clamp-text'); this.textContent = this.textContent === '続きを読む' ? '短く表示' : '続きを読む';">続きを読む</span>
       </div>
     `;
@@ -8649,13 +8682,21 @@
   async function openAddMemento() {
     playUIClick();
     editingMementoId = null;
-    const textEl = document.getElementById('mementoTextInput');
-    let draft = '';
+    let draftTitle = '', draftText = '';
     try {
       const saved = await window.storage.get('quest-memento-draft-v1');
-      if (saved && saved.value) draft = saved.value;
+      if (saved && saved.value) {
+        try {
+          const parsed = JSON.parse(saved.value);
+          draftTitle = parsed.title || '';
+          draftText = parsed.text || '';
+        } catch (e) {
+          draftText = saved.value; // 以前のバージョンの下書き(題名欄が無かった頃)との互換性
+        }
+      }
     } catch (e) {}
-    textEl.value = draft;
+    document.getElementById('mementoTitleInput').value = draftTitle;
+    document.getElementById('mementoTextInput').value = draftText;
     document.getElementById('mementoModal').classList.add('show');
   }
   function openEditMemento(id) {
@@ -8663,6 +8704,7 @@
     const card = mementoCards.find(c => c.id === id);
     if (!card) return;
     editingMementoId = id;
+    document.getElementById('mementoTitleInput').value = card.title || '';
     document.getElementById('mementoTextInput').value = card.text;
     document.getElementById('mementoModal').classList.add('show');
   }
@@ -8671,7 +8713,10 @@
     if (editingMementoId) return; // 編集中は下書き保存の対象外(元カードを直接上書きしないため)
     clearTimeout(mementoDraftSaveTimer);
     mementoDraftSaveTimer = setTimeout(async () => {
-      try { await window.storage.set('quest-memento-draft-v1', document.getElementById('mementoTextInput').value); } catch (e) {}
+      try {
+        const draft = { title: document.getElementById('mementoTitleInput').value, text: document.getElementById('mementoTextInput').value };
+        await window.storage.set('quest-memento-draft-v1', JSON.stringify(draft));
+      } catch (e) {}
     }, 500);
   }
   function closeAddMemento() {
@@ -8680,18 +8725,19 @@
     document.getElementById('mementoModal').classList.remove('show');
   }
   async function confirmAddMemento() {
+    const title = document.getElementById('mementoTitleInput').value.trim();
     const text = document.getElementById('mementoTextInput').value.trim();
     if (!text) return;
     if (editingMementoId) {
       const card = mementoCards.find(c => c.id === editingMementoId);
-      if (card) card.text = text;
+      if (card) { card.title = title; card.text = text; }
       saveMementoCards();
       renderMementoCards();
       closeAddMemento();
       showToast('📖 更新しました');
       return;
     }
-    mementoCards.push({ id: 'mem_' + Date.now(), text, createdAt: Date.now(), favorite: false });
+    mementoCards.push({ id: 'mem_' + Date.now(), title, text, createdAt: Date.now(), favorite: false });
     saveMementoCards();
     mementoPage = 0;
     renderMementoCards();
