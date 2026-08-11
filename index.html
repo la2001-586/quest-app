@@ -1557,6 +1557,16 @@
     margin-bottom: 14px;
     position: relative; overflow: hidden;
   }
+  /* カードの種類を示す、共通ルールの小さな点。
+     ルール: カードの右下から、下16px・右16pxの位置に固定する(全カード共通)。
+     上部は、カレンダーの月送りボタンやタスクのフォルダタブなど、機能が集中しやすいため避けている */
+  .card-accent-dot {
+    position: absolute !important; bottom: 16px; right: 16px; width: 8px; height: 8px;
+    border-radius: 50%; z-index: 2; opacity: 0.55;
+  }
+  .card-accent-dot.tab-cal { background: var(--cyan); }
+  .card-accent-dot.tab-task { background: #F0906B; }
+  .card-accent-dot.tab-diary { background: var(--magenta); }
   #calSectionWrap::before {
     content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
     background:
@@ -1678,6 +1688,7 @@
   .mood-journal-shell {
     background: linear-gradient(160deg, rgba(24,28,36,0.97), rgba(12,15,20,0.97));
     border: 1.5px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 14px;
+    position: relative; overflow: hidden;
   }
   .mood-tag-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
   .mood-tag-toggle {
@@ -1795,6 +1806,11 @@
     0% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
     100% { opacity: 0; transform: translate(-50%, -50%) scale(14); }
   }
+  @keyframes tutorialSwipeHintMove {
+    0%, 100% { transform: translate(-50%,-50%) translateX(14px); }
+    50% { transform: translate(-50%,-50%) translateX(-14px); }
+  }
+  #tutorialSwipeFloatHint.show { opacity: 1; }
   .mood-entry-card-time {
     font-family: "Orbitron", sans-serif; font-size: 9.5px; color: var(--cyan); margin-bottom: 3px;
   }
@@ -2447,9 +2463,10 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_TASK_SWIPE_FIX_V279</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_MEMENTO_MARKER_V290</div>
   <div class="app-group-label" data-i18n="group_calendar">📅 カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
+    <div class="card-accent-dot tab-cal"></div>
     <div id="calMonthSection">
       <div class="cal-grid-shell">
         <div class="week-view-nav">
@@ -2568,11 +2585,6 @@
         <div class="exp-chart" id="expChart"></div>
       </div>
     </div>
-    <div class="cal-primary-toggle">
-      <button class="cal-view-btn active" data-view="month" onclick="switchCalView('month')">月</button>
-      <button class="cal-view-btn" data-view="week" onclick="switchCalView('week')">週</button>
-      <button class="cal-view-btn" data-view="day" onclick="switchCalView('day')">日</button>
-    </div>
     <div class="cal-secondary-label" data-i18n="cal_secondary_other">その他</div>
     <div class="cal-secondary-toggle">
       <button class="cal-view-btn cal-view-btn-sub" data-view="agenda" onclick="switchCalView('agenda')">📋 予定一覧</button>
@@ -2648,6 +2660,7 @@
   <!-- ================= 今日限定の単発タスク(v62で追加) ================= -->
   <div class="app-group-label" data-i18n="group_task">✅ タスク管理</div>
   <div id="tabsPanelsWrap" class="unified-task-card">
+    <div class="card-accent-dot tab-task"></div>
   <div class="folder-tab-row">
     <div class="folder-tab active" id="folderTabTask" data-i18n="folder_tab_task" onclick="switchTaskRoutineFolder('task')">📋 タスク</div>
     <div class="folder-tab" id="folderTabRoutine" data-i18n="folder_tab_routine" onclick="switchTaskRoutineFolder('routine')">📦 日課</div>
@@ -2692,6 +2705,7 @@
   <div class="cal-section" style="margin-top:0;">
     <div id="moodEntryList" class="mood-entry-list"></div>
     <div class="mood-journal-shell" id="moodComposeShell">
+      <div class="card-accent-dot tab-diary"></div>
       <div class="cal-section-title-row" style="margin-bottom:8px; align-items:flex-start;">
         <div class="cal-section-title" style="font-size:11px;" data-i18n="mood_journal_title">今日の気分日記</div>
         <div id="moodJournalImages" class="mood-journal-images-top" onclick="triggerMoodImageUpload()"></div>
@@ -3195,12 +3209,14 @@
     </div>
   </div>
 </div>
+<div id="tutorialSwipeFloatHint" style="position:fixed; left:50%; top:38%; transform:translate(-50%,-50%); z-index:60; font-size:26px; pointer-events:none; opacity:0; transition:opacity 0.2s ease; animation:tutorialSwipeHintMove 1.4s ease-in-out infinite;">👈 👉</div>
 
 <div class="grand-modal" id="mementoModal" onclick="closeAddMemento()">
   <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:22px; max-width:min(340px,88vw); max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
     <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="memento_add_title">📖 備忘録を追加</div>
     <input type="text" id="mementoTitleInput" placeholder="題名(任意)" data-i18n-placeholder="memento_title_ph" oninput="handleMementoDraftInput()" style="width:100%; box-sizing:border-box; font-size:14px; font-weight:700; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:8px;">
-    <textarea id="mementoTextInput" placeholder="例: 富士登山に挑戦。5合目から山頂まで7時間かかった。" oninput="handleMementoDraftInput()" style="width:100%; box-sizing:border-box; min-height:280px; resize:vertical; background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.15); border-radius:10px; padding:12px; color:#fff; font-size:13px; line-height:1.7; font-family:inherit; margin-bottom:14px;"></textarea>
+    <textarea id="mementoTextInput" placeholder="例: 富士登山に挑戦。5合目から山頂まで7時間かかった。" oninput="handleMementoDraftInput()" style="width:100%; box-sizing:border-box; min-height:280px; resize:vertical; background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.15); border-radius:10px; padding:12px; color:#fff; font-size:13px; line-height:1.7; font-family:inherit; margin-bottom:6px;"></textarea>
+    <div style="font-size:10px; color:var(--ink-dim); margin-bottom:14px;">💡 <b>==強調したい部分==</b> のように囲むと、表示時にマーカーが引かれます</div>
     <button class="badge-close-btn" data-i18n="memento_save_btn" onclick="confirmAddMemento()" style="width:100%; box-sizing:border-box; font-weight:700;">保存</button>
   </div>
 </div>
@@ -7943,6 +7959,14 @@
   function switchCalView(view, direction) {
     if (calTransitionInProgress) return;
     playUIClick();
+    if (direction && tutorialWaitingForSwipe) {
+      // 本物のカレンダーで、実際にスワイプ操作が行われたことを検知 → チュートリアルを再開する
+      tutorialWaitingForSwipe = false;
+      document.getElementById('tutorialSwipeFloatHint').classList.remove('show');
+      setTimeout(() => {
+        document.getElementById('tutorialModal').classList.add('show');
+      }, 500);
+    }
     document.querySelectorAll('.cal-view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
     const sectionIds = { month: 'calMonthSection', week: 'calWeekSection', day: 'calDaySection', agenda: 'calAgendaSection', search: 'calSearchSection', report: 'calReportSection' };
     const targetEl = document.getElementById(sectionIds[view]);
@@ -8627,6 +8651,10 @@
     playUIClick();
     renderMementoCards();
   }
+  // 備忘録で「==強調したい部分==」のように書くと、表示時にマーカーを引いたように見せる、軽量な強調記法
+  function applyMementoHighlight(escapedText) {
+    return escapedText.replace(/==(.+?)==/g, '<mark style="background:rgba(245,205,60,0.55); color:inherit; padding:0 2px; border-radius:2px;">$1</mark>');
+  }
   function renderMementoCards() {
     const el = document.getElementById('mementoCardList');
     if (!el) return;
@@ -8656,7 +8684,7 @@
             <span onclick="deleteMemento('${card.id}')" style="color:var(--ink-dim); font-size:13px; cursor:pointer; padding:2px 4px;">✕</span>
           </div>
         </div>
-        <div id="memText_${card.id}" class="clamp-text" style="font-size:12.5px; color:var(--ink); line-height:1.6; white-space:pre-wrap;">${card.title ? `<div style="font-weight:700; font-size:13.5px; margin-bottom:4px;">${escapeHtml(card.title)}</div>` : ''}${escapeHtml(card.text)}</div>
+        <div id="memText_${card.id}" class="clamp-text" style="font-size:12.5px; color:var(--ink); line-height:1.6; white-space:pre-wrap;">${card.title ? `<div style="font-weight:700; font-size:13.5px; margin-bottom:4px;">${applyMementoHighlight(escapeHtml(card.title))}</div>` : ''}${applyMementoHighlight(escapeHtml(card.text))}</div>
         <span class="clamp-expand-btn" onclick="document.getElementById('memText_${card.id}').classList.toggle('clamp-text'); this.textContent = this.textContent === '続きを読む' ? '短く表示' : '続きを読む';">続きを読む</span>
       </div>
     `;
@@ -8754,10 +8782,12 @@
 
   // ---- チュートリアル(手動呼び出し。開発中に毎回自動表示されるとだるいので、設定ページから任意のタイミングで見る形にする) ----
   const TUTORIAL_STEPS_JA = [
+    '📅 カレンダーは、左右にスワイプすると、月→週→日を切り替えられます。下のカードを、実際に左右にスワイプしてみてください。',
     '📍 記録のある日をタップすると、その日の詳細が見られます。',
     '🤖 日記の「コピー」ボタンで、記録をAIに相談しやすい形でコピーできます。お気に入りのAIチャットに貼り付けて、率直な感想をもらってみましょう。',
   ];
   const TUTORIAL_STEPS_EN = [
+    '📅 In the calendar, swipe left or right to switch between month, week, and day views. Try swiping the card below.',
     '📍 Tap a day with a record to see its details.',
     "🤖 The diary's Copy button copies your entry in a format that's easy to share with an AI. Paste it into your favorite AI chat for an honest take.",
   ];
@@ -8773,18 +8803,29 @@
   function openTutorial() {
     playUIClick();
     tutorialStepIndex = 0;
-    renderTutorialStep();
     document.getElementById('tutorialModal').classList.add('show');
+    renderTutorialStep();
   }
   function closeTutorial() {
     playUIClick();
     document.getElementById('tutorialModal').classList.remove('show');
+    tutorialWaitingForSwipe = false;
+    document.getElementById('tutorialSwipeFloatHint').classList.remove('show');
   }
+  let tutorialWaitingForSwipe = false;
   function renderTutorialStep() {
     const steps = (currentLang === 'en') ? TUTORIAL_STEPS_EN : TUTORIAL_STEPS_JA;
     document.getElementById('tutorialStepText').textContent = steps[tutorialStepIndex];
     document.getElementById('tutorialStepNum').textContent = tutorialStepIndex + 1;
     document.getElementById('tutorialStepTotal').textContent = steps.length;
+    const isSwipeStep = (tutorialStepIndex === 0); // カレンダースワイプの説明は、常に最初のステップ
+    if (isSwipeStep) {
+      // 説明を読んだら、一旦チュートリアルを閉じて、本物のカレンダーを実際にスワイプしてもらう
+      document.getElementById('tutorialModal').classList.remove('show');
+      document.getElementById('calSectionWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      tutorialWaitingForSwipe = true;
+      document.getElementById('tutorialSwipeFloatHint').classList.add('show');
+    }
   }
   function tutorialNext() {
     const steps = (currentLang === 'en') ? TUTORIAL_STEPS_EN : TUTORIAL_STEPS_JA;
