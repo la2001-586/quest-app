@@ -696,6 +696,50 @@
     text-align: center; margin: 0 10px 16px; cursor: pointer;
     background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 22px;
     padding: 24px 10px;
+    position: relative;
+  }
+  /* カードの縁から覗く、猫のマスコット */
+  .peek-cat {
+    position: absolute; top: -19px; right: 22px; width: 46px; height: 30px;
+    z-index: 3; pointer-events: auto; cursor: pointer;
+  }
+  .peek-cat .cat-eye { animation: peekCatBlink 4.5s ease-in-out infinite; transform-origin: center; }
+  .peek-cat .cat-eye.eye-r { animation-delay: 0.05s; }
+  @keyframes peekCatBlink {
+    0%, 90%, 100% { transform: scaleY(1); }
+    93%, 96% { transform: scaleY(0.1); }
+  }
+  .peek-cat .cat-paw {
+    animation: peekCatPaw 7s ease-in-out infinite;
+    transform-origin: top center;
+  }
+  @keyframes peekCatPaw {
+    0%, 78%, 100% { transform: translateY(6px) scale(0.85); opacity: 0; }
+    85%, 92% { transform: translateY(-2px) scale(1); opacity: 1; }
+  }
+  /* タップした時、猫がピョコッと驚くリアクション */
+  .peek-cat.cat-poked { animation: catPokedReact 0.5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes catPokedReact {
+    0% { transform: translateY(0) rotate(0); }
+    30% { transform: translateY(-8px) rotate(-6deg); }
+    55% { transform: translateY(-3px) rotate(4deg); }
+    100% { transform: translateY(0) rotate(0); }
+  }
+  .cat-speech-bubble {
+    position: absolute; top: -34px; left: 50%; transform: translateX(-50%) scale(0);
+    background: #fff; color: #333; font-size: 11px; font-weight: 700;
+    padding: 3px 9px; border-radius: 10px; white-space: nowrap;
+    opacity: 0; transition: none; pointer-events: none;
+  }
+  .cat-speech-bubble.show {
+    animation: catSpeechPop 1.3s ease forwards;
+  }
+  @keyframes catSpeechPop {
+    0% { transform: translateX(-50%) scale(0); opacity: 0; }
+    15% { transform: translateX(-50%) scale(1.15); opacity: 1; }
+    25% { transform: translateX(-50%) scale(1); opacity: 1; }
+    80% { transform: translateX(-50%) scale(1); opacity: 1; }
+    100% { transform: translateX(-50%) scale(0.9); opacity: 0; }
   }
   .hud-date {
     font-family: "Orbitron", sans-serif; font-size: 12px; color: var(--ink-dim);
@@ -988,6 +1032,45 @@
   }
   .app-group-label:first-child { margin-top: 0; }
   .app-group-label::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+  /* 複数ページモード(試験的): ホームバーに、グループ切り替え用のタブを増やす */
+  .home-tab.multipage-only { display: none; }
+  body.multipage-mode .home-tab.multipage-only { display: flex; }
+  body.multipage-mode .home-tab .normal-mode-only { display: none !important; }
+  body.multipage-mode .home-tab .multipage-only.home-tab-icon,
+  body.multipage-mode .home-tab .multipage-only.home-tab-label { display: block !important; }
+  body.multipage-mode .home-bar { padding-left: 2px; padding-right: 2px; }
+  body.multipage-mode .home-tab { padding: 6px 8px; }
+
+  /* ===== 複数ページモード(試験的): 画面いっぱいに使う、大胆な"端から端まで線区切り"UI ===== */
+  /* カードの箱自体を、画面の縦幅いっぱいまで広げ、角丸・影・余白を無くして、フチまで使う */
+  body.multipage-mode #page-task { padding-left: 0; padding-right: 0; }
+  body.multipage-mode .app-group-wrap {
+    min-height: calc(100dvh - 140px);
+  }
+  body.multipage-mode .app-group-wrap #calSectionWrap,
+  body.multipage-mode .app-group-wrap .unified-task-card,
+  body.multipage-mode .app-group-wrap .mood-journal-shell {
+    border-radius: 0 !important; border-left: none !important; border-right: none !important;
+    box-shadow: none !important; margin-left: -16px; margin-right: -16px;
+    min-height: calc(100dvh - 200px);
+  }
+  body.multipage-mode .app-group-label { display: none; } /* ホームバー側に、既に表示名があるため、二重表示を避ける */
+  /* カレンダーの日付マス・見出しも、少し大きく、ゆったりと */
+  body.multipage-mode .cal-grid-shell { font-size: 1.08em; }
+  body.multipage-mode .cal-day { min-height: 52px; }
+
+  /* タスク・日課のカードを、iPhoneの「アラーム」一覧のような、端から端まで・線区切りの見た目に */
+  body.multipage-mode .app-group-wrap .item {
+    border-radius: 0 !important; box-shadow: none !important; margin-bottom: 0 !important;
+    background: transparent !important; border-top: none !important; border-right: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    padding: 16px 16px !important;
+  }
+  body.multipage-mode .app-group-wrap .swipe-del-wrap { border-radius: 0; margin-bottom: 0; }
+  body.multipage-mode .app-group-wrap .unified-task-card,
+  body.multipage-mode .app-group-wrap #calSectionWrap {
+    padding-left: 16px; padding-right: 16px;
+  }
   body.theme-simple .app-group-label::after { background: rgba(0,0,0,0.08); }
   .folder-panel.show { display: block; }
   body.theme-simple .folder-tab {
@@ -1531,7 +1614,9 @@
 
   /* ================= ホームバー ================= */
   .home-bar {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 15;
+    position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important;
+    transform: none !important; transition: none !important; animation: none !important;
+    z-index: 15;
     display: flex; justify-content: space-around; align-items: center;
     background: linear-gradient(180deg, rgba(15,19,25,0.85), rgba(10,13,17,0.98));
     border-top: 1.5px solid rgba(43,201,204,0.35);
@@ -1543,7 +1628,7 @@
     transition: all 0.2s cubic-bezier(.34,1.4,.4,1);
   }
   .home-tab:active { transform: scale(0.9); }
-  .home-tab-icon { font-size: 17px; transition: transform 0.25s cubic-bezier(.34,1.5,.4,1); }
+  .home-tab-icon { font-size: 17px; transition: transform 0.25s cubic-bezier(.34,1.5,.4,1); display: flex; align-items: center; justify-content: center; color: inherit; }
   .home-tab-label { font-family: "Orbitron", sans-serif; font-size: 9px; letter-spacing: 0.03em; }
   .home-tab.active { color: var(--cyan); background: rgba(43,201,204,0.14); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(43,201,204,0.15); }
   .home-tab.active .home-tab-icon { filter: drop-shadow(0 0 6px rgba(43,201,204,0.7)); transform: scale(1.15); }
@@ -2464,7 +2549,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_BACKUP_FULL_V297</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_ALARM_PUSH_SYNC_V314</div>
   <div class="app-group-label" data-i18n="group_calendar">📅 カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
@@ -2615,8 +2700,10 @@
     <button class="focus-banner-end-btn" data-i18n="focus_end_btn" onclick="confirmEndFocusMode()">終了する</button>
   </div>
 
-  <div class="hud-header">
+  <div id="hudHeaderPlaceholder" style="display:none;"></div>
+  <div class="hud-header" id="hudHeaderBlock">
     <div class="hud-clock-hero" onclick="scrollToCalendarTop()">
+      <div id="peekCatContainer" class="peek-cat"></div>
       <div class="hud-date" id="clockDate">----/--/--</div>
       <div class="hud-time" id="clockTime">--:--:--</div>
       <div class="hud-weather" id="hudWeather" onclick="event.stopPropagation();"></div>
@@ -2882,6 +2969,19 @@
     </div>
     <input type="range" class="volume-slider" id="boundaryHourSlider" min="0" max="8" value="4" style="width:100%; margin-bottom:6px;">
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6;" data-i18n="opt_boundary_desc">この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。</div>
+    <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_manual_daychange_btn" onclick="manualAdvanceDay()">🌅 今すぐ、新しい1日に切り替える</button>
+    <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_manual_daychange_desc">生活リズムが不規則な時、区切りの時刻を待たずに、手動で1日を締められます</div>
+  </div>
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="opt_multipage_label">📑 複数ページモード(試験的)</div>
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="opt_multipage_desc">カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。いつでもオフに戻せます。</div>
+    <div class="settings-row">
+      <span data-i18n="opt_multipage_row">有効にする</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="multiPageModeToggle" onchange="toggleMultiPageMode(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
   </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="notify_label">🔔 通知(試験導入)</div>
@@ -2932,6 +3032,13 @@
     <div class="settings-label" data-i18n="opt_support_label">サポート</div>
     <button class="settings-btn" data-i18n="opt_contact_btn" onclick="contactSupport()">運営に連絡する</button>
     <button class="settings-btn" data-i18n="opt_policy_btn" onclick="showPolicy()">利用規約・プライバシー</button>
+  </div>
+  <div class="settings-group">
+    <div class="settings-label" data-i18n="opt_credits_label">🙏 クレジット</div>
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="opt_credits_desc">このアプリで使用している、外部素材の制作者の方々です。</div>
+    <div id="creditsList" style="font-size:11px; color:var(--ink); line-height:2;">
+      <div>🔊 <span data-i18n="credit_cat_meow">猫の鳴き声</span> — <a href="https://pixabay.com/ja/users/dragon-studio-38165424/" target="_blank" rel="noopener" style="color:var(--cyan);">DRAGON-STUDIO</a> (Pixabay)</div>
+    </div>
   </div>
   <div class="settings-group" style="border: 1.5px dashed rgba(255,80,80,0.5);">
     <div class="settings-label" style="color:#FF5050;" data-i18n="dev_section_label">🛠️ 開発者用(本番公開前に削除)</div>
@@ -3091,6 +3198,8 @@
     <button class="settings-btn" data-i18n="opt_diagnostic_btn" onclick="runStorageDiagnostic()">🔧 保存機能を診断する</button>
     <button class="settings-btn" data-i18n="opt_export_btn" onclick="exportBackup()">⬇️ バックアップを書き出す</button>
     <button class="settings-btn" data-i18n="opt_import_btn" onclick="triggerImportBackup()">⬆️ バックアップから復元する</button>
+    <button class="settings-btn" style="margin-top:10px; border-top:1px dashed rgba(255,255,255,0.15); padding-top:14px;" data-i18n="opt_clearcache_btn" onclick="clearAppCache()">🧹 アプリのキャッシュを削除</button>
+    <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_clearcache_desc">アプリ本体の中身(機能・見た目)を最新版に更新します。※ホーム画面のアイコン画像は、これでは変わりません(削除して再追加が必要)</div>
     <input type="file" id="backupFileInput" accept="application/json" style="display:none;">
     <div id="lastBackupInfo" style="font-size:10px; color:var(--ink-dim); margin-top:8px;"></div>
     <button class="badge-close-btn" style="margin-top:14px; width:100%; box-sizing:border-box;" data-i18n="btn_close" onclick="closeDataManageModal()">閉じる</button>
@@ -3316,12 +3425,26 @@
 
 <!-- ================= ホームバー（下部固定タブ） ================= -->
 <div class="home-bar">
-  <div class="home-tab active" data-page="task">
-    <div class="home-tab-icon">✓</div>
-    <div class="home-tab-label" data-i18n="hometab_task">タスク</div>
+  <div class="home-tab multipage-only" data-page="task" data-group="group_other">
+    <div class="home-tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M10 20v-6h4v6"></path></svg></div>
+    <div class="home-tab-label" data-i18n="group_home_short">ホーム</div>
+  </div>
+  <div class="home-tab active" data-page="task" data-group="group_calendar">
+    <div class="home-tab-icon normal-mode-only"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></div>
+    <div class="home-tab-icon multipage-only" style="display:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg></div>
+    <div class="home-tab-label normal-mode-only" data-i18n="hometab_task">タスク</div>
+    <div class="home-tab-label multipage-only" style="display:none;" data-i18n="group_calendar_short">カレンダー</div>
+  </div>
+  <div class="home-tab multipage-only" data-page="task" data-group="group_task">
+    <div class="home-tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="6" height="6" rx="1"></rect><path d="M5.5 7l1 1 2-2"></path><path d="M12 5h9"></path><path d="M12 12h9"></path><path d="M12 19h9"></path><rect x="3" y="16" width="6" height="6" rx="1"></rect></svg></div>
+    <div class="home-tab-label" data-i18n="group_task_short">タスク管理</div>
+  </div>
+  <div class="home-tab multipage-only" data-page="task" data-group="group_diary">
+    <div class="home-tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v17H6a2 2 0 0 0-2 2z"></path><path d="M19 17H6a2 2 0 0 0-2 2"></path><path d="M8 7h7"></path><path d="M8 11h7"></path></svg></div>
+    <div class="home-tab-label" data-i18n="group_diary_short">日記</div>
   </div>
   <div class="home-tab" data-page="settings">
-    <div class="home-tab-icon">⚙</div>
+    <div class="home-tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
     <div class="home-tab-label" data-i18n="hometab_settings">オプション</div>
   </div>
 </div>
@@ -3344,7 +3467,7 @@
     const buildEl = document.getElementById('openingBuild');
     const overlayEl = document.getElementById('openingOverlay');
     if (!titleEl || !overlayEl) return;
-    const titleText = '軽量級_中量級_重量級';
+    const titleText = 'Daily Station';
     titleText.split('').forEach((ch, i) => {
       const span = document.createElement('span');
       span.textContent = ch;
@@ -3444,7 +3567,7 @@
   // ==================================================================
   const I18N_DICT = {
     ja: {
-      brand: '軽量級_中量級_重量級',
+      brand: 'Daily Station',
       sub_main: 'どれくらい積めそう？',
       tab_low: '軽量級', tab_mid: '中量級', tab_high: '重量級',
       levelhead_low_name: '軽量級', levelhead_mid_name: '中量級', levelhead_high_name: '重量級',
@@ -3458,6 +3581,13 @@
       opt_test_sound_btn: '🔊 音を試す', opt_sound_toggle_row: '効果音を鳴らす',
       opt_boundary_label: '1日の区切り', opt_boundary_row: '区切りの時刻',
       opt_boundary_desc: 'この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。',
+      opt_manual_daychange_btn: '🌅 今すぐ、新しい1日に切り替える',
+      opt_manual_daychange_desc: '生活リズムが不規則な時、区切りの時刻を待たずに、手動で1日を締められます',
+      opt_multipage_label: '📑 複数ページモード(試験的)',
+      opt_multipage_desc: 'カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。いつでもオフに戻せます。',
+      opt_multipage_row: '有効にする',
+      group_calendar_short: 'カレンダー', group_task_short: 'タスク管理', group_diary_short: '日記', group_other_short: 'その他',
+      group_home_short: 'ホーム',
       opt_data_label: 'データの管理',
       opt_data_desc: '経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。',
       group_calendar: '📅 カレンダー', group_task: '✅ タスク管理', group_diary: '📔 日記', group_other: '✨ その他',
@@ -3465,7 +3595,11 @@
       memento_title_ph: '題名(任意)',
       opt_view_data_btn: '🔍 データを見る', opt_export_btn: '⬇️ バックアップを書き出す',
       opt_import_btn: '⬆️ バックアップから復元する',
+      opt_clearcache_btn: '🧹 アプリのキャッシュを削除',
+      opt_clearcache_desc: 'アプリ本体の中身(機能・見た目)を最新版に更新します。※ホーム画面のアイコン画像は、これでは変わりません(削除して再追加が必要)',
       opt_support_label: 'サポート', opt_contact_btn: '運営に連絡する', opt_policy_btn: '利用規約・プライバシー',
+      opt_credits_label: '🙏 クレジット', opt_credits_desc: 'このアプリで使用している、外部素材の制作者の方々です。',
+      credit_cat_meow: '猫の鳴き声',
       opt_lang_label: '言語', lang_ja_btn: '日本語', lang_en_btn: 'English',
       opt_prototype_note: '※ このページは見た目のみの試作（ハリボテ）です。実際の設定保存はこれから実装します。',
       cal_title: '今月の記録', cal_days: '記録した日', cal_exp: '今月の合計EXP', cal_items: '合計選択数',
@@ -3575,6 +3709,13 @@
       opt_test_sound_btn: '🔊 Test Sound', opt_sound_toggle_row: 'Enable Sound Effects',
       opt_boundary_label: 'Day Boundary', opt_boundary_row: 'Boundary Time',
       opt_boundary_desc: 'Activity before this time is logged as the previous day. 4–5 AM suits night owls; midnight suits early sleepers.',
+      opt_manual_daychange_btn: '🌅 Start a New Day Now',
+      opt_manual_daychange_desc: "For irregular sleep schedules — close out today manually without waiting for the boundary time.",
+      opt_multipage_label: '📑 Multi-Page Mode (Experimental)',
+      opt_multipage_desc: 'Switch between Calendar, Tasks, Diary, and Other as separate full screens. You can turn this off anytime.',
+      opt_multipage_row: 'Enable',
+      group_calendar_short: 'Calendar', group_task_short: 'Tasks', group_diary_short: 'Diary', group_other_short: 'Other',
+      group_home_short: 'Home',
       opt_data_label: 'Data Management',
       opt_data_desc: 'Save your XP, history, and task list together as one file. It\u2019s a good idea to back up occasionally in case you switch devices or lose data.',
       group_calendar: '📅 Calendar', group_task: '✅ Tasks', group_diary: '📔 Diary', group_other: '✨ Other',
@@ -3582,7 +3723,11 @@
       memento_title_ph: 'Title (optional)',
       opt_view_data_btn: '🔍 View Saved Data', opt_export_btn: '⬇️ Export Backup',
       opt_import_btn: '⬆️ Restore from Backup',
+      opt_clearcache_btn: '🧹 Clear App Cache',
+      opt_clearcache_desc: "Refreshes the app's files (features & appearance) to the latest version. Note: this does NOT change the home screen icon image (delete & re-add is still required for that).",
       opt_support_label: 'Support', opt_contact_btn: 'Contact Support', opt_policy_btn: 'Terms & Privacy',
+      opt_credits_label: '🙏 Credits', opt_credits_desc: 'External assets used in this app, and their creators.',
+      credit_cat_meow: 'Cat meow sound',
       opt_lang_label: 'Language', lang_ja_btn: '日本語', lang_en_btn: 'English',
       opt_prototype_note: '※ This page is a visual prototype only for now. Real settings persistence is coming soon.',
       cal_title: "This Month's Record", cal_days: 'Days Logged', cal_exp: 'Total EXP', cal_items: 'Total Picks',
@@ -4256,9 +4401,16 @@
   // ---- タップした場所から、色がフワッと広がる演出 ----
   // スワイプ削除の対象カードを、削除ボタン付きの外枠でラップするための共通ヘルパー
   // (確認ダイアログは、ここではなく、渡された削除関数の側で出す想定。誤って二重に出さないよう、ここでは挟まない)
+  // 検索の虫眼鏡アイコンと同じ路線の、絵文字ではない、線だけのシンプルなゴミ箱アイコン
+  const TRASH_ICON_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 7h16"></path>
+    <path d="M9 7V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V7"></path>
+    <path d="M6 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5L18 7"></path>
+    <path d="M10 11v6"></path><path d="M14 11v6"></path>
+  </svg>`;
   function wrapForSwipeDelete(innerHtml, deleteJsCall) {
     return `<div class="swipe-del-wrap">
-      <div class="swipe-del-trash" onclick="${deleteJsCall}">🗑️</div>
+      <div class="swipe-del-trash" onclick="${deleteJsCall}">${TRASH_ICON_SVG}</div>
       ${innerHtml}
     </div>`;
   }
@@ -4503,6 +4655,7 @@
   }
   async function persistAlarms() {
     try { await window.storage.set('quest-alarms-v2', JSON.stringify(alarms)); } catch (e) {}
+    syncRemindersToServer(); // アラームの変更を、プッシュ通知サーバー側にも、すぐ反映する
   }
   function renderAlarmList() {
     const box = document.getElementById('alarmListBox');
@@ -4930,6 +5083,7 @@
       else { ev.doneOccurrences.splice(idx, 1); justUncompleted = (occurrenceDateKey === todayKey); }
     } else {
       ev.done = !ev.done;
+      ev.doneOnDateKey = ev.done ? todayKey : null; // 「チェック済みのまま、日付が変わるまでは表示」を実現するため、いつチェックしたかを記録する
       justCompleted = ev.done && ev.dateKey === todayKey;
       justUncompleted = !ev.done && ev.dateKey === todayKey;
     }
@@ -4964,6 +5118,46 @@
     return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
   }
 
+  // 実際の時計が区切り時刻をまたいでいなくても、「今、1日を区切りたい」という、手動での日付切り替え。
+  // (早寝早起きなど、区切り時刻の設定と、実際の生活リズムがズレる人向け)
+  async function manualAdvanceDay() {
+    if (!confirm(currentLang === 'en'
+      ? 'End today and start a new day now? Unfinished tasks will be carried over.'
+      : '今日を締めて、新しい1日を始めますか？未完了のタスクは、持ち越しになります。')) return;
+    playUIClick();
+    const closingKey = logicalDateKey(trustedNow); // 実時刻とは無関係に、「今、閉じる対象の日」として扱う
+
+    // ①軽量級・中量級・重量級で選んだ項目を、履歴に確定する
+    const prevPicked = [...picked];
+    if (prevPicked.length > 0) {
+      dailyHistory[closingKey] = {
+        count: prevPicked.length,
+        exp: currentTodayExp || 0,
+        items: prevPicked.map(k => k.split('|')[1]),
+      };
+    }
+    bankedExp = (bankedExp || 0) + (currentTodayExp || 0);
+    picked.clear();
+    currentTodayExp = 0;
+
+    // ②「今日のタスク」を、完了済みは履歴へ、未完了は持ち越しへ、それぞれ片付ける
+    const stillDone = todayTasks.filter(t => t.done);
+    const stillIncomplete = todayTasks.filter(t => !t.done);
+    stillIncomplete.forEach(t => { if (!t.carriedFrom) t.carriedFrom = closingKey; });
+    if (stillDone.length > 0) {
+      if (!dailyHistory[closingKey]) dailyHistory[closingKey] = { count: 0, exp: 0, items: [] };
+      if (!dailyHistory[closingKey].todayTasksCompleted) dailyHistory[closingKey].todayTasksCompleted = [];
+      dailyHistory[closingKey].todayTasksCompleted.push(...stillDone.map(t => t.text));
+    }
+    todayTasks = stillIncomplete;
+
+    await saveTodayTasks();
+    await saveProgress(0);
+    updateSummary();
+    renderAllTasks();
+    renderTodayTasksList();
+    showToast('🌅 新しい1日として、切り替えました');
+  }
   async function loadProgress() {
     try {
       const saved = await window.storage.get('quest-progress-v2');
@@ -5065,7 +5259,7 @@
       wrap.className = 'swipe-del-wrap';
       const trash = document.createElement('div');
       trash.className = 'swipe-del-trash';
-      trash.textContent = '🗑️';
+      trash.innerHTML = TRASH_ICON_SVG;
       trash.onclick = () => deleteTask(task.id);
       wrap.appendChild(trash);
       const div = document.createElement('div');
@@ -5415,6 +5609,28 @@
     }
   }
 
+  async function clearAppCache() {
+    playUIClick();
+    if (!confirm(currentLang === 'en'
+      ? 'This refreshes the app\'s files to the latest version. (Note: this does NOT change the home screen icon image — that still requires delete & re-add.) Continue?'
+      : 'アプリ本体の中身を、最新版に更新します。(※ホーム画面のアイコン画像は変わりません、削除して再追加が必要です) 続けますか？')) return;
+    try {
+      // Service Workerが持っている、キャッシュ済みのファイル群を消す
+      if ('caches' in window) {
+        const names = await caches.keys();
+        await Promise.all(names.map(name => caches.delete(name)));
+      }
+      // Service Worker自体も、登録解除して、次回まっさらな状態で再登録させる
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(reg => reg.unregister()));
+      }
+      showToast('キャッシュを削除しました。再読み込みします…');
+      setTimeout(() => location.reload(true), 1200);
+    } catch (e) {
+      showToast('キャッシュの削除に失敗しました');
+    }
+  }
   async function runStorageDiagnostic() {
     playUIClick();
     const lines = [];
@@ -5651,7 +5867,14 @@
 
       for (const [field, key] of Object.entries(BACKUP_KEYS)) {
         if (backup[field] !== undefined && backup[field] !== null) {
-          await window.storage.set(key, JSON.stringify(backup[field]));
+          let value = backup[field];
+          // バックアップ復元は、「日付が変わったら片付ける」通常の処理を素通りしてしまうため、
+          // 昔チェック済みだったタスク・予定が、そのまま復活して一覧を埋め尽くす不具合があった。
+          // 復元のタイミングで、明らかに古いチェック済み項目だけ、ここで取り除いておく。
+          if (field === 'todayTasks' && Array.isArray(value)) {
+            value = value.filter(t => !t.done);
+          }
+          await window.storage.set(key, JSON.stringify(value));
         }
       }
 
@@ -5740,6 +5963,8 @@
     loadWeather();
     await loadAlarmSettings();
     await loadOtherPinState();
+    await loadMultiPageModePref();
+    renderTodaysPeekCat();
     await loadDebugLogPref();
     try {
       const savedBgmOn = await window.storage.get('quest-bgm-on-v1');
@@ -6376,7 +6601,10 @@
     const todayKey = logicalDateKey(trustedNow);
     const todaysScheduled = eventsForDate(todayKey); // カレンダーで今日の日付になった予定も、ここに合流させる
     // 過去の日付のまま未完了で残っている(繰り返しではない)予定も、期限切れとして一緒に表示する(旧・持ち越し機能の役割を引き継ぐ)
-    const overdue = scheduledEvents.filter(e => e.dateKey && !e.recurrence && e.dateKey !== todayKey && dateFromKey(e.dateKey) < dateFromKey(todayKey));
+    // 「未完了」か、「今日チェックしたばかり」のものだけを表示する。
+    // (以前は、一度チェックした予定が、日付が変わっても永遠に残り続けてしまうバグがあった。
+    //  特にバックアップ復元時、過去の完了済み予定が大量に復活し、一覧を埋め尽くす原因になっていた)
+    const overdue = scheduledEvents.filter(e => e.dateKey && !e.recurrence && e.dateKey !== todayKey && dateFromKey(e.dateKey) < dateFromKey(todayKey) && (!e.done || e.doneOnDateKey === todayKey));
     if (todayTasks.length === 0 && todaysScheduled.length === 0 && overdue.length === 0) {
       el.innerHTML = `<div class="today-tasks-empty">${currentLang === 'en' ? 'Nothing here yet today' : '今日はまだ何もありません'}</div>`;
       return;
@@ -6401,7 +6629,7 @@
     const scheduledHtml = todaysScheduled.map(ev => {
       const isDone = ev.recurrence ? (ev.doneOccurrences || []).includes(todayKey) : ev.done;
       const dot = ev.color ? `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${ev.color}; margin-right:3px;"></span>` : '';
-      return `
+      const inner = `
       <div class="item today-custom${isDone ? ' done' : ''}">
         <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();">✓</div>
         <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();">
@@ -6412,10 +6640,11 @@
         </div>
       </div>
     `;
+      return wrapForSwipeDelete(inner, `deleteScheduledEvent('${ev.id}'); renderTodayTasksList();`);
     }).join('');
     const overdueHtml = overdue.map(ev => {
       const overdueLabel = currentLang === 'en' ? ` (overdue, was ${formatShortDate(ev.dateKey)})` : `(未完了${formatShortDate(ev.dateKey)}から持ち越し)`;
-      return `
+      const inner = `
       <div class="item today-custom${ev.done ? ' done' : ''}">
         <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();">✓</div>
         <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();">
@@ -6426,6 +6655,7 @@
         </div>
       </div>
     `;
+      return wrapForSwipeDelete(inner, `deleteScheduledEvent('${ev.id}'); renderTodayTasksList();`);
     }).join('');
     el.innerHTML = overdueHtml + scheduledHtml + customHtml;
     initAllSwipeDelete(el);
@@ -6613,6 +6843,81 @@
   }
 
   // ---- 日課ストック(v62で追加): 今は不要な日課をオフにして一覧から隠す ----
+  // ===== 複数ページモード(試験的): 今の構造とは別モードとして、いつでも元に戻せる形で追加 =====
+  // 各グループの中身を、個別に display 指定するのではなく、専用の箱(wrapper)へ、DOMノードごと"移動"させ、
+  // 箱の表示・非表示だけで切り替える。中身の要素自身のstyle/classは、一切触らない。
+  // (以前の実装は、各要素に直接display:noneを付けていたため、ピン留め等、別の仕組みが管理しているstyleと衝突し、
+  //  全集中モードが意図せず有効化されるような不具合を起こしていた)
+  let multiPageModeOn = false;
+  const APP_GROUP_KEYS = ['group_calendar', 'group_task', 'group_diary', 'group_other'];
+  function ensureAppGroupWrappers() {
+    if (document.getElementById('appGroupWrap_group_other')) return; // 初回のみ実行
+    const pageEl = document.getElementById('page-task');
+    APP_GROUP_KEYS.forEach(groupKey => {
+      const label = pageEl.querySelector(`:scope > .app-group-label[data-i18n="${groupKey}"]`);
+      if (!label) return;
+      const wrapper = document.createElement('div');
+      wrapper.id = 'appGroupWrap_' + groupKey;
+      wrapper.className = 'app-group-wrap';
+      let sib = label.nextElementSibling;
+      while (sib && !sib.classList.contains('app-group-label')) {
+        const next = sib.nextElementSibling;
+        wrapper.appendChild(sib); // 既存のDOMノードをそのまま移動(クローンではないので、中の状態はそのまま保たれる)
+        sib = next;
+      }
+      label.after(wrapper);
+    });
+  }
+  function switchAppGroup(groupKey) {
+    if (!multiPageModeOn) return;
+    ensureAppGroupWrappers();
+    playUIClick();
+    APP_GROUP_KEYS.forEach(key => {
+      const label = document.querySelector(`.app-group-label[data-i18n="${key}"]`);
+      const wrap = document.getElementById('appGroupWrap_' + key);
+      const show = (key === groupKey);
+      if (label) label.style.display = show ? '' : 'none';
+      if (wrap) wrap.style.display = show ? '' : 'none';
+    });
+    document.querySelectorAll('.home-tab[data-group]').forEach(t => t.classList.toggle('active', t.dataset.group === groupKey));
+    window.scrollTo(0, 0);
+  }
+  async function toggleMultiPageMode(on) {
+    multiPageModeOn = on;
+    document.body.classList.toggle('multipage-mode', on);
+    ensureAppGroupWrappers();
+    const hudHeader = document.getElementById('hudHeaderBlock');
+    const placeholder = document.getElementById('hudHeaderPlaceholder');
+    const otherWrap = document.getElementById('appGroupWrap_group_other');
+    if (on) {
+      // 複数ページモードの間だけ、時計・ポモドーロ・猫などのエリアを、「ホーム」グループの先頭へ、一時的に移動する
+      if (hudHeader && otherWrap && !otherWrap.contains(hudHeader)) {
+        otherWrap.insertBefore(hudHeader, otherWrap.firstChild);
+      }
+      switchAppGroup('group_other');
+    } else {
+      // 元の位置に戻す
+      if (hudHeader && placeholder && placeholder.parentNode) {
+        placeholder.after(hudHeader);
+      }
+      APP_GROUP_KEYS.forEach(key => {
+        const label = document.querySelector(`.app-group-label[data-i18n="${key}"]`);
+        const wrap = document.getElementById('appGroupWrap_' + key);
+        if (label) label.style.display = '';
+        if (wrap) wrap.style.display = '';
+      });
+    }
+    try { await window.storage.set('quest-multipage-mode-v1', on ? '1' : '0'); } catch (e) {}
+  }
+  async function loadMultiPageModePref() {
+    try {
+      const saved = await window.storage.get('quest-multipage-mode-v1');
+      const on = !!(saved && saved.value === '1');
+      const toggleEl = document.getElementById('multiPageModeToggle');
+      if (toggleEl) toggleEl.checked = on;
+      if (on) toggleMultiPageMode(true);
+    } catch (e) {}
+  }
   function switchTaskRoutineFolder(which) {
     playUIClick();
     document.getElementById('folderTabTask').classList.toggle('active', which === 'task');
@@ -7455,6 +7760,53 @@
     el.innerHTML = `<span class="weather-loc-btn" onclick="requestWeatherLocation()">${currentLang === 'en' ? '📍 Allow location for weather' : '📍 位置情報を許可して天気を見る'}</span>`;
   }
 
+  // ===== 縁から覗く猫、日替わりローテーション(ねこあつめ的な、集める楽しさを狙って) =====
+  const PEEK_CAT_ROSTER = [
+    { name: 'くろ', body: '#4A4550', earInner: '#E7A9BE', eye: '#FFD87A', phrases: ['にゃ！', 'ふしゃー', 'んん…？'] },
+    { name: 'とら', body: '#E8935B', earInner: '#F5C199', eye: '#4E8F6E', phrases: ['なー', 'ごろごろ…', 'にゃおん'] },
+    { name: 'しろ', body: '#F3EEE4', earInner: '#F0C4D0', eye: '#5FA3C9', phrases: ['みゃー', 'すやぁ…', 'にゃ？'] },
+    { name: 'ぎん', body: '#8F97A3', earInner: '#6B7280', eye: '#D99B3C', phrases: ['ふにゃ', 'なにゃ', 'ゴロゴロ'] },
+    { name: 'みけ', body: '#F3EEE4', earInner: '#E7A9BE', eye: '#5C8F5C', patch: '#D97B3E', phrases: ['にゃにゃ！', 'ふん', 'みゃお'] },
+  ];
+  function buildPeekCatSVG(cat) {
+    const patchHtml = cat.patch ? `<path d="M30 12 Q40 12 40 22 Q40 30 30 28 Q34 20 30 12 Z" fill="${cat.patch}"></path>` : '';
+    return `<svg viewBox="0 0 46 30" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="23" cy="24" rx="16" ry="14" fill="${cat.body}"></ellipse>
+      <path d="M8 14 L12 2 L18 13 Z" fill="${cat.body}"></path>
+      <path d="M28 13 L34 2 L38 14 Z" fill="${cat.body}"></path>
+      <path d="M9.5 12.5 L12.5 5 L16.5 12 Z" fill="${cat.earInner}"></path>
+      <path d="M29.5 12 L34 5 L36.5 12.5 Z" fill="${cat.earInner}"></path>
+      ${patchHtml}
+      <ellipse class="cat-eye eye-l" cx="17.5" cy="17" rx="2.1" ry="2.6" fill="${cat.eye}"></ellipse>
+      <ellipse class="cat-eye eye-r" cx="28.5" cy="17" rx="2.1" ry="2.6" fill="${cat.eye}"></ellipse>
+      <ellipse class="cat-paw" cx="10" cy="8" rx="4" ry="3.4" fill="${cat.body}"></ellipse>
+    </svg>`;
+  }
+  function renderTodaysPeekCat() {
+    const el = document.getElementById('peekCatContainer');
+    if (!el) return;
+    const dayIndex = Math.floor(trustedNow.getTime() / 86400000); // 日が変われば、猫も変わる
+    const cat = PEEK_CAT_ROSTER[dayIndex % PEEK_CAT_ROSTER.length];
+    el.innerHTML = buildPeekCatSVG(cat) + `<div class="cat-speech-bubble" id="catSpeechBubble"></div>`;
+    el.title = `今日は「${cat.name}」が遊びに来ています`;
+    el.onclick = (e) => {
+      e.stopPropagation();
+      pokeCat(cat);
+    };
+  }
+  let catPokeTimer = null;
+  function pokeCat(cat) {
+    const el = document.getElementById('peekCatContainer');
+    const bubble = document.getElementById('catSpeechBubble');
+    if (!el || !bubble) return;
+    el.classList.remove('cat-poked'); void el.offsetWidth; // アニメーションを、連続タップでも毎回リセットして再生させる
+    el.classList.add('cat-poked');
+    const phrase = cat.phrases[Math.floor(Math.random() * cat.phrases.length)];
+    bubble.textContent = phrase;
+    bubble.classList.remove('show'); void bubble.offsetWidth;
+    bubble.classList.add('show');
+    playUIClick();
+  }
   function scrollToCalendarTop() {
     playUIClick();
     const el = document.getElementById('calSectionWrap');
@@ -7518,17 +7870,23 @@
     }
   }
   document.querySelectorAll('.home-tab').forEach(tab => {
-    tab.onclick = () => goToPage(tab.dataset.page);
+    tab.onclick = () => {
+      goToPage(tab.dataset.page);
+      if (multiPageModeOn && tab.dataset.group) switchAppGroup(tab.dataset.group);
+    };
   });
 
   // ---- 画面のどこでも(カレンダー内を除く)左右スワイプで、タスク⇔オプションを切り替える ----
   (function setupPageSwipe() {
-    const PAGE_ORDER = ['task', 'settings'];
+    const NORMAL_ORDER = ['task', 'settings'];
+    // 複数ページモードの時は、ホームバーに並んでいる、実際の左右の順番と揃える
+    const MULTIPAGE_ORDER = ['group_other', 'group_calendar', 'group_task', 'group_diary', 'settings'];
     let touchStartX = 0, touchStartY = 0, swiping = false;
 
     document.addEventListener('touchstart', (e) => {
       if (e.touches.length !== 1) return;
       if (e.target.closest('#calSectionWrap')) return; // カレンダー内は、別のスワイプ(月/週/日)が担当するので対象外
+      if (e.target.closest('.swipe-del-wrap')) return; // タスク・日課・予定の削除スワイプと、ページ切り替えスワイプが競合しないよう、カードの上から始まった場合は対象外
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
       swiping = true;
@@ -7540,16 +7898,35 @@
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
       if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      const dir = dx < 0 ? 'left' : 'right';
 
-      const activeTab = document.querySelector('.home-tab.active');
-      const currentPage = activeTab ? activeTab.dataset.page : 'task';
-      const idx = PAGE_ORDER.indexOf(currentPage);
-      if (idx === -1) return;
-
-      let nextIdx = idx;
-      if (dx < 0 && idx < PAGE_ORDER.length - 1) nextIdx = idx + 1;
-      if (dx > 0 && idx > 0) nextIdx = idx - 1;
-      if (nextIdx !== idx) goToPage(PAGE_ORDER[nextIdx], null, dx < 0 ? 'left' : 'right');
+      if (multiPageModeOn) {
+        const onSettingsPage = document.getElementById('page-settings').classList.contains('show');
+        const activeGroupTab = document.querySelector('.home-tab.active[data-group]');
+        const currentKey = onSettingsPage ? 'settings' : (activeGroupTab ? activeGroupTab.dataset.group : 'group_other');
+        const idx = MULTIPAGE_ORDER.indexOf(currentKey);
+        if (idx === -1) return;
+        let nextIdx = idx;
+        if (dx < 0 && idx < MULTIPAGE_ORDER.length - 1) nextIdx = idx + 1;
+        if (dx > 0 && idx > 0) nextIdx = idx - 1;
+        if (nextIdx === idx) return;
+        const nextKey = MULTIPAGE_ORDER[nextIdx];
+        if (nextKey === 'settings') {
+          goToPage('settings', null, dir);
+        } else {
+          if (onSettingsPage) goToPage('task', null, dir); // オプションページから戻る場合は、外側のページ自体も切り替える
+          switchAppGroup(nextKey);
+        }
+      } else {
+        const activeTab = document.querySelector('.home-tab.active');
+        const currentPage = activeTab ? activeTab.dataset.page : 'task';
+        const idx = NORMAL_ORDER.indexOf(currentPage);
+        if (idx === -1) return;
+        let nextIdx = idx;
+        if (dx < 0 && idx < NORMAL_ORDER.length - 1) nextIdx = idx + 1;
+        if (dx > 0 && idx > 0) nextIdx = idx - 1;
+        if (nextIdx !== idx) goToPage(NORMAL_ORDER[nextIdx], null, dir);
+      }
     }, { passive: true });
   })();
 
@@ -9887,6 +10264,35 @@
           }
         });
       }
+      // アラームも、同じプッシュ通知の仕組みに乗せる。これまでは「アプリを開いている間だけ」動く、
+      // 純粋なアプリ内タイマーだったため、アプリを閉じている・他アプリを使っている間は、一切鳴らせなかった。
+      // ここで、次に鳴る予定の1回分を計算し、サーバー側に登録しておく(アプリを開き直すたびに、次の1回分へ更新される)
+      alarms.forEach(a => {
+        if (!a.enabled || !a.time) return;
+        const [hh, mm] = a.time.split(':').map(Number);
+        let fireAt = null;
+        if (a.repeatDays.length === 0) {
+          const candidate = new Date();
+          candidate.setHours(hh, mm, 0, 0);
+          if (candidate.getTime() <= now) candidate.setDate(candidate.getDate() + 1);
+          fireAt = candidate.getTime();
+        } else {
+          for (let addDays = 0; addDays < 8; addDays++) {
+            const candidate = new Date();
+            candidate.setDate(candidate.getDate() + addDays);
+            candidate.setHours(hh, mm, 0, 0);
+            const dow = ['SU','MO','TU','WE','TH','FR','SA'][candidate.getDay()];
+            if (a.repeatDays.includes(dow) && candidate.getTime() > now) { fireAt = candidate.getTime(); break; }
+          }
+        }
+        if (fireAt) {
+          reminders.push({
+            id: 'alarm_' + a.id, fireAt: new Date(fireAt).toISOString(),
+            title: 'index', body: `⏰ ${a.label || 'アラーム'}`,
+            alarmId: a.id, snoozeable: true,
+          });
+        }
+      });
       await fetch(`${NOTIFY_SERVER_URL}/.netlify/functions/sync-reminders`, {
         method: 'POST',
         body: JSON.stringify({ endpoint: sub.endpoint, reminders, prefs: notificationPrefs }),
