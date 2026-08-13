@@ -360,6 +360,11 @@
     animation: openingCharIn 0.25s ease-out forwards;
   }
   @keyframes openingCharIn { to { opacity: 1; transform: translateY(0); } }
+  .opening-tagline {
+    font-size: 11px; letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.55); opacity: 0; margin-top: 8px;
+    animation: openingCharIn 0.4s ease-out 0.4s forwards;
+  }
   .opening-build {
     font-family: "Orbitron", sans-serif; font-size: 8px; letter-spacing: 0.1em;
     color: rgba(255,255,255,0.4); opacity: 0;
@@ -1059,12 +1064,18 @@
   body.multipage-mode .cal-grid-shell { font-size: 1.08em; }
   body.multipage-mode .cal-day { min-height: 52px; }
 
-  /* タスク・日課のカードを、iPhoneの「アラーム」一覧のような、端から端まで・線区切りの見た目に */
+  /* タスク・日課のカードを、iPhoneの「アラーム」一覧のような、端から端まで・線区切りの見た目に。
+     背景を透明にすると、下に隠れているはずのスワイプ削除用ゴミ箱が、透けて見えてしまう不具合があったため、
+     "透明"ではなく、周りに馴染む、不透明な色で塗りつぶす形にしている */
   body.multipage-mode .app-group-wrap .item {
     border-radius: 0 !important; box-shadow: none !important; margin-bottom: 0 !important;
-    background: transparent !important; border-top: none !important; border-right: none !important;
+    background: #14171c !important; border-top: none !important; border-right: none !important;
     border-bottom: 1px solid rgba(255,255,255,0.1) !important;
     padding: 16px 16px !important;
+  }
+  body.multipage-mode.theme-simple .app-group-wrap .item,
+  body.multipage-mode.theme-simple:not(.theme-dark) .app-group-wrap .item {
+    background: #FFFFFF !important;
   }
   body.multipage-mode .app-group-wrap .swipe-del-wrap { border-radius: 0; margin-bottom: 0; }
   body.multipage-mode .app-group-wrap .unified-task-card,
@@ -2186,6 +2197,7 @@
 <body class="theme-simple">
 <div class="opening-overlay" id="openingOverlay">
   <div class="opening-title" id="openingTitle"></div>
+  <div class="opening-tagline" id="openingTagline" data-i18n="app_tagline">あなたの生活に、そっと寄り添う汎用エージェントアプリ</div>
   <div class="opening-build" id="openingBuild"></div>
 </div>
 <div class="cityscape-bg" id="cityscapeBg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1300" preserveAspectRatio="xMidYMax slice">
@@ -2549,7 +2561,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_ALARM_PUSH_SYNC_V314</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_ALARM_DISMISS_V318</div>
   <div class="app-group-label" data-i18n="group_calendar">📅 カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
@@ -2845,9 +2857,19 @@
       <div class="settings-label" style="margin-bottom:0;" data-i18n="alarm_label">⏰ アラーム</div>
       <span class="pin-toggle-btn" onclick="pinOtherItem('alarm')">📌</span>
     </div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを開いている間だけ、指定した時刻に音・振動でお知らせします。</div>
+    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="alarm_desc_v2">指定した時刻に、音・振動でお知らせします。通知が有効なら、アプリを閉じていても届きます。</div>
     <div id="alarmListBox"></div>
     <button class="add-task-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋</button>
+    <div style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.12);">
+      <div class="settings-row">
+        <span data-i18n="alarm_dismiss_row" style="font-size:12px;">止め方</span>
+        <select id="alarmDismissMethod" onchange="saveAlarmDismissMethod(this.value)" style="background:rgba(255,255,255,0.06); color:var(--ink); border:1.5px solid rgba(255,255,255,0.15); border-radius:8px; padding:6px 8px; font-size:11px;">
+          <option value="tap" data-i18n="alarm_dismiss_tap">普通にタップ</option>
+          <option value="math" data-i18n="alarm_dismiss_math">計算問題を解く</option>
+          <option value="shake" data-i18n="alarm_dismiss_shake">スマホを振る</option>
+        </select>
+      </div>
+    </div>
   </div>
   <div class="settings-group" id="otherWrapMemento">
     <div class="settings-row" style="margin-bottom:0;">
@@ -2935,6 +2957,14 @@
       </div>
     </div>
     <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_bgview_btn" onclick="enterBgViewMode()">🌌 背景だけを見る</button>
+    <div class="settings-row" style="margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12);">
+      <span data-i18n="opt_multipage_row_label">📑 複数ページモード</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="multiPageModeToggle" onchange="toggleMultiPageMode(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+    <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_multipage_desc">カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。</div>
   </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="opt_lang_label">言語</div>
@@ -2971,17 +3001,6 @@
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6;" data-i18n="opt_boundary_desc">この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。</div>
     <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_manual_daychange_btn" onclick="manualAdvanceDay()">🌅 今すぐ、新しい1日に切り替える</button>
     <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_manual_daychange_desc">生活リズムが不規則な時、区切りの時刻を待たずに、手動で1日を締められます</div>
-  </div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_multipage_label">📑 複数ページモード(試験的)</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="opt_multipage_desc">カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。いつでもオフに戻せます。</div>
-    <div class="settings-row">
-      <span data-i18n="opt_multipage_row">有効にする</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="multiPageModeToggle" onchange="toggleMultiPageMode(this.checked)">
-        <span class="toggle-track"></span>
-      </label>
-    </div>
   </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="notify_label">🔔 通知(試験導入)</div>
@@ -3032,12 +3051,32 @@
     <div class="settings-label" data-i18n="opt_support_label">サポート</div>
     <button class="settings-btn" data-i18n="opt_contact_btn" onclick="contactSupport()">運営に連絡する</button>
     <button class="settings-btn" data-i18n="opt_policy_btn" onclick="showPolicy()">利用規約・プライバシー</button>
-  </div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_credits_label">🙏 クレジット</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="opt_credits_desc">このアプリで使用している、外部素材の制作者の方々です。</div>
-    <div id="creditsList" style="font-size:11px; color:var(--ink); line-height:2;">
-      <div>🔊 <span data-i18n="credit_cat_meow">猫の鳴き声</span> — <a href="https://pixabay.com/ja/users/dragon-studio-38165424/" target="_blank" rel="noopener" style="color:var(--cyan);">DRAGON-STUDIO</a> (Pixabay)</div>
+    <div style="margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12);">
+      <div style="font-size:11px; font-weight:700; color:var(--ink); margin-bottom:6px;" data-i18n="opt_credits_label">🙏 クレジット</div>
+      <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:8px;" data-i18n="opt_credits_desc">このアプリで使用している、外部素材の制作者の方々です。</div>
+      <div id="creditsList" style="font-size:11px; color:var(--ink); line-height:2;">
+        <div>🔊 <span data-i18n="credit_cat_meow">猫の鳴き声</span> — <a href="https://pixabay.com/ja/users/dragon-studio-38165424/" target="_blank" rel="noopener" style="color:var(--cyan);">DRAGON-STUDIO</a> (Pixabay)</div>
+      </div>
+    </div>
+    <div style="margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12);">
+      <div style="font-size:11px; font-weight:700; color:var(--ink); margin-bottom:6px;" data-i18n="opt_sources_label">📚 機能の根拠・出典</div>
+      <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:8px;" data-i18n="opt_sources_desc">現役医学生として、"なんとなく良さそう"ではなく、根拠を大事にしたいという考えから、主な機能の元になっている研究を、正直にまとめています。</div>
+      <details style="margin-bottom:8px;">
+        <summary style="font-size:11px; color:var(--cyan); cursor:pointer;" data-i18n="src_pomo_title">⏱️ ポモドーロ(25分集中+5分休憩)</summary>
+        <div style="font-size:10px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_pomo_body">2025年の研究では、解剖学のような高負荷な学習において、自己ペースの休憩と比べ、疲労度が約20%低下、集中力が15〜25%向上、学習効率が約12%向上したとの報告があります。理論的な背景として、ノーベル賞受賞者ダニエル・カーネマンの「注意資源理論」があり、人の集中力はおよそ20〜30分で低下し始めるとされています。</div>
+      </details>
+      <details style="margin-bottom:8px;">
+        <summary style="font-size:11px; color:var(--cyan); cursor:pointer;" data-i18n="src_sleep_title">🌙 睡眠記録・起こすタイミング</summary>
+        <div style="font-size:10px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_sleep_body">起床直後、一時的に認知機能・反応速度が落ちる現象は「睡眠慣性」と呼ばれ、広く実証されています。特に、深い眠り(徐波睡眠)の最中に急に起こされると、浅い眠りの時に比べて、この慣性がより強く出ることが分かっています。</div>
+      </details>
+      <details style="margin-bottom:8px;">
+        <summary style="font-size:11px; color:var(--cyan); cursor:pointer;" data-i18n="src_ebbing_title">🧠 忘却曲線と、復習リマインダー</summary>
+        <div style="font-size:10px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_ebbing_body">1885年、心理学者エビングハウスが、記憶は学習直後から急速に失われることを示しました。一方、カナダ・ウォータールー大学の研究では、「学習から24時間以内に、10分間復習する」ことで、記憶がほぼ元の水準まで戻るとの報告があります。</div>
+      </details>
+      <details>
+        <summary style="font-size:11px; color:var(--cyan); cursor:pointer;" data-i18n="src_mathalarm_title">🔢 アラームの計算問題について(正直な位置づけ)</summary>
+        <div style="font-size:10px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_mathalarm_body">正直にお伝えすると、「計算問題を解くこと自体が、睡眠慣性を早く解消する」という直接的な研究は見つけられませんでした。ただし、起床直後は判断力・反応速度が落ちやすいことは実証されているため、この機能は「本当に目が覚めているかを確かめる、実用的なチェック」としての位置づけです。</div>
+      </details>
     </div>
   </div>
   <div class="settings-group" style="border: 1.5px dashed rgba(255,80,80,0.5);">
@@ -3325,6 +3364,26 @@
 </div>
 <div id="tutorialSwipeFloatHint" style="position:fixed; left:50%; top:38%; transform:translate(-50%,-50%); z-index:60; font-size:26px; pointer-events:none; opacity:0; transition:opacity 0.2s ease; animation:tutorialSwipeHintMove 1.4s ease-in-out infinite;">👈 👉</div>
 
+<div class="grand-modal" id="alarmFiringModal" style="z-index:80; background:rgba(5,6,9,0.97);">
+  <div style="text-align:center; padding:24px; width:100%; max-width:360px;">
+    <div style="font-size:15px; color:var(--ink-dim); margin-bottom:6px;" id="alarmFiringTime">--:--</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:26px; color:var(--cyan); font-weight:800; margin-bottom:28px;" id="alarmFiringLabel">⏰ アラーム</div>
+    <div id="alarmDismissTapArea" style="display:none;">
+      <button class="badge-close-btn" style="width:100%; padding:16px; font-size:15px;" onclick="dismissFiringAlarm()" data-i18n="alarm_stop_btn">停止</button>
+    </div>
+    <div id="alarmDismissMathArea" style="display:none;">
+      <div style="font-size:20px; color:#fff; margin-bottom:14px;" id="alarmMathQuestion">? + ? = ?</div>
+      <input type="number" id="alarmMathAnswer" inputmode="numeric" style="width:100%; box-sizing:border-box; font-size:20px; text-align:center; padding:12px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.06); color:#fff; margin-bottom:12px;">
+      <button class="badge-close-btn" style="width:100%; padding:14px; font-size:14px;" onclick="checkAlarmMathAnswer()" data-i18n="alarm_answer_btn">答える</button>
+      <div id="alarmMathWrong" style="display:none; color:#FF6B6B; font-size:12px; margin-top:8px;" data-i18n="alarm_wrong">違います、もう一度</div>
+    </div>
+    <div id="alarmDismissShakeArea" style="display:none;">
+      <div style="font-size:40px; margin-bottom:10px;" id="alarmShakeIcon">📳</div>
+      <div style="font-size:13px; color:var(--ink-dim); margin-bottom:6px;" data-i18n="alarm_shake_desc">スマホを、しっかり振ってください</div>
+      <div style="font-size:11px; color:var(--ink-dim);"><span id="alarmShakeCount">0</span> / <span id="alarmShakeTarget">15</span></div>
+    </div>
+  </div>
+</div>
 <div class="grand-modal" id="mementoModal" onclick="closeAddMemento()">
   <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:22px; max-width:min(340px,88vw); max-height:85vh; overflow-y:auto;" onclick="event.stopPropagation()">
     <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="memento_add_title">📖 備忘録を追加</div>
@@ -3568,6 +3627,11 @@
   const I18N_DICT = {
     ja: {
       brand: 'Daily Station',
+      app_tagline: 'あなたの生活に、そっと寄り添う汎用エージェントアプリ',
+      alarm_desc_v2: '指定した時刻に、音・振動でお知らせします。通知が有効なら、アプリを閉じていても届きます。',
+      alarm_dismiss_row: '止め方', alarm_dismiss_tap: '普通にタップ', alarm_dismiss_math: '計算問題を解く', alarm_dismiss_shake: 'スマホを振る',
+      alarm_stop_btn: '停止', alarm_answer_btn: '答える', alarm_wrong: '違います、もう一度',
+      alarm_shake_desc: 'スマホを、しっかり振ってください',
       sub_main: 'どれくらい積めそう？',
       tab_low: '軽量級', tab_mid: '中量級', tab_high: '重量級',
       levelhead_low_name: '軽量級', levelhead_mid_name: '中量級', levelhead_high_name: '重量級',
@@ -3584,7 +3648,8 @@
       opt_manual_daychange_btn: '🌅 今すぐ、新しい1日に切り替える',
       opt_manual_daychange_desc: '生活リズムが不規則な時、区切りの時刻を待たずに、手動で1日を締められます',
       opt_multipage_label: '📑 複数ページモード(試験的)',
-      opt_multipage_desc: 'カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。いつでもオフに戻せます。',
+      opt_multipage_row_label: '📑 複数ページモード',
+      opt_multipage_desc: 'カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。',
       opt_multipage_row: '有効にする',
       group_calendar_short: 'カレンダー', group_task_short: 'タスク管理', group_diary_short: '日記', group_other_short: 'その他',
       group_home_short: 'ホーム',
@@ -3600,6 +3665,16 @@
       opt_support_label: 'サポート', opt_contact_btn: '運営に連絡する', opt_policy_btn: '利用規約・プライバシー',
       opt_credits_label: '🙏 クレジット', opt_credits_desc: 'このアプリで使用している、外部素材の制作者の方々です。',
       credit_cat_meow: '猫の鳴き声',
+      opt_sources_label: '📚 機能の根拠・出典',
+      opt_sources_desc: '現役医学生として、"なんとなく良さそう"ではなく、根拠を大事にしたいという考えから、主な機能の元になっている研究を、正直にまとめています。',
+      src_pomo_title: '⏱️ ポモドーロ(25分集中+5分休憩)',
+      src_pomo_body: '2025年の研究では、解剖学のような高負荷な学習において、自己ペースの休憩と比べ、疲労度が約20%低下、集中力が15〜25%向上、学習効率が約12%向上したとの報告があります。理論的な背景として、ノーベル賞受賞者ダニエル・カーネマンの「注意資源理論」があり、人の集中力はおよそ20〜30分で低下し始めるとされています。',
+      src_sleep_title: '🌙 睡眠記録・起こすタイミング',
+      src_sleep_body: '起床直後、一時的に認知機能・反応速度が落ちる現象は「睡眠慣性」と呼ばれ、広く実証されています。特に、深い眠り(徐波睡眠)の最中に急に起こされると、浅い眠りの時に比べて、この慣性がより強く出ることが分かっています。',
+      src_ebbing_title: '🧠 忘却曲線と、復習リマインダー',
+      src_ebbing_body: '1885年、心理学者エビングハウスが、記憶は学習直後から急速に失われることを示しました。一方、カナダ・ウォータールー大学の研究では、「学習から24時間以内に、10分間復習する」ことで、記憶がほぼ元の水準まで戻るとの報告があります。',
+      src_mathalarm_title: '🔢 アラームの計算問題について(正直な位置づけ)',
+      src_mathalarm_body: '正直にお伝えすると、「計算問題を解くこと自体が、睡眠慣性を早く解消する」という直接的な研究は見つけられませんでした。ただし、起床直後は判断力・反応速度が落ちやすいことは実証されているため、この機能は「本当に目が覚めているかを確かめる、実用的なチェック」としての位置づけです。',
       opt_lang_label: '言語', lang_ja_btn: '日本語', lang_en_btn: 'English',
       opt_prototype_note: '※ このページは見た目のみの試作（ハリボテ）です。実際の設定保存はこれから実装します。',
       cal_title: '今月の記録', cal_days: '記録した日', cal_exp: '今月の合計EXP', cal_items: '合計選択数',
@@ -3695,7 +3770,12 @@
       today_tasks_empty2: '今日はまだ何もありません', today_nothing_done: '今日はまだ何も完了していません',
     },
     en: {
-      brand: 'LIGHT_MIDDLE_HEAVY',
+      brand: 'Daily Station',
+      app_tagline: 'A general-purpose agent app that quietly accompanies your life',
+      alarm_desc_v2: 'Notifies you with sound and vibration at the set time. With notifications enabled, this works even if the app is closed.',
+      alarm_dismiss_row: 'Dismiss method', alarm_dismiss_tap: 'Simple tap', alarm_dismiss_math: 'Solve a math problem', alarm_dismiss_shake: 'Shake your phone',
+      alarm_stop_btn: 'Stop', alarm_answer_btn: 'Answer', alarm_wrong: 'Wrong, try again',
+      alarm_shake_desc: 'Shake your phone firmly',
       sub_main: 'How much can you stack today?',
       tab_low: 'Light', tab_mid: 'Middle', tab_high: 'Heavy',
       levelhead_low_name: 'Light', levelhead_mid_name: 'Middle', levelhead_high_name: 'Heavy',
@@ -3712,7 +3792,8 @@
       opt_manual_daychange_btn: '🌅 Start a New Day Now',
       opt_manual_daychange_desc: "For irregular sleep schedules — close out today manually without waiting for the boundary time.",
       opt_multipage_label: '📑 Multi-Page Mode (Experimental)',
-      opt_multipage_desc: 'Switch between Calendar, Tasks, Diary, and Other as separate full screens. You can turn this off anytime.',
+      opt_multipage_row_label: '📑 Multi-Page Mode',
+      opt_multipage_desc: 'Switch between Calendar, Tasks, Diary, and Other as separate full screens.',
       opt_multipage_row: 'Enable',
       group_calendar_short: 'Calendar', group_task_short: 'Tasks', group_diary_short: 'Diary', group_other_short: 'Other',
       group_home_short: 'Home',
@@ -3728,6 +3809,16 @@
       opt_support_label: 'Support', opt_contact_btn: 'Contact Support', opt_policy_btn: 'Terms & Privacy',
       opt_credits_label: '🙏 Credits', opt_credits_desc: 'External assets used in this app, and their creators.',
       credit_cat_meow: 'Cat meow sound',
+      opt_sources_label: '📚 Feature Sources & Evidence',
+      opt_sources_desc: 'As a current medical student, I care about evidence over "seems good." Here are the studies behind the main features, presented honestly.',
+      src_pomo_title: '⏱️ Pomodoro (25 min focus + 5 min break)',
+      src_pomo_body: 'A 2025 study on high-cognitive-load learning (e.g., anatomy) found about a 20% reduction in fatigue, 15-25% improvement in concentration, and roughly 12% improvement in learning efficiency compared to self-paced breaks. Theoretically, this is grounded in Nobel laureate Daniel Kahneman\u2019s attention resource theory, which holds that attention begins to decline after roughly 20-30 minutes.',
+      src_sleep_title: '🌙 Sleep Log & Wake Timing',
+      src_sleep_body: 'The temporary drop in cognitive function and reaction speed right after waking is called "sleep inertia," and is well documented. Notably, being abruptly woken during deep (slow-wave) sleep produces stronger inertia than waking during lighter sleep stages.',
+      src_ebbing_title: '🧠 Forgetting Curve & Review Reminders',
+      src_ebbing_body: 'In 1885, psychologist Hermann Ebbinghaus showed that memory decays rapidly right after learning. Separately, research from the University of Waterloo found that a 10-minute review within 24 hours of learning restores memory to near-original levels.',
+      src_mathalarm_title: '🔢 About the Alarm Math Problem (an honest note)',
+      src_mathalarm_body: 'To be honest, I could not find direct research showing that solving a math problem itself speeds up recovery from sleep inertia. That said, since impaired judgment and reaction speed right after waking is well established, this feature is best understood as a practical check for genuine wakefulness, not a cure.',
       opt_lang_label: 'Language', lang_ja_btn: '日本語', lang_en_btn: 'English',
       opt_prototype_note: '※ This page is a visual prototype only for now. Real settings persistence is coming soon.',
       cal_title: "This Month's Record", cal_days: 'Days Logged', cal_exp: 'Total EXP', cal_items: 'Total Picks',
@@ -4755,11 +4846,127 @@
       }
     });
   }
+  let alarmDismissMethod = 'tap';
+  async function loadAlarmDismissMethod() {
+    try {
+      const saved = await window.storage.get('quest-alarm-dismiss-v1');
+      alarmDismissMethod = (saved && saved.value) ? saved.value : 'tap';
+    } catch (e) { alarmDismissMethod = 'tap'; }
+    const sel = document.getElementById('alarmDismissMethod');
+    if (sel) sel.value = alarmDismissMethod;
+  }
+  async function saveAlarmDismissMethod(method) {
+    alarmDismissMethod = method;
+    try { await window.storage.set('quest-alarm-dismiss-v1', method); } catch (e) {}
+  }
+  let alarmLoopTimer = null, alarmLoopStartedAt = 0, alarmShakeCount = 0, alarmShakeTarget = 15, alarmMathCorrectAnswer = null;
   function fireAlarm(alarm) {
-    playPomodoroAlarm(); // 既存のはっきりした通知音を流用
-    if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 300]);
     const label = alarm && alarm.label ? alarm.label : (currentLang === 'en' ? 'Alarm' : 'アラーム');
-    showToast(`⏰ ${label}`);
+    document.getElementById('alarmFiringLabel').textContent = `⏰ ${label}`;
+    document.getElementById('alarmFiringTime').textContent = new Date().toLocaleTimeString(currentLang === 'en' ? 'en-US' : 'ja-JP', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('alarmFiringModal').classList.add('show');
+    if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 300]);
+
+    // 音を、少しずつ音量を上げながら、止めるまでループ再生する
+    alarmLoopStartedAt = Date.now();
+    playAlarmLoopStep();
+
+    // 止め方(タップ・計算問題・振る)に応じて、対応するエリアだけを表示する
+    document.getElementById('alarmDismissTapArea').style.display = 'none';
+    document.getElementById('alarmDismissMathArea').style.display = 'none';
+    document.getElementById('alarmDismissShakeArea').style.display = 'none';
+    if (alarmDismissMethod === 'math') {
+      setupAlarmMathChallenge();
+      document.getElementById('alarmDismissMathArea').style.display = 'block';
+    } else if (alarmDismissMethod === 'shake') {
+      setupAlarmShakeChallenge();
+      document.getElementById('alarmDismissShakeArea').style.display = 'block';
+    } else {
+      document.getElementById('alarmDismissTapArea').style.display = 'block';
+    }
+  }
+  function playAlarmLoopStep() {
+    if (!soundOn) { alarmLoopTimer = setTimeout(playAlarmLoopStep, 2000); return; }
+    const ctx = ensureAudioCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+    const now = ctx.currentTime;
+    // 鳴り始めてからの経過時間で、少しずつ音量を上げる(0〜45秒かけて、6割→フルの音量まで)
+    const elapsedSec = (Date.now() - alarmLoopStartedAt) / 1000;
+    const volRamp = Math.min(1, 0.6 + (elapsedSec / 45) * 0.4);
+    for (let i = 0; i < 2; i++) {
+      const t0 = now + i * 0.5;
+      [880, 1108].forEach((freq, j) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freq, t0 + j * 0.16);
+        gain.gain.setValueAtTime(0.0001, t0 + j * 0.16);
+        gain.gain.exponentialRampToValueAtTime(0.16 * masterVolume * volRamp, t0 + j * 0.16 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + j * 0.16 + 0.14);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t0 + j * 0.16);
+        osc.stop(t0 + j * 0.16 + 0.16);
+      });
+    }
+    alarmLoopTimer = setTimeout(playAlarmLoopStep, 1400);
+  }
+  function stopAlarmLoop() {
+    if (alarmLoopTimer) { clearTimeout(alarmLoopTimer); alarmLoopTimer = null; }
+  }
+  function setupAlarmMathChallenge() {
+    const a = 10 + Math.floor(Math.random() * 40);
+    const b = 10 + Math.floor(Math.random() * 40);
+    alarmMathCorrectAnswer = a + b;
+    document.getElementById('alarmMathQuestion').textContent = `${a} + ${b} = ?`;
+    document.getElementById('alarmMathAnswer').value = '';
+    document.getElementById('alarmMathWrong').style.display = 'none';
+  }
+  function checkAlarmMathAnswer() {
+    const val = Number(document.getElementById('alarmMathAnswer').value);
+    if (val === alarmMathCorrectAnswer) {
+      dismissFiringAlarm();
+    } else {
+      setupAlarmMathChallenge(); // 間違えたら、次の問題に切り替える(同じ問題を"覚えて"止められないように)
+      document.getElementById('alarmMathWrong').style.display = 'block'; // 問題の切り替え"後"に表示することで、消されないようにする
+      if (navigator.vibrate) navigator.vibrate(100);
+    }
+  }
+  let alarmShakeListenerAttached = false;
+  function handleAlarmShakeEvent(e) {
+    const acc = e.accelerationIncludingGravity;
+    if (!acc) return;
+    const total = Math.abs(acc.x || 0) + Math.abs(acc.y || 0) + Math.abs(acc.z || 0);
+    if (total > 28) { // それなりにしっかり振らないと、カウントされない閾値
+      alarmShakeCount++;
+      document.getElementById('alarmShakeCount').textContent = alarmShakeCount;
+      if (alarmShakeCount >= alarmShakeTarget) dismissFiringAlarm();
+    }
+  }
+  async function setupAlarmShakeChallenge() {
+    alarmShakeCount = 0;
+    document.getElementById('alarmShakeCount').textContent = '0';
+    document.getElementById('alarmShakeTarget').textContent = alarmShakeTarget;
+    // iOS 13以降は、加速度センサーの利用に、明示的な許可が必要
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+      try {
+        const perm = await DeviceMotionEvent.requestPermission();
+        if (perm !== 'granted') {
+          // 許可が得られなければ、代わりにタップで止められるようにしておく(振れない状況で、詰んでしまわないように)
+          document.getElementById('alarmDismissShakeArea').style.display = 'none';
+          document.getElementById('alarmDismissTapArea').style.display = 'block';
+          return;
+        }
+      } catch (e) {}
+    }
+    if (!alarmShakeListenerAttached) {
+      window.addEventListener('devicemotion', handleAlarmShakeEvent);
+      alarmShakeListenerAttached = true;
+    }
+  }
+  function dismissFiringAlarm() {
+    stopAlarmLoop();
+    document.getElementById('alarmFiringModal').classList.remove('show');
+    playUIClick();
   }
 
   // ---- ポモドーロタイマー ----
@@ -5964,6 +6171,7 @@
     await loadAlarmSettings();
     await loadOtherPinState();
     await loadMultiPageModePref();
+    await loadAlarmDismissMethod();
     renderTodaysPeekCat();
     await loadDebugLogPref();
     try {
@@ -6910,13 +7118,16 @@
     try { await window.storage.set('quest-multipage-mode-v1', on ? '1' : '0'); } catch (e) {}
   }
   async function loadMultiPageModePref() {
+    let on = true; // 初回起動(まだ何も保存されていない状態)では、デフォルトでONにする
     try {
       const saved = await window.storage.get('quest-multipage-mode-v1');
-      const on = !!(saved && saved.value === '1');
-      const toggleEl = document.getElementById('multiPageModeToggle');
-      if (toggleEl) toggleEl.checked = on;
-      if (on) toggleMultiPageMode(true);
-    } catch (e) {}
+      if (saved && saved.value !== undefined) on = (saved.value === '1');
+    } catch (e) {
+      // 未保存(初回起動)の場合は、デフォルトのON(true)のまま進める
+    }
+    const toggleEl = document.getElementById('multiPageModeToggle');
+    if (toggleEl) toggleEl.checked = on;
+    if (on) toggleMultiPageMode(true);
   }
   function switchTaskRoutineFolder(which) {
     playUIClick();
@@ -9838,10 +10049,12 @@
     setTimeout(() => chain.remove(), duration * 1000 + 200);
   }
   function spawnDriftChain() {
+    if (!appIsPageVisible) return; // 画面を見ていない間は、演出を止める
     // 手前の層: 今まで通りのパラメータ
     spawnDriftChainLayer('tileBg', 15, [60, 100], 0.8, DRIFT_TILE_COLORS);
   }
   function spawnDriftChainFar() {
+    if (!appIsPageVisible) return; // 画面を見ていない間は、演出を止める
     // 奥の層: 同じ形・同じ動き方のまま、小さく・遅く・薄くするだけ(パララックスの定石通り)
     spawnDriftChainLayer('tileBgFar', 34, [130, 190], 0.35, DRIFT_TILE_COLORS_FAR);
   }
@@ -9866,6 +10079,7 @@
   // ---- ファンシーテーマ専用: 雲がゆっくり下に流れることで、
   //      相対的に画面が上昇しているように見せる演出(v44で追加) ----
   function spawnCloud() {
+    if (!appIsPageVisible) return; // 画面を見ていない間は、演出を止める
     const field = document.getElementById('cloudBg');
     if (!field) return;
     const w = 100 + Math.random() * 140;
@@ -9902,6 +10116,7 @@
 
   // ---- サイバー背景専用: 時々空を横切る乗り物、時々灯るサーチライト(v57) ----
   function spawnVehicle() {
+    if (!appIsPageVisible) return; // 画面を見ていない間は、演出を止める
     const field = document.getElementById('cyberFx');
     if (!field) return;
     const vh = window.innerHeight, vw = window.innerWidth;
@@ -10020,6 +10235,7 @@
   }
 
   function spawnStreetCarGlow() {
+    if (!appIsPageVisible) return; // 画面を見ていない間は、演出を止める
     const field = document.getElementById('cyberFx');
     if (!field) return;
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -10043,6 +10259,7 @@
   }
 
   function spawnRainDrop() {
+    if (!appIsPageVisible) return; // 画面を見ていない間は、演出を止める
     if (currentCyberMood !== 'pink') return; // 雨はピンク系の日だけ
     const field = document.getElementById('cyberFx');
     if (!field) return;
@@ -10068,6 +10285,7 @@
     setInterval(spawnRainDrop, 500);
   }
   function spawnFogLayer() {
+    if (!appIsPageVisible) return; // 画面を見ていない間は、演出を止める
     if (currentCyberMood !== 'blue') return; // 霧は青系の日だけ
     const field = document.getElementById('cyberFx');
     if (!field) return;
@@ -10091,6 +10309,7 @@
 
   // ---- ファンシー背景専用: まれに流れる星(v60) ----
   function spawnShootingStar() {
+    if (!appIsPageVisible) return; // 画面を見ていない間は、演出を止める
     const field = document.getElementById('shootingStarFx');
     if (!field) return;
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -10118,6 +10337,14 @@
     setTimeout(spawnShootingStar, 6000);
     setInterval(() => spawnShootingStar(), 20000 + Math.random() * 22000);
   }
+
+  // 画面を見ていない間(バックグラウンド・画面ロック中)は、雨・雲・車などの背景演出を止め、無駄な発熱・電池消費を防ぐ。
+  // 見た目・タイミング・機能は、画面を見ている間は、これまでと一切変わらない。
+  // (初期化処理が、この直後の各init関数から、いきなり同期的に演出を呼び出すため、この宣言は、それより必ず前に置く必要がある)
+  let appIsPageVisible = (document.visibilityState === 'visible');
+  document.addEventListener('visibilitychange', () => {
+    appIsPageVisible = (document.visibilityState === 'visible');
+  });
 
   initCloudBackground();
   initTileBackground();
