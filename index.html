@@ -1099,8 +1099,11 @@
   body.multipage-mode .app-group-wrap .swipe-del-wrap { border-radius: 0; margin-bottom: 0; }
   body.multipage-mode .app-group-wrap .unified-task-card,
   body.multipage-mode .app-group-wrap #calSectionWrap {
-    padding-left: 16px; padding-right: 16px;
+    padding-left: 2px; padding-right: 2px;
   }
+  /* カレンダーは、より多くの予定を、見やすく表示できるよう、縦方向に1.2倍広げる */
+  body.multipage-mode .cal-day { min-height: 62px; }
+  body.multipage-mode .cal-grid-shell { font-size: 1.15em; }
   body.theme-simple .app-group-label::after { background: rgba(0,0,0,0.08); }
   .folder-panel.show { display: block; }
   body.theme-simple .folder-tab {
@@ -1244,12 +1247,12 @@
   .add-task-btn {
     display: flex; align-items: center; justify-content: center;
     position: absolute; right: 16px; bottom: 16px; z-index: 5;
-    width: 46px; height: 46px; padding: 0; margin: 0;
-    background: linear-gradient(160deg, #FF6B5C, #E8483A);
+    width: 43.7px; height: 43.7px; padding: 0; margin: 0;
+    background: linear-gradient(160deg, #E8756A, #D1584C);
     border: none; border-radius: 50%;
     color: #fff; font-size: 24px; font-weight: 900; line-height: 1;
     cursor: pointer; transition: all 0.15s ease;
-    box-shadow: 0 4px 14px rgba(232,72,58,0.45), 0 2px 4px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 14px rgba(209,88,76,0.4), 0 2px 4px rgba(0,0,0,0.25);
   }
   .add-task-btn:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(232,72,58,0.4); }
   /* フローティングボタンが、直下のコンテンツに重ならないよう、持ち主のカード側に、余白を確保する */
@@ -1830,28 +1833,6 @@
   .diary-big-date-sub { display: flex; flex-direction: column; gap: 2px; }
   .diary-big-date-ym { font-size: 11px; color: var(--ink-dim); }
   .diary-big-date-dow { font-size: 13px; font-weight: 700; }
-  /* これまでの日記、折りたたみ一覧(ライフベア風、日付・曜日を添えて、書き出しだけ見える) */
-  .diary-history-shell {
-    background: linear-gradient(160deg, rgba(24,28,36,0.97), rgba(12,15,20,0.97));
-    border: 1.5px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 14px; margin-top: 10px;
-  }
-  .diary-history-toggle {
-    display: flex; align-items: center; cursor: pointer;
-    font-family: "Orbitron", sans-serif; font-size: 11px; color: var(--ink-dim);
-  }
-  .diary-history-list { display: none; margin-top: 12px; }
-  .diary-history-list.show { display: block; }
-  .diary-history-row {
-    display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;
-  }
-  .diary-history-row:last-child { border-bottom: none; }
-  .diary-history-row-date { flex: 0 0 44px; text-align: center; }
-  .diary-history-row-daynum { font-family: "Orbitron", sans-serif; font-size: 18px; font-weight: 800; color: var(--ink); line-height: 1.1; }
-  .diary-history-row-dow { font-size: 9.5px; color: var(--ink-dim); }
-  .diary-history-row-text {
-    flex: 1; font-size: 12px; color: var(--ink-dim); line-height: 1.5;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  }
   .mood-tag-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
   .mood-tag-toggle {
     font-size: 12px; padding: 7px 12px; border-radius: 10px; cursor: pointer;
@@ -2140,7 +2121,7 @@
     position: fixed; right: 0; top: 50%; transform: translateY(-50%);
     background: linear-gradient(160deg, rgba(24,28,36,0.97), rgba(12,15,20,0.97));
     border: 1.5px solid rgba(255,255,255,0.15); border-right: none;
-    border-radius: 12px 0 0 12px; padding: 14px 4px; font-size: 10px; color: var(--cyan);
+    border-radius: 12px 0 0 12px; padding: 26px 4px; font-size: 10px; color: var(--cyan);
     line-height: 1.4; text-align: center; z-index: 60; cursor: pointer;
     box-shadow: -2px 0 10px rgba(0,0,0,0.3);
     width: 26px; box-sizing: content-box;
@@ -2255,10 +2236,11 @@
 
   .settings-btn {
     display: block; width: 100%; text-align: left;
-    background: rgba(255,255,255,0.04); border: 1.2px solid rgba(255,255,255,0.12);
+    background: linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02));
+    border: 1.2px solid rgba(255,255,255,0.14);
     color: var(--ink); font-size: 12.5px; font-weight: 600; padding: 11px 14px;
     border-radius: 10px; cursor: pointer; margin-bottom: 8px; transition: all 0.15s ease;
-    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.03), 0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.35), 0 4px 10px rgba(0,0,0,0.25);
   }
   .settings-btn:last-child { margin-bottom: 0; }
   .settings-btn:active { background: rgba(43,201,204,0.1); transform: scale(0.98); }
@@ -2631,7 +2613,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_FULL_BATCH_DONE_V342</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0813_DEBUGOFF_MEMO_V345</div>
   <div class="app-group-label" data-i18n="group_calendar"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
@@ -2789,28 +2771,27 @@
       <div class="hud-date" id="clockDate">----/--/--</div>
       <div class="hud-time" id="clockTime">--:--:--</div>
       <div class="hud-weather" id="hudWeather" onclick="event.stopPropagation();"></div>
-    </div>
-    <div class="hud-agent-hub-label">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"></rect><path d="M12 8V4"></path><circle cx="12" cy="3" r="1"></circle><circle cx="9" cy="14" r="1.3" fill="currentColor"></circle><circle cx="15" cy="14" r="1.3" fill="currentColor"></circle><path d="M9 18h6"></path></svg>
-      <span data-i18n="agent_hub_label">エージェント</span>
-    </div>
-    <div class="settings-group" id="otherWrapAlarm" style="margin-bottom:10px;">
-      <div class="settings-row" style="margin-bottom:0;">
-        <div class="settings-label" style="margin-bottom:0;" data-i18n="alarm_label">⏰ アラーム</div>
-        <span class="pin-toggle-btn" onclick="pinOtherItem('alarm')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
-      </div>
-      <div id="alarmListBox"></div>
-      <button class="add-task-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋</button>
-      <div style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.12);">
-        <div class="settings-row">
-          <span data-i18n="alarm_dismiss_row" style="font-size:12px;">止め方</span>
-          <select id="alarmDismissMethod" onchange="saveAlarmDismissMethod(this.value)" style="background:rgba(255,255,255,0.06); color:var(--ink); border:1.5px solid rgba(255,255,255,0.15); border-radius:8px; padding:6px 8px; font-size:11px;">
-            <option value="tap" data-i18n="alarm_dismiss_tap">普通にタップ</option>
-            <option value="math" data-i18n="alarm_dismiss_math">計算問題を解く</option>
-            <option value="shake" data-i18n="alarm_dismiss_shake">スマホを振る</option>
-          </select>
+      <div id="otherWrapAlarm" style="text-align:left; margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12);" onclick="event.stopPropagation();">
+        <div class="settings-row" style="margin-bottom:0;">
+          <div class="settings-label" style="margin-bottom:0;" data-i18n="alarm_label">⏰ アラーム</div>
+          <span class="pin-toggle-btn" onclick="pinOtherItem('alarm')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
+        </div>
+        <div id="alarmListBox"></div>
+        <button class="add-task-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋</button>
+        <div style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.12);">
+          <div class="settings-row">
+            <span data-i18n="alarm_dismiss_row" style="font-size:12px;">止め方</span>
+            <select id="alarmDismissMethod" onchange="saveAlarmDismissMethod(this.value)" style="background:rgba(255,255,255,0.06); color:var(--ink); border:1.5px solid rgba(255,255,255,0.15); border-radius:8px; padding:6px 8px; font-size:11px;">
+              <option value="tap" data-i18n="alarm_dismiss_tap">普通にタップ</option>
+              <option value="math" data-i18n="alarm_dismiss_math">計算問題を解く</option>
+              <option value="shake" data-i18n="alarm_dismiss_shake">スマホを振る</option>
+            </select>
+          </div>
         </div>
       </div>
+    </div>
+    <div class="hud-agent-hub-label">
+      <span style="width:100%;"></span>
     </div>
     <div class="hud-agent-row">
       <div class="hud-agent-eye" id="hudAgentEye" onclick="pokeAgentEye()">
@@ -2935,13 +2916,6 @@
       </div>
       <input type="file" id="moodImageInput" accept="image/*" multiple style="display:none;">
       <div id="moodJournalSavedInfo" class="mood-journal-saved-info"></div>
-    </div>
-    <div class="diary-history-shell">
-      <div class="diary-history-toggle" onclick="toggleDiaryHistory()">
-        <span data-i18n="diary_history_label">これまでの日記</span>
-        <span id="diaryHistoryChevron" style="margin-left:auto; transition:transform 0.2s;">›</span>
-      </div>
-      <div id="diaryHistoryList" class="diary-history-list"></div>
     </div>
   </div>
 
@@ -3076,7 +3050,7 @@
       <span id="boundaryHourLabel" style="font-family:'Orbitron',sans-serif; font-size:12px; color:var(--cyan);">午前4時</span>
     </div>
     <input type="range" class="volume-slider" id="boundaryHourSlider" min="0" max="8" value="4" style="width:100%; margin-bottom:6px;">
-    <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_manual_daychange_btn" onclick="manualAdvanceDay()">🌅 今すぐ、新しい1日に切り替える</button>
+    <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_manual_daychange_btn" onclick="manualAdvanceDay()">日付を切り替える</button>
     <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_manual_daychange_desc">生活リズムが不規則な時、区切りの時刻を待たずに、手動で1日を締められます</div>
   </div>
   <div class="settings-group">
@@ -3140,7 +3114,7 @@
     <div class="settings-row" style="margin-top:10px;">
       <span style="color:#FF5050; font-size:12px;">デバッグログ表示(最終的には削除予定)</span>
       <label class="toggle-switch">
-        <input type="checkbox" id="debugLogToggle" checked onchange="handleDebugLogToggle(this.checked)">
+        <input type="checkbox" id="debugLogToggle" onchange="handleDebugLogToggle(this.checked)">
         <span class="toggle-track"></span>
       </label>
     </div>
@@ -3494,10 +3468,10 @@
 </div>
 
 
-<div id="quickMemoTab"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg><br>メモ</div>
+<div id="quickMemoTab"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6.5 4.6a1.6 1.6 0 0 1 1.6-1.6h5.4L18 7.4v11.9a1.6 1.6 0 0 1-1.6 1.6H8.1a1.6 1.6 0 0 1-1.6-1.6z"></path><path d="M13.2 3.1v3.1a1.6 1.6 0 0 0 1.6 1.6h3"></path><path d="M9.2 12.4h5.6"></path><path d="M9.2 15.6h4"></path></svg><br>メモ</div>
 <div id="quickMemoPanel">
   <div class="quick-memo-header">
-    <span><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg> メモ</span>
+    <span><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6.5 4.6a1.6 1.6 0 0 1 1.6-1.6h5.4L18 7.4v11.9a1.6 1.6 0 0 1-1.6 1.6H8.1a1.6 1.6 0 0 1-1.6-1.6z"></path><path d="M13.2 3.1v3.1a1.6 1.6 0 0 0 1.6 1.6h3"></path><path d="M9.2 12.4h5.6"></path><path d="M9.2 15.6h4"></path></svg> メモ</span>
     <span id="quickMemoSaveStatus" style="font-size:9px; color:var(--ink-dim);"></span>
     <span onclick="toggleQuickMemo()" style="cursor:pointer; font-size:16px; color:var(--ink-dim);">✕</span>
   </div>
@@ -3727,7 +3701,7 @@
       opt_test_sound_btn: '🔊 音を試す', opt_sound_toggle_row: '効果音を鳴らす',
       opt_boundary_label: '1日の区切り', opt_boundary_row: '区切りの時刻',
       opt_boundary_desc: 'この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。',
-      opt_manual_daychange_btn: '🌅 今すぐ、新しい1日に切り替える',
+      opt_manual_daychange_btn: '日付を切り替える',
       opt_manual_daychange_desc: '生活リズムが不規則な時、区切りの時刻を待たずに、手動で1日を締められます',
       opt_multipage_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M14 2v6h6"></path></svg> 複数ページモード(試験的)',
       opt_multipage_row_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M14 2v6h6"></path></svg> 複数ページモード',
@@ -3875,7 +3849,7 @@
       opt_test_sound_btn: '🔊 Test Sound', opt_sound_toggle_row: 'Enable Sound Effects',
       opt_boundary_label: 'Day Boundary', opt_boundary_row: 'Boundary Time',
       opt_boundary_desc: 'Activity before this time is logged as the previous day. 4–5 AM suits night owls; midnight suits early sleepers.',
-      opt_manual_daychange_btn: '🌅 Start a New Day Now',
+      opt_manual_daychange_btn: 'Switch Date',
       opt_manual_daychange_desc: "For irregular sleep schedules — close out today manually without waiting for the boundary time.",
       opt_multipage_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M14 2v6h6"></path></svg> Multi-Page Mode (Experimental)',
       opt_multipage_row_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M14 2v6h6"></path></svg> Multi-Page Mode',
@@ -4127,7 +4101,7 @@
 
   // 汎用UIクリック音(タブ切り替え、設定操作など「押したことが分かる」ための短い音)
   // ---- デバッグログ(操作が実際に発火しているか画面上で確認するための表示) ----
-  let debugLogEnabled = true; // 開発者用オプションのトグルで切り替え。読み込み時にloadOtherPinState等と同じタイミングで復元される
+  let debugLogEnabled = false; // 既定はOFF(公開版で緑帯が出ないように)。開発者用オプションのトグルでONにでき、その設定は復元される
   function logDebug(msg) {
     if (!debugLogEnabled) return;
     const el = document.getElementById('debugLog');
@@ -4138,7 +4112,7 @@
   async function loadDebugLogPref() {
     try {
       const saved = await window.storage.get('quest-debuglog-on-v1');
-      if (saved && saved.value === '0') debugLogEnabled = false;
+      if (saved && saved.value === '1') debugLogEnabled = true;
     } catch (e) {}
     const toggleEl = document.getElementById('debugLogToggle');
     if (toggleEl) toggleEl.checked = debugLogEnabled;
@@ -4608,6 +4582,7 @@
       contentEl.style.transition = animate ? 'transform 0.2s ease' : 'none';
       contentEl.style.transform = `translateX(${x}px)`;
     }
+    setX(0, false); // 初期表示時、一度も操作していなくても、位置を明示的に確定させておく(初回だけ透けて見える不具合の対策)
     contentEl.addEventListener('touchstart', (e) => {
       if (e.touches.length !== 1) return;
       startX = e.touches[0].clientX;
@@ -6495,43 +6470,6 @@
       // 途中で失敗していても、経験値・選択状態の保存だけは可能な限り試みる
       try { saveProgress(currentTodayExp || 0); } catch (e2) {}
     }
-  }
-  let diaryHistoryOpen = false;
-  function toggleDiaryHistory() {
-    playUIClick();
-    diaryHistoryOpen = !diaryHistoryOpen;
-    document.getElementById('diaryHistoryList').classList.toggle('show', diaryHistoryOpen);
-    document.getElementById('diaryHistoryChevron').style.transform = diaryHistoryOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-    if (diaryHistoryOpen) renderDiaryHistory();
-  }
-  function renderDiaryHistory() {
-    const el = document.getElementById('diaryHistoryList');
-    if (!el) return;
-    const dowNames = currentLang === 'en' ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] : ['日','月','火','水','木','金','土'];
-    const keys = Object.keys(moodJournalData).filter(k => (moodJournalData[k] || []).some(e => e.text && e.text.trim())).sort().reverse();
-    if (keys.length === 0) {
-      el.innerHTML = `<div style="font-size:11px; color:var(--ink-dim); opacity:0.6; padding:6px 0;">${currentLang === 'en' ? 'No entries yet' : 'まだ日記がありません'}</div>`;
-      return;
-    }
-    el.innerHTML = keys.slice(0, 60).map(key => {
-      const [y, m, d] = key.split('-').map(Number);
-      const dateObj = new Date(y, m - 1, d);
-      const dow = dowNames[dateObj.getDay()];
-      const entries = moodJournalData[key].filter(e => e.text && e.text.trim());
-      const preview = entries.map(e => e.text).join(' / ');
-      return `
-        <div class="diary-history-row" onclick="jumpToDiaryDate('${key}')">
-          <div class="diary-history-row-date">
-            <div class="diary-history-row-daynum">${d}</div>
-            <div class="diary-history-row-dow">${dow}</div>
-          </div>
-          <div class="diary-history-row-text">${escapeHtml(preview)}</div>
-        </div>
-      `;
-    }).join('');
-  }
-  function jumpToDiaryDate(key) {
-    showDayDetail(key, dailyHistory[key] || { count: 0, exp: 0, items: [] });
   }
   function renderDiaryDateHeader() {
     const el = document.getElementById('diaryBigDateRow');
