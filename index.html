@@ -811,6 +811,13 @@
   }
   .misc-grid-tile.info { cursor: default; font-size: 9px; }
   .misc-grid-tile.empty { border-style: dashed; opacity: 0.3; cursor: default; }
+  /* エージェント系のハブ(アラーム・全集中の目・カレンダーへのリンク)をまとめて、境界をはっきりさせる見出し */
+  .hud-agent-hub-label {
+    display: flex; align-items: center; gap: 6px;
+    font-family: "Orbitron", sans-serif; font-size: 9px; letter-spacing: 0.14em;
+    color: var(--cyan); opacity: 0.85; margin: 16px 2px 8px;
+  }
+  .hud-agent-hub-label::after { content: ""; flex: 1; height: 1px; background: rgba(43,201,204,0.25); }
   .hud-agent-row {
     display: flex; align-items: stretch; gap: 10px; margin-bottom: 14px;
   }
@@ -1083,7 +1090,7 @@
     border-radius: 0 !important; box-shadow: none !important; margin-bottom: 0 !important;
     background: #14171c !important; border-top: none !important; border-right: none !important;
     border-bottom: 1px solid rgba(255,255,255,0.1) !important;
-    padding: 16px 16px !important;
+    padding: 22px 16px !important; font-size: 1.08em;
   }
   body.multipage-mode.theme-simple .app-group-wrap .item,
   body.multipage-mode.theme-simple:not(.theme-dark) .app-group-wrap .item {
@@ -1232,13 +1239,21 @@
   .group-label::before { content: "> "; color: var(--magenta); }
   .group-label:first-of-type { margin-top: 0; }
 
+  /* Alarmyの新規アラーム追加ボタン(右下・丸型・目立つ色)を参考にした、フローティング型の追加ボタン。
+     各カードの右下に固定し、右利きの人が親指で押しやすい位置に統一する */
   .add-task-btn {
-    display: block; width: 100%; margin-top: 6px; padding: 12px;
-    background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(255,255,255,0.2);
-    color: var(--ink-dim); font-size: 18px; font-weight: 900; line-height: 1;
-    border-radius: 12px; cursor: pointer; transition: all 0.15s ease;
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; right: 16px; bottom: 16px; z-index: 5;
+    width: 46px; height: 46px; padding: 0; margin: 0;
+    background: linear-gradient(160deg, #FF6B5C, #E8483A);
+    border: none; border-radius: 50%;
+    color: #fff; font-size: 24px; font-weight: 900; line-height: 1;
+    cursor: pointer; transition: all 0.15s ease;
+    box-shadow: 0 4px 14px rgba(232,72,58,0.45), 0 2px 4px rgba(0,0,0,0.25);
   }
-  .add-task-btn:active { background: rgba(43,201,204,0.08); border-color: var(--cyan); transform: scale(0.98); }
+  .add-task-btn:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(232,72,58,0.4); }
+  /* フローティングボタンが、直下のコンテンツに重ならないよう、持ち主のカード側に、余白を確保する */
+  :has(> .add-task-btn) { padding-bottom: 72px !important; position: relative; }
 
   /* ---- 長押しドラッグ&ドロップ ---- */
   .item.dragging { opacity: 0.35; }
@@ -1805,6 +1820,38 @@
     border: 1.5px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 14px;
     position: relative; overflow: hidden;
   }
+  /* ライフベアの日記画面を参考に、日付・曜日を大きく、ひと目で分かるように表示する */
+  .diary-big-date-row {
+    display: flex; align-items: baseline; gap: 10px; margin: 4px 0 14px;
+  }
+  .diary-big-date-num {
+    font-family: "Orbitron", sans-serif; font-size: 34px; font-weight: 800; color: var(--ink); line-height: 1;
+  }
+  .diary-big-date-sub { display: flex; flex-direction: column; gap: 2px; }
+  .diary-big-date-ym { font-size: 11px; color: var(--ink-dim); }
+  .diary-big-date-dow { font-size: 13px; font-weight: 700; }
+  /* これまでの日記、折りたたみ一覧(ライフベア風、日付・曜日を添えて、書き出しだけ見える) */
+  .diary-history-shell {
+    background: linear-gradient(160deg, rgba(24,28,36,0.97), rgba(12,15,20,0.97));
+    border: 1.5px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 14px; margin-top: 10px;
+  }
+  .diary-history-toggle {
+    display: flex; align-items: center; cursor: pointer;
+    font-family: "Orbitron", sans-serif; font-size: 11px; color: var(--ink-dim);
+  }
+  .diary-history-list { display: none; margin-top: 12px; }
+  .diary-history-list.show { display: block; }
+  .diary-history-row {
+    display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer;
+  }
+  .diary-history-row:last-child { border-bottom: none; }
+  .diary-history-row-date { flex: 0 0 44px; text-align: center; }
+  .diary-history-row-daynum { font-family: "Orbitron", sans-serif; font-size: 18px; font-weight: 800; color: var(--ink); line-height: 1.1; }
+  .diary-history-row-dow { font-size: 9.5px; color: var(--ink-dim); }
+  .diary-history-row-text {
+    flex: 1; font-size: 12px; color: var(--ink-dim); line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
   .mood-tag-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
   .mood-tag-toggle {
     font-size: 12px; padding: 7px 12px; border-radius: 10px; cursor: pointer;
@@ -2181,7 +2228,7 @@
   .alarm-row {
     display: flex; align-items: center; justify-content: space-between;
     padding: 10px 2px; border-bottom: 1px solid rgba(255,255,255,0.08);
-    background: #14171c; /* 透明のままだと、スワイプ削除用の赤いゴミ箱が、下から透けて見えてしまうため */
+    background: linear-gradient(160deg, rgba(22,26,34,1), rgba(12,15,20,1)); /* カードと完全に同じグラデーションにして、透け・色ズレを防ぐ */
   }
   body.theme-simple:not(.theme-dark) .alarm-row { background: #FFFFFF; }
   .alarm-row:last-child { border-bottom: none; }
@@ -2584,8 +2631,8 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_ALARM_TIME_ICON_V335</div>
-  <div class="app-group-label" data-i18n="group_calendar">📅 カレンダー</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_FULL_BATCH_DONE_V342</div>
+  <div class="app-group-label" data-i18n="group_calendar"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
     <div id="calMonthSection">
@@ -2635,7 +2682,7 @@
           </div>
         </div>
         <div id="dayViewItems" style="font-size:12px; color:var(--ink-dim); line-height:1.7; background:rgba(255,255,255,0.03); border-radius:10px; padding:12px; margin-bottom:10px;"></div>
-        <div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin-bottom:6px;">📅 予定</div>
+        <div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> 予定</div>
         <div id="dayViewEventsList"></div>
         <div style="display:flex; gap:6px; margin-top:8px;">
           <input type="time" id="dayViewEventTime" style="width:80px; flex-shrink:0; font-size:12px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
@@ -2649,7 +2696,7 @@
 
     <div id="calAgendaSection" style="display:none;">
       <div style="margin-bottom:14px;">
-        <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">📋 今週のまとめ(自動集計)</div>
+        <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> 今週のまとめ(自動集計)</div>
         <div id="weeklySummaryBox" style="font-size:12px; line-height:1.8; color:var(--ink);"></div>
       </div>
       <div style="margin-bottom:14px;">
@@ -2697,8 +2744,8 @@
         </div>
         <div class="report-compare" id="reportCompare"></div>
         <div id="reportDayExtra" style="display:none; margin-top:12px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.1);">
-          <div style="font-size:12px; margin-bottom:8px;" id="reportStreakLine"><span class="premium-gold-text">🔥 0日連続</span></div>
-          <div style="font-size:11px; color:var(--cyan); text-decoration:underline; cursor:pointer;" onclick="openTodayCompletedModal()">✅ 今日完了した一覧を見る</div>
+          <div style="font-size:12px; margin-bottom:8px;" id="reportStreakLine"><span class="premium-gold-text"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg> 0日連続</span></div>
+          <div style="font-size:11px; color:var(--cyan); text-decoration:underline; cursor:pointer;" onclick="openTodayCompletedModal()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> 今日完了した一覧を見る</div>
         </div>
       </div>
       <div class="cal-section-title" style="margin-top:18px;" data-i18n="cal_chart_title">直近14日間のEXP推移</div>
@@ -2708,16 +2755,16 @@
     </div>
     <div class="cal-secondary-label" data-i18n="cal_secondary_other">その他</div>
     <div class="cal-secondary-toggle">
-      <button class="cal-view-btn cal-view-btn-sub" data-view="agenda" onclick="switchCalView('agenda')">📋 予定一覧</button>
-      <button class="cal-view-btn cal-view-btn-sub" data-view="search" onclick="switchCalView('search')">🔍 検索</button>
-      <button class="cal-view-btn cal-view-btn-sub" data-view="report" onclick="switchCalView('report')">📊 レポート</button>
+      <button class="cal-view-btn cal-view-btn-sub" data-view="agenda" onclick="switchCalView('agenda')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> 予定一覧</button>
+      <button class="cal-view-btn cal-view-btn-sub" data-view="search" onclick="switchCalView('search')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> 検索</button>
+      <button class="cal-view-btn cal-view-btn-sub" data-view="report" onclick="switchCalView('report')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 3v18h18"></path><rect x="7" y="12" width="3" height="6"></rect><rect x="12" y="8" width="3" height="10"></rect><rect x="17" y="5" width="3" height="13"></rect></svg> レポート</button>
     </div>
 
   </div>
 
 
   <div class="focus-banner" id="focusBanner" style="display:none;">
-    <div class="focus-banner-label" data-i18n="focus_banner_label">🎯 全集中中</div>
+    <div class="focus-banner-label" data-i18n="focus_banner_label"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> 全集中中</div>
     <div class="focus-banner-target" id="focusBannerTarget"></div>
     <div class="focus-banner-reason" id="focusBannerReason"></div>
     <div class="focus-banner-days" id="focusBannerDays"></div>
@@ -2742,6 +2789,28 @@
       <div class="hud-date" id="clockDate">----/--/--</div>
       <div class="hud-time" id="clockTime">--:--:--</div>
       <div class="hud-weather" id="hudWeather" onclick="event.stopPropagation();"></div>
+    </div>
+    <div class="hud-agent-hub-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"></rect><path d="M12 8V4"></path><circle cx="12" cy="3" r="1"></circle><circle cx="9" cy="14" r="1.3" fill="currentColor"></circle><circle cx="15" cy="14" r="1.3" fill="currentColor"></circle><path d="M9 18h6"></path></svg>
+      <span data-i18n="agent_hub_label">エージェント</span>
+    </div>
+    <div class="settings-group" id="otherWrapAlarm" style="margin-bottom:10px;">
+      <div class="settings-row" style="margin-bottom:0;">
+        <div class="settings-label" style="margin-bottom:0;" data-i18n="alarm_label">⏰ アラーム</div>
+        <span class="pin-toggle-btn" onclick="pinOtherItem('alarm')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
+      </div>
+      <div id="alarmListBox"></div>
+      <button class="add-task-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋</button>
+      <div style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.12);">
+        <div class="settings-row">
+          <span data-i18n="alarm_dismiss_row" style="font-size:12px;">止め方</span>
+          <select id="alarmDismissMethod" onchange="saveAlarmDismissMethod(this.value)" style="background:rgba(255,255,255,0.06); color:var(--ink); border:1.5px solid rgba(255,255,255,0.15); border-radius:8px; padding:6px 8px; font-size:11px;">
+            <option value="tap" data-i18n="alarm_dismiss_tap">普通にタップ</option>
+            <option value="math" data-i18n="alarm_dismiss_math">計算問題を解く</option>
+            <option value="shake" data-i18n="alarm_dismiss_shake">スマホを振る</option>
+          </select>
+        </div>
+      </div>
     </div>
     <div class="hud-agent-row">
       <div class="hud-agent-eye" id="hudAgentEye" onclick="pokeAgentEye()">
@@ -2781,11 +2850,11 @@
   <input type="file" id="badgeImageInput" accept="image/*" style="display:none;">
 
   <!-- ================= 今日限定の単発タスク(v62で追加) ================= -->
-  <div class="app-group-label" data-i18n="group_task">✅ タスク管理</div>
+  <div class="app-group-label" data-i18n="group_task"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> タスク管理</div>
   <div class="folder-stack">
     <div class="folder-tab-row">
-      <div class="folder-tab active" id="folderTabTask" data-i18n="folder_tab_task" onclick="switchTaskRoutineFolder('task')">📋 タスク</div>
-      <div class="folder-tab" id="folderTabRoutine" data-i18n="folder_tab_routine" onclick="switchTaskRoutineFolder('routine')">📦 日課</div>
+      <div class="folder-tab active" id="folderTabTask" data-i18n="folder_tab_task" onclick="switchTaskRoutineFolder('task')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> タスク</div>
+      <div class="folder-tab" id="folderTabRoutine" data-i18n="folder_tab_routine" onclick="switchTaskRoutineFolder('routine')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> 日課</div>
     </div>
   <div id="tabsPanelsWrap" class="unified-task-card corner-left">
     <div class="card-accent-dot tab-task"></div>
@@ -2797,7 +2866,7 @@
 
   <div id="folderPanelRoutine" class="folder-panel">
   <div style="text-align:right; margin-bottom:6px;">
-    <span style="font-size:10.5px; color:var(--ink-dim); text-decoration:underline; cursor:pointer;" onclick="openRoutineStock()">📦 日課ストックを見る</span>
+    <span style="font-size:10.5px; color:var(--ink-dim); text-decoration:underline; cursor:pointer;" onclick="openRoutineStock()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> 日課ストックを見る</span>
   </div>
   <div class="tabs" id="tabs">
     <div class="tab active" data-lv="low" data-i18n="tab_low">軽量級</div>
@@ -2839,6 +2908,7 @@
         </div>
         <div id="moodJournalImages" class="mood-journal-images-top" onclick="triggerMoodImageUpload()"></div>
       </div>
+      <div id="diaryBigDateRow" class="diary-big-date-row"></div>
       <div class="mood-tag-row" id="moodTagRow">
         <button class="mood-tag-toggle" id="moodTagToggle" onclick="toggleMoodTagPicker()" data-i18n="mood_tag_default">🙂 気分を記録</button>
         <div class="mood-tag-options" id="moodTagOptions">
@@ -2860,11 +2930,18 @@
       </div>
       <textarea id="moodJournalText" class="mood-journal-textarea" data-i18n-placeholder="ph_mood_journal" placeholder="今日の気分、体調、頭に浮かんだこと。何でも自由に。" oninput="handleMoodJournalInput()" onblur="handleMoodJournalBlur()"></textarea>
       <div class="mood-journal-actions">
-        <button class="mood-journal-btn" onclick="copyForAIConsult()">📋 コピー</button>
-        <button class="mood-journal-btn" id="moodResetBtn" onclick="resetMoodCompose()" style="display:none;">🔄 リセット(新しく書く)</button>
+        <button class="mood-journal-btn" onclick="copyForAIConsult()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> コピー</button>
+        <button class="mood-journal-btn" id="moodResetBtn" onclick="resetMoodCompose()" style="display:none;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg> リセット(新しく書く)</button>
       </div>
       <input type="file" id="moodImageInput" accept="image/*" multiple style="display:none;">
       <div id="moodJournalSavedInfo" class="mood-journal-saved-info"></div>
+    </div>
+    <div class="diary-history-shell">
+      <div class="diary-history-toggle" onclick="toggleDiaryHistory()">
+        <span data-i18n="diary_history_label">これまでの日記</span>
+        <span id="diaryHistoryChevron" style="margin-left:auto; transition:transform 0.2s;">›</span>
+      </div>
+      <div id="diaryHistoryList" class="diary-history-list"></div>
     </div>
   </div>
 
@@ -2872,36 +2949,15 @@
   <div class="settings-group" id="otherWrapFocus">
     <div class="settings-row" style="margin-bottom:0;">
       <div class="settings-label" style="margin-bottom:0;" data-i18n="focus_settings_label">全集中モード</div>
-      <span class="pin-toggle-btn" onclick="pinOtherItem('focus')">📌</span>
+      <span class="pin-toggle-btn" onclick="pinOtherItem('focus')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
     </div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="focus_settings_desc">期間を決めて、1つのことだけに深く向き合うモードです。その間、日課タスクは「今はやらなくていい」色で表示されます。</div>
-    <button class="settings-btn" id="focusModeBtn" data-i18n="focus_start_btn" onclick="openFocusModeModal()">🎯 全集中モードを始める</button>
-  </div>
-  <div class="settings-group" id="otherWrapAlarm">
-    <div class="settings-row" style="margin-bottom:0;">
-      <div class="settings-label" style="margin-bottom:0;" data-i18n="alarm_label">⏰ アラーム</div>
-      <span class="pin-toggle-btn" onclick="pinOtherItem('alarm')">📌</span>
-    </div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="alarm_desc_v2">指定した時刻に、音・振動でお知らせします。通知が有効なら、アプリを閉じていても届きます。</div>
-    <div id="alarmListBox"></div>
-    <button class="add-task-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋</button>
-    <div style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.12);">
-      <div class="settings-row">
-        <span data-i18n="alarm_dismiss_row" style="font-size:12px;">止め方</span>
-        <select id="alarmDismissMethod" onchange="saveAlarmDismissMethod(this.value)" style="background:rgba(255,255,255,0.06); color:var(--ink); border:1.5px solid rgba(255,255,255,0.15); border-radius:8px; padding:6px 8px; font-size:11px;">
-          <option value="tap" data-i18n="alarm_dismiss_tap">普通にタップ</option>
-          <option value="math" data-i18n="alarm_dismiss_math">計算問題を解く</option>
-          <option value="shake" data-i18n="alarm_dismiss_shake">スマホを振る</option>
-        </select>
-      </div>
-    </div>
+    <button class="settings-btn" id="focusModeBtn" data-i18n="focus_start_btn" onclick="openFocusModeModal()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> 全集中モードを始める</button>
   </div>
   <div class="settings-group" id="otherWrapMemento">
     <div class="settings-row" style="margin-bottom:0;">
       <div class="settings-label" style="margin-bottom:0;" data-i18n="memento_label">📖 備忘録</div>
-      <span class="pin-toggle-btn" onclick="pinOtherItem('memento')">📌</span>
+      <span class="pin-toggle-btn" onclick="pinOtherItem('memento')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
     </div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">1度書いたら、上書きされずに積み上がっていく記録です。今取り組んでいることや、一度きりの体験を、あとでいつでも見返せます。</div>
     <div id="mementoCardList"></div>
     <button class="add-task-btn" onclick="openAddMemento()">＋</button>
   </div>
@@ -2953,7 +3009,7 @@
 
 <div class="grand-modal" id="selfDeclareBadgeModal" onclick="closeSelfDeclareBadge()">
   <div class="modal-card" style="border:1.5px solid var(--yellow); border-radius:18px; padding:26px 24px; max-width:min(320px,86vw); text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--yellow); font-weight:800; margin-bottom:6px;">🏅 実績を記録</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--yellow); font-weight:800; margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg> 実績を記録</div>
     <div style="font-size:10.5px; color:var(--ink-dim); margin-bottom:14px; line-height:1.6;">今の環境ではAIによる自動判定が使えないため、自己申告での記録になります。何の実績か入力してください。</div>
     <input id="selfDeclareTitleInput" type="text" placeholder="例: マラソン完走、資格試験合格" onkeydown="if(event.key==='Enter') confirmSelfDeclareBadge()" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:18px; box-sizing:border-box;">
     <button class="badge-close-btn" style="width:100%; margin-top:0; border-color:var(--yellow); color:var(--yellow);" onclick="confirmSelfDeclareBadge()">記録する</button>
@@ -2983,7 +3039,7 @@
     </div>
     <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_bgview_btn" onclick="enterBgViewMode()">🌌 背景だけを見る</button>
     <div class="settings-row" style="margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12);">
-      <span data-i18n="opt_multipage_row_label">📑 複数ページモード</span>
+      <span data-i18n="opt_multipage_row_label"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M14 2v6h6"></path></svg> 複数ページモード</span>
       <label class="toggle-switch">
         <input type="checkbox" id="multiPageModeToggle" onchange="toggleMultiPageMode(this.checked)">
         <span class="toggle-track"></span>
@@ -2992,7 +3048,7 @@
     <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_multipage_desc">カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。</div>
   </div>
   <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_lang_label">言語</div>
+    <div class="settings-label" data-i18n="opt_lang_sound_label">言語 / サウンド</div>
     <div class="settings-row">
       <span>Language</span>
       <div class="theme-switch">
@@ -3000,10 +3056,7 @@
         <button class="lang-btn" data-lang="en" data-i18n="lang_en_btn">English</button>
       </div>
     </div>
-  </div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_sound_label">サウンド</div>
-    <div class="settings-row">
+    <div class="settings-row" style="margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12);">
       <span data-i18n="opt_sound_vol_row">BGM・効果音の音量</span>
       <span id="volumeLabel" style="font-family:'Orbitron',sans-serif; font-size:12px; color:var(--cyan);">70%</span>
     </div>
@@ -3023,13 +3076,11 @@
       <span id="boundaryHourLabel" style="font-family:'Orbitron',sans-serif; font-size:12px; color:var(--cyan);">午前4時</span>
     </div>
     <input type="range" class="volume-slider" id="boundaryHourSlider" min="0" max="8" value="4" style="width:100%; margin-bottom:6px;">
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6;" data-i18n="opt_boundary_desc">この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。</div>
     <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_manual_daychange_btn" onclick="manualAdvanceDay()">🌅 今すぐ、新しい1日に切り替える</button>
     <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_manual_daychange_desc">生活リズムが不規則な時、区切りの時刻を待たずに、手動で1日を締められます</div>
   </div>
   <div class="settings-group">
-    <div class="settings-label" data-i18n="notify_label">🔔 通知(試験導入)</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;">アプリを閉じていても、時間が来たら通知でお知らせします。試験的な機能です。</div>
+    <div class="settings-label" data-i18n="notify_label"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg> 通知(試験導入)</div>
     <div class="settings-row">
       <span data-i18n="notify_enable_btn">通知を有効にする</span>
       <label class="toggle-switch">
@@ -3060,7 +3111,7 @@
         </span>
       </label>
       <label style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
-        <span data-i18n="notify_type_overdue">🔁 やり忘れの再通知</span>
+        <span data-i18n="notify_type_overdue"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M17 2l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg> やり忘れの再通知</span>
         <span class="toggle-switch">
           <input type="checkbox" id="notifyTypeOverdue" checked onchange="saveNotificationPrefs()">
           <span class="toggle-track"></span>
@@ -3069,18 +3120,15 @@
     </div>
   </div>
   <div class="settings-group">
-    <div class="settings-label" data-i18n="tutorial_label">💡 使い方</div>
+    <div class="settings-label" data-i18n="opt_howto_support_label">使い方 / サポート</div>
     <button class="settings-btn" data-i18n="tutorial_btn" onclick="openTutorial()">チュートリアルを見る</button>
-  </div>
-  <div class="settings-group">
-    <div class="settings-label" data-i18n="opt_support_label">サポート</div>
     <button class="settings-btn" data-i18n="opt_contact_btn" onclick="contactSupport()">運営に連絡する</button>
     <button class="settings-btn" data-i18n="opt_policy_btn" onclick="showPolicy()">利用規約・プライバシー</button>
     <button class="settings-btn" data-i18n="opt_credits_label" onclick="showCredits()">クレジット</button>
     <button class="settings-btn" data-i18n="opt_sources_label" onclick="showSources()">機能の根拠・出典</button>
   </div>
   <div class="settings-group" style="border: 1.5px dashed rgba(255,80,80,0.5);">
-    <div class="settings-label" style="color:#FF5050;" data-i18n="dev_section_label">🛠️ 開発者用(本番公開前に削除)</div>
+    <div class="settings-label" style="color:#FF5050;" data-i18n="dev_section_label"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"></path></svg> 開発者用(本番公開前に削除)</div>
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="dev_desc">レベル解放演出(宇宙背景の見え方など)を確認するための検証用ボタンです。実際のユーザーには見せません。</div>
     <button class="settings-btn" style="border-color:#FF5050; color:#FF5050;" data-i18n="dev_add_exp_btn" onclick="devAddExp(500)">➕ 検証用: EXPを500増やす</button>
     <div style="display:flex; gap:6px; margin-bottom:10px;">
@@ -3088,7 +3136,7 @@
       <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" onclick="applyCyberDailyMood('blue')">🌌 青系</button>
       <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" onclick="applyCyberDailyMood('vapor')">🌴 ウェイブ系</button>
     </div>
-    <button class="settings-btn" style="border-color:#FF5050; color:#FF5050;" data-i18n="dev_reset_exp_btn" onclick="devResetExp()">🔄 検証用: EXPを0に戻す</button>
+    <button class="settings-btn" style="border-color:#FF5050; color:#FF5050;" data-i18n="dev_reset_exp_btn" onclick="devResetExp()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg> 検証用: EXPを0に戻す</button>
     <div class="settings-row" style="margin-top:10px;">
       <span style="color:#FF5050; font-size:12px;">デバッグログ表示(最終的には削除予定)</span>
       <label class="toggle-switch">
@@ -3144,11 +3192,11 @@
       <div style="font-size:11px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_sleep_body">起床直後、一時的に認知機能・反応速度が落ちる現象は「睡眠慣性」と呼ばれ、広く実証されています。特に、深い眠り(徐波睡眠)の最中に急に起こされると、浅い眠りの時に比べて、この慣性がより強く出ることが分かっています。</div>
     </details>
     <details style="margin-bottom:8px;">
-      <summary style="font-size:12px; color:var(--cyan); cursor:pointer;" data-i18n="src_ebbing_title">🧠 忘却曲線と、復習リマインダー</summary>
+      <summary style="font-size:12px; color:var(--cyan); cursor:pointer;" data-i18n="src_ebbing_title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"></path><path d="M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-2 5v1a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"></path></svg> 忘却曲線と、復習リマインダー</summary>
       <div style="font-size:11px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_ebbing_body">1885年、心理学者エビングハウスが、記憶は学習直後から急速に失われることを示しました。一方、カナダ・ウォータールー大学の研究では、「学習から24時間以内に、10分間復習する」ことで、記憶がほぼ元の水準まで戻るとの報告があります。</div>
     </details>
     <details>
-      <summary style="font-size:12px; color:var(--cyan); cursor:pointer;" data-i18n="src_mathalarm_title">🔢 アラームの計算問題について(正直な位置づけ)</summary>
+      <summary style="font-size:12px; color:var(--cyan); cursor:pointer;" data-i18n="src_mathalarm_title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 9h16"></path><path d="M4 15h16"></path><path d="M10 3L8 21"></path><path d="M16 3l-2 18"></path></svg> アラームの計算問題について(正直な位置づけ)</summary>
       <div style="font-size:11px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_mathalarm_body">正直にお伝えすると、「計算問題を解くこと自体が、睡眠慣性を早く解消する」という直接的な研究は見つけられませんでした。ただし、起床直後は判断力・反応速度が落ちやすいことは実証されているため、この機能は「本当に目が覚めているかを確かめる、実用的なチェック」としての位置づけです。</div>
     </details>
     <button class="badge-close-btn" style="margin-top:16px;" data-i18n="btn_close" onclick="closeSources()">閉じる</button>
@@ -3170,7 +3218,7 @@
     </div>
     <div id="dayDetailItems" style="font-size:12px; color:var(--ink-dim); line-height:1.7; text-align:left; background:rgba(255,255,255,0.03); border-radius:10px; padding:12px;"></div>
     <div style="margin-top:14px; text-align:left;">
-      <div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin-bottom:6px;">📅 予定</div>
+      <div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> 予定</div>
       <div id="dayDetailEventsList"></div>
       <div style="display:flex; gap:6px; margin-top:8px; align-items:center;">
         <input type="time" id="dayDetailEventTime" onchange="autofillEventEndTime()" style="width:62px; flex-shrink:0; font-size:11px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
@@ -3198,7 +3246,7 @@
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:6px; margin-top:8px;">
-        <span style="font-size:10.5px; color:var(--ink-dim); flex-shrink:0;">🔔リマインド</span>
+        <span style="font-size:10.5px; color:var(--ink-dim); flex-shrink:0;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>リマインド</span>
         <select id="dayDetailEventReminder" onchange="document.getElementById('dayDetailEventReminderCustom').style.display = (this.value === 'custom') ? 'inline-block' : 'none';" style="flex:1; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
           <option value="">なし</option>
           <option value="10">10分前</option>
@@ -3219,14 +3267,14 @@
       <div id="dayDetailMoodText" style="font-size:12px; color:#fff; line-height:1.7; white-space:pre-wrap;"></div>
       <div id="dayDetailMoodImages" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
     </div>
-    <button class="badge-close-btn" style="margin-top:16px; background:transparent; border:1.5px solid var(--cyan); color:var(--cyan);" onclick="copyDayForAIAnalysis()">🤖 この日をAI分析用にコピー</button>
+    <button class="badge-close-btn" style="margin-top:16px; background:transparent; border:1.5px solid var(--cyan); color:var(--cyan);" onclick="copyDayForAIAnalysis()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="8" width="16" height="12" rx="2"></rect><path d="M12 8V4"></path><circle cx="12" cy="3" r="1"></circle><circle cx="9" cy="14" r="1.3" fill="currentColor"></circle><circle cx="15" cy="14" r="1.3" fill="currentColor"></circle><path d="M9 18h6"></path></svg> この日をAI分析用にコピー</button>
     <button class="badge-close-btn" style="margin-top:8px;" data-i18n="btn_close" onclick="closeDayDetail()">閉じる</button>
   </div>
 </div>
 
 <div class="grand-modal" id="dataViewerModal" onclick="closeDataViewer()">
   <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:26px 22px; max-width:min(360px,88vw); max-height:78vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="data_viewer_title">🔍 データを見る</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="data_viewer_title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> データを見る</div>
 
     <div style="display:flex; gap:8px; margin-bottom:14px;">
       <div style="flex:1; background:rgba(255,255,255,0.04); border-radius:10px; padding:10px; text-align:center;">
@@ -3257,22 +3305,21 @@
 
 <div class="grand-modal" id="badgeListModal" onclick="closeBadgeList()">
   <div class="modal-card" style="border:1.5px solid rgba(232,255,78,0.4); border-radius:18px; padding:26px 22px; max-width:min(360px,88vw); max-height:78vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--yellow); font-weight:800; margin-bottom:14px;" data-i18n="badge_list_title">🏅 実績バッジ一覧</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--yellow); font-weight:800; margin-bottom:14px;" data-i18n="badge_list_title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg> 実績バッジ一覧</div>
     <div id="badgeListBody" style="font-size:12px; color:#ddd; line-height:1.8;"></div>
-    <button class="settings-btn" style="margin-top:14px;" data-i18n="misc_proof_tile_full" onclick="triggerBadgeUpload()">📷 実績を写真で照合する</button>
+    <button class="settings-btn" style="margin-top:14px;" data-i18n="misc_proof_tile_full" onclick="triggerBadgeUpload()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 8h3l2-2h6l2 2h3v11H4z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg> 実績を写真で照合する</button>
     <button class="badge-close-btn" style="margin-top:10px;" data-i18n="btn_close" onclick="closeBadgeList()">閉じる</button>
   </div>
 </div>
 
 <div class="grand-modal" id="dataManageModal" onclick="closeDataManageModal()">
   <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:26px 22px; max-width:min(340px,88vw); text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:6px;">💾 データの管理</div>
-    <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:14px;" data-i18n="opt_data_desc">経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。</div>
-    <button class="settings-btn" data-i18n="opt_view_data_btn" onclick="openDataViewer()">🔍 データを見る</button>
-    <button class="settings-btn" data-i18n="opt_diagnostic_btn" onclick="runStorageDiagnostic()">🔧 保存機能を診断する</button>
+    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg> データの管理</div>
+    <button class="settings-btn" data-i18n="opt_view_data_btn" onclick="openDataViewer()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> データを見る</button>
+    <button class="settings-btn" data-i18n="opt_diagnostic_btn" onclick="runStorageDiagnostic()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"></path></svg> 保存機能を診断する</button>
     <button class="settings-btn" data-i18n="opt_export_btn" onclick="exportBackup()">⬇️ バックアップを書き出す</button>
     <button class="settings-btn" data-i18n="opt_import_btn" onclick="triggerImportBackup()">⬆️ バックアップから復元する</button>
-    <button class="settings-btn" style="margin-top:10px; border-top:1px dashed rgba(255,255,255,0.15); padding-top:14px;" data-i18n="opt_clearcache_btn" onclick="clearAppCache()">🧹 アプリのキャッシュを削除</button>
+    <button class="settings-btn" style="margin-top:10px; border-top:1px dashed rgba(255,255,255,0.15); padding-top:14px;" data-i18n="opt_clearcache_btn" onclick="clearAppCache()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 5L9 15"></path><path d="M9 15l-5 5 3-8z"></path><path d="M13 9l2 2"></path></svg> アプリのキャッシュを削除</button>
     <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_clearcache_desc">アプリ本体の中身(機能・見た目)を最新版に更新します。※ホーム画面のアイコン画像は、これでは変わりません(削除して再追加が必要)</div>
     <input type="file" id="backupFileInput" accept="application/json" style="display:none;">
     <div id="lastBackupInfo" style="font-size:10px; color:var(--ink-dim); margin-top:8px;"></div>
@@ -3283,7 +3330,7 @@
 
 <div class="grand-modal" id="focusModeModal" onclick="closeFocusModeModal()">
   <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:26px 22px; max-width:min(340px,88vw); text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:6px;" data-i18n="focus_modal_title">🎯 全集中モードを始める</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:6px;" data-i18n="focus_modal_title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> 全集中モードを始める</div>
     <div style="font-size:11px; color:var(--ink-dim); margin-bottom:14px; line-height:1.6;" data-i18n="focus_modal_desc">この期間、何か1つに深く向き合ってみましょう。休養そのものを対象にしても構いません。</div>
     <div style="font-size:11px; color:var(--ink-dim); margin-bottom:4px;" data-i18n="focus_target_label">何に集中しますか？</div>
     <input type="text" id="focusTargetInput" data-i18n-placeholder="ph_focus_target" placeholder="例: 研究発表の準備" style="width:100%; box-sizing:border-box; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; font-size:13px; margin-bottom:14px;">
@@ -3312,7 +3359,7 @@
 
 <div class="grand-modal" id="addTodayTaskModal" onclick="closeAddTodayTask()">
   <div class="modal-card" style="border:1.5px solid rgba(255,138,92,0.5); border-radius:18px; padding:26px 24px; max-width:min(320px,86vw); text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:#F0906B; font-weight:800; margin-bottom:6px;">📋 単発タスクを追加</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:#F0906B; font-weight:800; margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> 単発タスクを追加</div>
     <div style="font-size:10.5px; color:var(--ink-dim); margin-bottom:14px; line-height:1.6;" data-i18n="today_task_desc">今日〜数日のうちにやりたい、単発の用事を入れておけます。「今日のタスク」欄に、選んだ日課と一緒に並びます。</div>
     <input id="todayTaskInput" type="text" placeholder="例: 荷解き、匂い対策の掃除" onkeydown="if(event.key==='Enter') confirmAddTodayTask()" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:18px; box-sizing:border-box;">
     <button class="badge-close-btn" style="width:100%; margin-top:0; border-color:#F0906B; color:#F0906B;" data-i18n="confirm_add_btn" onclick="confirmAddTodayTask()">追加する</button>
@@ -3322,7 +3369,7 @@
 
 <div class="grand-modal" id="missedTasksModal" onclick="closeMissedTasksReview()">
   <div class="modal-card" style="border:1.5px solid var(--magenta); border-radius:18px; padding:26px 22px; max-width:min(340px,88vw); max-height:75vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--magenta); font-weight:800; margin-bottom:6px;">🔔 押し忘れの確認</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--magenta); font-weight:800; margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg> 押し忘れの確認</div>
     <div style="font-size:10.5px; color:var(--ink-dim); margin-bottom:14px; line-height:1.6;" data-i18n="missed_tasks_desc">昨日、未完了のまま残っていた「今日のタスク」です。実は終わっていたものがあれば、タップして片付けてください。</div>
     <div id="missedTasksList"></div>
     <button class="badge-close-btn" style="margin-top:16px;" data-i18n="missed_tasks_close_btn" onclick="closeMissedTasksReview()">閉じる(これらは今日も持ち越します)</button>
@@ -3332,7 +3379,7 @@
 <div class="grand-modal" id="agentSuggestModal">
   <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:26px 22px; max-width:min(320px,86vw); text-align:center;" onclick="event.stopPropagation()">
     <div id="agentSuggestStep1">
-      <div style="font-family:'Orbitron',sans-serif; font-size:13px; color:var(--cyan); margin-bottom:16px;" data-i18n="agent_suggest_title">💬 次は何をしますか？</div>
+      <div style="font-family:'Orbitron',sans-serif; font-size:13px; color:var(--cyan); margin-bottom:16px;" data-i18n="agent_suggest_title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> 次は何をしますか？</div>
       <div id="agentSuggestOptions" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;"></div>
       <div style="font-size:11px; color:var(--ink-dim); text-decoration:underline; cursor:pointer;" data-i18n="agent_suggest_skip" onclick="closeAgentSuggest()">今はやらない</div>
     </div>
@@ -3359,7 +3406,7 @@
       </div>
     </div>
     <div style="text-align:left; background:rgba(43,201,204,0.06); border:1px solid rgba(43,201,204,0.25); border-radius:12px; padding:14px; margin-bottom:18px;">
-      <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">💬 今日への提案</div>
+      <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> 今日への提案</div>
       <div id="briefingSuggestion" style="font-size:13px; color:#fff; line-height:1.7;"></div>
     </div>
     <button class="badge-close-btn" data-i18n="daily_briefing_start_btn" onclick="closeDailyBriefing()">今日を始める</button>
@@ -3376,20 +3423,20 @@
       <div class="misc-grid-tile info">
         <span class="hud-sel" id="pickCountBadge">SEL:0</span>
       </div>
-      <div class="misc-grid-tile" onclick="openBadgeList()">🏅<br>実績</div>
+      <div class="misc-grid-tile" onclick="openBadgeList()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg><br>実績</div>
       <div class="misc-grid-tile" id="restDayBtn" data-i18n="misc_restday_tile" onclick="useRestDay()">😮‍💨<br>サボる</div>
-      <div class="misc-grid-tile" id="surpriseDrawBtn" style="display:none;" data-i18n="misc_surprise_tile" onclick="manualDrawSurpriseQuest()">🎲<br>臨時クエスト</div>
-      <div class="misc-grid-tile" id="miscTileFocus" style="display:none;" onclick="unpinOtherItem('focus')">🎯<br>全集中</div>
+      <div class="misc-grid-tile" id="surpriseDrawBtn" style="display:none;" data-i18n="misc_surprise_tile" onclick="manualDrawSurpriseQuest()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="3"></rect><circle cx="8" cy="8" r="1.3" fill="currentColor"></circle><circle cx="16" cy="8" r="1.3" fill="currentColor"></circle><circle cx="12" cy="12" r="1.3" fill="currentColor"></circle><circle cx="8" cy="16" r="1.3" fill="currentColor"></circle><circle cx="16" cy="16" r="1.3" fill="currentColor"></circle></svg><br>臨時クエスト</div>
+      <div class="misc-grid-tile" id="miscTileFocus" style="display:none;" onclick="unpinOtherItem('focus')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg><br>全集中</div>
       <div class="misc-grid-tile" id="miscTileAlarm" style="display:none;" onclick="unpinOtherItem('alarm')">⏰<br>アラーム</div>
       <div class="misc-grid-tile" id="miscTileMemento" style="display:none;" onclick="unpinOtherItem('memento')">📖<br>備忘録</div>
-      <div class="misc-grid-tile" onclick="openDataManageModal()">💾<br>データ</div>
+      <div class="misc-grid-tile" onclick="openDataManageModal()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg><br>データ</div>
     </div>
   </div>
 </div>
 
 <div class="grand-modal" id="tutorialModal" onclick="closeTutorial()">
   <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:24px; max-width:min(320px,86vw); text-align:center;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:13px; color:var(--cyan); margin-bottom:6px;">💡 使い方(<span id="tutorialStepNum">1</span>/<span id="tutorialStepTotal">1</span>)</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:13px; color:var(--cyan); margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.3h6c0-1.1.4-1.8 1-2.3A7 7 0 0 0 12 2z"></path></svg> 使い方(<span id="tutorialStepNum">1</span>/<span id="tutorialStepTotal">1</span>)</div>
     <div id="tutorialStepText" style="font-size:13px; color:#fff; line-height:1.7; margin:14px 0 18px;"></div>
     <div style="display:flex; gap:8px;">
       <button class="badge-close-btn" style="flex:1;" onclick="tutorialPrev()">戻る</button>
@@ -3427,7 +3474,7 @@
       <div id="mementoTextInput" contenteditable="true" data-placeholder="例: 富士登山に挑戦。5合目から山頂まで7時間かかった。" oninput="handleMementoDraftInput()" style="width:100%; box-sizing:border-box; min-height:280px; max-height:50vh; overflow-y:auto; resize:vertical; background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.15); border-radius:10px; padding:12px; color:#fff; font-size:13px; line-height:1.7; font-family:inherit; margin-bottom:6px; outline:none;"></div>
       <div id="mementoMarkerBtn" onclick="applyMementoMarker()" style="display:none; position:absolute; z-index:5; background:var(--cyan); color:#04262b; font-size:12px; font-weight:800; padding:7px 12px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.4); cursor:pointer; white-space:nowrap;">🖍 マーカー</div>
     </div>
-    <div style="font-size:10px; color:var(--ink-dim); margin-bottom:14px;">💡 文字を選択すると、マーカーで強調できます</div>
+    <div style="font-size:10px; color:var(--ink-dim); margin-bottom:14px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.3h6c0-1.1.4-1.8 1-2.3A7 7 0 0 0 12 2z"></path></svg> 文字を選択すると、マーカーで強調できます</div>
     <button class="badge-close-btn" data-i18n="memento_save_btn" onclick="confirmAddMemento()" style="width:100%; box-sizing:border-box; font-weight:700;">保存</button>
   </div>
 </div>
@@ -3447,10 +3494,10 @@
 </div>
 
 
-<div id="quickMemoTab">📝<br>メモ</div>
+<div id="quickMemoTab"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg><br>メモ</div>
 <div id="quickMemoPanel">
   <div class="quick-memo-header">
-    <span>📝 メモ</span>
+    <span><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg> メモ</span>
     <span id="quickMemoSaveStatus" style="font-size:9px; color:var(--ink-dim);"></span>
     <span onclick="toggleQuickMemo()" style="cursor:pointer; font-size:16px; color:var(--ink-dim);">✕</span>
   </div>
@@ -3459,7 +3506,7 @@
 
 <div class="grand-modal" id="todayCompletedModal" onclick="closeTodayCompletedModal()">
   <div class="modal-card" style="border:1.5px solid var(--cyan); border-radius:18px; padding:26px 22px; max-width:min(340px,88vw); max-height:75vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="today_completed_title">✅ 今日完了した一覧</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--cyan); font-weight:800; margin-bottom:14px;" data-i18n="today_completed_title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> 今日完了した一覧</div>
     <div id="todayCompletedList"></div>
     <button class="badge-close-btn" style="margin-top:16px;" onclick="closeTodayCompletedModal()">閉じる</button>
   </div>
@@ -3493,7 +3540,7 @@
 
 <div class="grand-modal" id="routineStockModal" onclick="closeRoutineStock()">
   <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:26px 22px; max-width:min(360px,88vw); max-height:80vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:6px;" data-i18n="routine_stock_title">📦 日課ストック</div>
+    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:6px;" data-i18n="routine_stock_title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> 日課ストック</div>
     <div style="font-size:10.5px; color:var(--ink-dim); margin-bottom:14px; line-height:1.6;" data-i18n="routine_stock_desc">今は不要な日課をオフにして一覧から隠せます(削除はされません)。大会前だけ必要になるような日課も、ここから必要な時だけオンに戻せます。</div>
     <div id="routineStockList"></div>
     <button class="badge-close-btn" style="margin-top:16px;" onclick="closeRoutineStock()">閉じる</button>
@@ -3512,8 +3559,8 @@
 
 <div class="drop-zone-bar" id="dropZoneBar">
   <div class="drop-zone" data-zone="low" data-i18n="drop_zone_low">🌿<br>軽量級</div>
-  <div class="drop-zone" data-zone="mid" data-i18n="drop_zone_mid">⚙️<br>中量級</div>
-  <div class="drop-zone" data-zone="high" data-i18n="drop_zone_high">🔥<br>重量級</div>
+  <div class="drop-zone" data-zone="mid" data-i18n="drop_zone_mid"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><br>中量級</div>
+  <div class="drop-zone" data-zone="high" data-i18n="drop_zone_high"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg><br>重量級</div>
 </div>
 <div class="drag-ghost" id="dragGhost"></div>
 
@@ -3682,20 +3729,20 @@
       opt_boundary_desc: 'この時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。',
       opt_manual_daychange_btn: '🌅 今すぐ、新しい1日に切り替える',
       opt_manual_daychange_desc: '生活リズムが不規則な時、区切りの時刻を待たずに、手動で1日を締められます',
-      opt_multipage_label: '📑 複数ページモード(試験的)',
-      opt_multipage_row_label: '📑 複数ページモード',
+      opt_multipage_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M14 2v6h6"></path></svg> 複数ページモード(試験的)',
+      opt_multipage_row_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M14 2v6h6"></path></svg> 複数ページモード',
       opt_multipage_desc: 'カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。',
       opt_multipage_row: '有効にする',
       group_calendar_short: 'カレンダー', group_task_short: 'タスク管理', group_diary_short: '日記', group_other_short: 'その他',
       group_home_short: 'ホーム',
       opt_data_label: 'データの管理',
       opt_data_desc: '経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。',
-      group_calendar: '📅 カレンダー', group_task: '✅ タスク管理', group_diary: '📔 日記', group_other: '✨ その他',
-      folder_tab_task: '📋 タスク', folder_tab_routine: '📦 日課',
+      group_calendar: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダー', group_task: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> タスク管理', group_diary: '📔 日記', group_other: '✨ その他',
+      folder_tab_task: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> タスク', folder_tab_routine: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> 日課',
       memento_title_ph: '題名(任意)',
-      opt_view_data_btn: '🔍 データを見る', opt_export_btn: '⬇️ バックアップを書き出す',
+      opt_view_data_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> データを見る', opt_export_btn: '⬇️ バックアップを書き出す',
       opt_import_btn: '⬆️ バックアップから復元する',
-      opt_clearcache_btn: '🧹 アプリのキャッシュを削除',
+      opt_clearcache_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 5L9 15"></path><path d="M9 15l-5 5 3-8z"></path><path d="M13 9l2 2"></path></svg> アプリのキャッシュを削除',
       opt_clearcache_desc: 'アプリ本体の中身(機能・見た目)を最新版に更新します。※ホーム画面のアイコン画像は、これでは変わりません(削除して再追加が必要)',
       opt_support_label: 'サポート', opt_contact_btn: '運営に連絡する', opt_policy_btn: '利用規約・プライバシー',
       opt_credits_label: 'クレジット', opt_credits_desc: 'このアプリで使用している、外部素材の制作者の方々です。',
@@ -3706,11 +3753,12 @@
       src_pomo_body: '2025年の研究では、解剖学のような高負荷な学習において、自己ペースの休憩と比べ、疲労度が約20%低下、集中力が15〜25%向上、学習効率が約12%向上したとの報告があります。理論的な背景として、ノーベル賞受賞者ダニエル・カーネマンの「注意資源理論」があり、人の集中力はおよそ20〜30分で低下し始めるとされています。',
       src_sleep_title: '🌙 睡眠記録・起こすタイミング',
       src_sleep_body: '起床直後、一時的に認知機能・反応速度が落ちる現象は「睡眠慣性」と呼ばれ、広く実証されています。特に、深い眠り(徐波睡眠)の最中に急に起こされると、浅い眠りの時に比べて、この慣性がより強く出ることが分かっています。',
-      src_ebbing_title: '🧠 忘却曲線と、復習リマインダー',
+      src_ebbing_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"></path><path d="M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-2 5v1a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"></path></svg> 忘却曲線と、復習リマインダー',
       src_ebbing_body: '1885年、心理学者エビングハウスが、記憶は学習直後から急速に失われることを示しました。一方、カナダ・ウォータールー大学の研究では、「学習から24時間以内に、10分間復習する」ことで、記憶がほぼ元の水準まで戻るとの報告があります。',
-      src_mathalarm_title: '🔢 アラームの計算問題について(正直な位置づけ)',
+      src_mathalarm_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 9h16"></path><path d="M4 15h16"></path><path d="M10 3L8 21"></path><path d="M16 3l-2 18"></path></svg> アラームの計算問題について(正直な位置づけ)',
       src_mathalarm_body: '正直にお伝えすると、「計算問題を解くこと自体が、睡眠慣性を早く解消する」という直接的な研究は見つけられませんでした。ただし、起床直後は判断力・反応速度が落ちやすいことは実証されているため、この機能は「本当に目が覚めているかを確かめる、実用的なチェック」としての位置づけです。',
       opt_lang_label: '言語', lang_ja_btn: '日本語', lang_en_btn: 'English',
+      opt_lang_sound_label: '言語 / サウンド',
       opt_prototype_note: '※ このページは見た目のみの試作（ハリボテ）です。実際の設定保存はこれから実装します。',
       cal_title: '今月の記録', cal_days: '記録した日', cal_exp: '今月の合計EXP', cal_items: '合計選択数',
       cal_chart_title: '直近14日間のEXP推移', cal_hint: '📍 記録のある日をタップすると詳細が見られます',
@@ -3735,51 +3783,54 @@
       ph_mood_journal: '今日の気分、体調、頭に浮かんだこと。何でも自由に。',
       ph_focus_target: '例: 研究発表の準備', ph_focus_reason: '例: 発表が近く、他が手につかないくらい振り切りたいから',
       ph_add_task_label: '例: ヨガ、日記を書く', ph_note_editor: '例: 練習は10分だけでもOK',
-      focus_banner_label: '🎯 全集中中', focus_settings_label: '全集中モード',
+      focus_banner_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> 全集中中', focus_settings_label: '全集中モード',
       focus_settings_desc: '期間を決めて、1つのことだけに深く向き合うモードです。その間、日課タスクは「今はやらなくていい」色で表示されます。',
-      focus_start_btn: '🎯 全集中モードを始める', focus_modal_title: '🎯 全集中モードを始める',
+      focus_start_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> 全集中モードを始める', focus_modal_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> 全集中モードを始める',
       focus_modal_desc: 'この期間、何か1つに深く向き合ってみましょう。休養そのものを対象にしても構いません。',
       focus_target_label: '何に集中しますか？', focus_reason_label: 'なぜこれに集中したいですか？(任意)',
       focus_days_label: '期間(日数)', focus_start_confirm_btn: '開始する', focus_cancel_btn: 'やめておく',
       focus_log_btn: '今日も向き合った', focus_log_done_btn: '✓ 今日は記録済み', focus_end_btn: '終了する',
       focus_subitem_section: '🔽 ゴールから逆算したステップ', focus_subitem_placeholder: '次にやる一歩を追加',
       focus_note_placeholder: '今日の一言(任意)', focus_note_save_btn: '保存',
-      data_viewer_title: '🔍 データを見る', data_viewer_recent_mood: '直近の気分日記',
-      badge_list_title: '🏅 実績バッジ一覧', badge_list_settings_btn: '🏅 実績バッジ一覧を見る', badge_list_empty: 'まだ実績バッジがありません。実績データ照合から最初の1枚を発行してみましょう。',
-      routine_stock_title: '📦 日課ストック',
+      data_viewer_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> データを見る', data_viewer_recent_mood: '直近の気分日記',
+      badge_list_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg> 実績バッジ一覧', badge_list_settings_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg> 実績バッジ一覧を見る', badge_list_empty: 'まだ実績バッジがありません。実績データ照合から最初の1枚を発行してみましょう。',
+      routine_stock_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> 日課ストック',
       routine_stock_desc: '今は不要な日課をオフにして一覧から隠せます(削除はされません)。大会前だけ必要になるような日課も、ここから必要な時だけオンに戻せます。',
       week_compare_title: '先週 vs 今週', week_compare_last: '先週', week_compare_this: '今週',
-      week_compare_days: '{n}日活動', flex_card_btn: '📊 今週の記録カードを見る',
+      week_compare_days: '{n}日活動', flex_card_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 3v18h18"></path><rect x="7" y="12" width="3" height="6"></rect><rect x="12" y="8" width="3" height="10"></rect><rect x="17" y="5" width="3" height="13"></rect></svg> 今週の記録カードを見る',
       flex_card_this_week: 'THIS WEEK', flex_card_streak: 'DAY STREAK', flex_card_active: 'ACTIVE DAYS',
       flex_card_tasks: 'TASKS DONE', flex_card_footer: 'スクリーンショットで記録に残せます',
-      surprise_draw_btn: '🎲 今日の臨時クエストを引く', surprise_label: '✨ 不意の提案',
+      surprise_draw_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="3"></rect><circle cx="8" cy="8" r="1.3" fill="currentColor"></circle><circle cx="16" cy="8" r="1.3" fill="currentColor"></circle><circle cx="12" cy="12" r="1.3" fill="currentColor"></circle><circle cx="8" cy="16" r="1.3" fill="currentColor"></circle><circle cx="16" cy="16" r="1.3" fill="currentColor"></circle></svg> 今日の臨時クエストを引く', surprise_label: '✨ 不意の提案',
       surprise_accept_btn: '受ける', surprise_decline_btn: '見送る',
-      dev_section_label: '🛠️ 開発者用(本番公開前に削除)',
-      today_tasks_header: '📋 今日のタスク', today_tasks_add_btn: '＋ 追加',
-      opt_bgview_btn: '🌌 背景だけを見る', opt_diagnostic_btn: '🔧 保存機能を診断する',
+      dev_section_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"></path></svg> 開発者用(本番公開前に削除)',
+      today_tasks_header: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> 今日のタスク', today_tasks_add_btn: '＋ 追加',
+      opt_bgview_btn: '🌌 背景だけを見る', opt_diagnostic_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"></path></svg> 保存機能を診断する',
       opt_achievements_label: '実績',
       mood_journal_title: '日記', mood_status_empty: '未記入',
-      mood_tag_default: '🙂 気分を記録', mood_add_photo_btn: '📷 写真を追加', mood_save_btn: '保存する',
+      diary_history_label: 'これまでの日記',
+      mood_tag_default: '🙂 気分を記録', mood_add_photo_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 8h3l2-2h6l2 2h3v11H4z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg> 写真を追加', mood_save_btn: '保存する',
       dev_desc: 'レベル解放演出(宇宙背景の見え方など)を確認するための検証用ボタンです。実際のユーザーには見せません。',
-      dev_add_exp_btn: '➕ 検証用: EXPを500増やす', dev_reset_exp_btn: '🔄 検証用: EXPを0に戻す',
-      tutorial_label: '💡 使い方', tutorial_btn: 'チュートリアルを見る',
+      dev_add_exp_btn: '➕ 検証用: EXPを500増やす', dev_reset_exp_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg> 検証用: EXPを0に戻す',
+      tutorial_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.3h6c0-1.1.4-1.8 1-2.3A7 7 0 0 0 12 2z"></path></svg> 使い方', tutorial_btn: 'チュートリアルを見る',
+      opt_howto_support_label: '使い方 / サポート',
       memento_label: '📖 備忘録',
       memento_desc: '1度書いたら、上書きされずに積み上がっていく記録です。今取り組んでいることや、一度きりの体験を、あとでいつでも見返せます。',
       memento_add_btn: '＋ 追加', memento_add_title: '📖 備忘録を追加', memento_save_btn: '保存',
       memento_empty: 'まだ何もありません', memento_confirm_delete: 'これを削除しますか？',
+      agent_hub_label: 'エージェント',
       alarm_label: '⏰ アラーム',
       alarm_desc: 'アプリを開いている間だけ、指定した時刻に音・振動でお知らせします。',
       alarm_enabled_label: '有効', alarm_set_btn: 'この時刻に設定',
       alarm_saved_toast: '⏰ {time}に設定しました', alarm_disabled_toast: 'アラームを無効にしました',
       alarm_fired_toast: '⏰ アラームの時刻です',
-      notify_label: '🔔 通知(試験導入)',
+      notify_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg> 通知(試験導入)',
       notify_desc: 'アプリを閉じていても、時間が来たら通知でお知らせします。試験的な機能です。',
       notify_enable_btn: '通知を有効にする',
       notify_type_reminder: '⏰ 予定のリマインド', notify_type_morning: '☀️ 朝の挨拶',
-      notify_type_absence: '💤 休眠復帰の通知', notify_type_overdue: '🔁 やり忘れの再通知',
+      notify_type_absence: '💤 休眠復帰の通知', notify_type_overdue: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M17 2l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg> やり忘れの再通知',
       misc_other_title: '⋯ その他', misc_other_tile: '⋯ その他',
-      misc_proof_tile: '📷<br>実績照合', misc_restday_tile: '😮‍💨<br>サボる', misc_surprise_tile: '🎲<br>臨時クエスト',
-      agent_suggest_title: '💬 次は何をしますか？', agent_suggest_skip: '今はやらない',
+      misc_proof_tile: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 8h3l2-2h6l2 2h3v11H4z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg><br>実績照合', misc_restday_tile: '😮‍💨<br>サボる', misc_surprise_tile: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="3"></rect><circle cx="8" cy="8" r="1.3" fill="currentColor"></circle><circle cx="16" cy="8" r="1.3" fill="currentColor"></circle><circle cx="12" cy="12" r="1.3" fill="currentColor"></circle><circle cx="8" cy="16" r="1.3" fill="currentColor"></circle><circle cx="16" cy="16" r="1.3" fill="currentColor"></circle></svg><br>臨時クエスト',
+      agent_suggest_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> 次は何をしますか？', agent_suggest_skip: '今はやらない',
       agent_suggest_when: '⏰ いつやりますか？', agent_suggest_confirm: 'この時間で決める',
       daily_briefing_start_btn: '今日を始める',
       new_routine_title: '日課を追加', new_routine_emoji_label: '絵文字（任意）', new_routine_name_label: '日課名',
@@ -3787,10 +3838,10 @@
       today_task_desc: '今日〜数日のうちにやりたい、単発の用事を入れておけます。「今日のタスク」欄に、選んだ日課と一緒に並びます。',
       missed_tasks_desc: '昨日、未完了のまま残っていた「今日のタスク」です。実は終わっていたものがあれば、タップして片付けてください。',
       missed_tasks_close_btn: '閉じる(これらは今日も持ち越します)',
-      today_completed_title: '✅ 今日完了した一覧', close_btn: '閉じる',
+      today_completed_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> 今日完了した一覧', close_btn: '閉じる',
       note_editor_title: 'メモを編集', note_editor_desc: '注意事項やちょっとしたメモを書けます',
       note_editor_save_btn: '保存する',
-      drop_zone_low: '🌿<br>軽量級', drop_zone_mid: '⚙️<br>中量級', drop_zone_high: '🔥<br>重量級', drop_zone_delete: '🗑️<br>削除',
+      drop_zone_low: '🌿<br>軽量級', drop_zone_mid: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><br>中量級', drop_zone_high: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg><br>重量級', drop_zone_delete: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 7h16"></path><path d="M9 7V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V7"></path><path d="M6 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5L18 7"></path></svg>️<br>削除',
       bg_view_hint: 'タップして戻る',
       cal_secondary_other: 'その他',
       cal_search_placeholder: '', cal_search_prompt: '',
@@ -3826,20 +3877,20 @@
       opt_boundary_desc: 'Activity before this time is logged as the previous day. 4–5 AM suits night owls; midnight suits early sleepers.',
       opt_manual_daychange_btn: '🌅 Start a New Day Now',
       opt_manual_daychange_desc: "For irregular sleep schedules — close out today manually without waiting for the boundary time.",
-      opt_multipage_label: '📑 Multi-Page Mode (Experimental)',
-      opt_multipage_row_label: '📑 Multi-Page Mode',
+      opt_multipage_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M14 2v6h6"></path></svg> Multi-Page Mode (Experimental)',
+      opt_multipage_row_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path><path d="M14 2v6h6"></path></svg> Multi-Page Mode',
       opt_multipage_desc: 'Switch between Calendar, Tasks, Diary, and Other as separate full screens.',
       opt_multipage_row: 'Enable',
       group_calendar_short: 'Calendar', group_task_short: 'Tasks', group_diary_short: 'Diary', group_other_short: 'Other',
       group_home_short: 'Home',
       opt_data_label: 'Data Management',
       opt_data_desc: 'Save your XP, history, and task list together as one file. It\u2019s a good idea to back up occasionally in case you switch devices or lose data.',
-      group_calendar: '📅 Calendar', group_task: '✅ Tasks', group_diary: '📔 Diary', group_other: '✨ Other',
-      folder_tab_task: '📋 Tasks', folder_tab_routine: '📦 Routines',
+      group_calendar: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> Calendar', group_task: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> Tasks', group_diary: '📔 Diary', group_other: '✨ Other',
+      folder_tab_task: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> Tasks', folder_tab_routine: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> Routines',
       memento_title_ph: 'Title (optional)',
-      opt_view_data_btn: '🔍 View Saved Data', opt_export_btn: '⬇️ Export Backup',
+      opt_view_data_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> View Saved Data', opt_export_btn: '⬇️ Export Backup',
       opt_import_btn: '⬆️ Restore from Backup',
-      opt_clearcache_btn: '🧹 Clear App Cache',
+      opt_clearcache_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 5L9 15"></path><path d="M9 15l-5 5 3-8z"></path><path d="M13 9l2 2"></path></svg> Clear App Cache',
       opt_clearcache_desc: "Refreshes the app's files (features & appearance) to the latest version. Note: this does NOT change the home screen icon image (delete & re-add is still required for that).",
       opt_support_label: 'Support', opt_contact_btn: 'Contact Support', opt_policy_btn: 'Terms & Privacy',
       opt_credits_label: 'Credits', opt_credits_desc: 'External assets used in this app, and their creators.',
@@ -3850,11 +3901,12 @@
       src_pomo_body: 'A 2025 study on high-cognitive-load learning (e.g., anatomy) found about a 20% reduction in fatigue, 15-25% improvement in concentration, and roughly 12% improvement in learning efficiency compared to self-paced breaks. Theoretically, this is grounded in Nobel laureate Daniel Kahneman\u2019s attention resource theory, which holds that attention begins to decline after roughly 20-30 minutes.',
       src_sleep_title: '🌙 Sleep Log & Wake Timing',
       src_sleep_body: 'The temporary drop in cognitive function and reaction speed right after waking is called "sleep inertia," and is well documented. Notably, being abruptly woken during deep (slow-wave) sleep produces stronger inertia than waking during lighter sleep stages.',
-      src_ebbing_title: '🧠 Forgetting Curve & Review Reminders',
+      src_ebbing_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"></path><path d="M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-2 5v1a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"></path></svg> Forgetting Curve & Review Reminders',
       src_ebbing_body: 'In 1885, psychologist Hermann Ebbinghaus showed that memory decays rapidly right after learning. Separately, research from the University of Waterloo found that a 10-minute review within 24 hours of learning restores memory to near-original levels.',
-      src_mathalarm_title: '🔢 About the Alarm Math Problem (an honest note)',
+      src_mathalarm_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 9h16"></path><path d="M4 15h16"></path><path d="M10 3L8 21"></path><path d="M16 3l-2 18"></path></svg> About the Alarm Math Problem (an honest note)',
       src_mathalarm_body: 'To be honest, I could not find direct research showing that solving a math problem itself speeds up recovery from sleep inertia. That said, since impaired judgment and reaction speed right after waking is well established, this feature is best understood as a practical check for genuine wakefulness, not a cure.',
       opt_lang_label: 'Language', lang_ja_btn: '日本語', lang_en_btn: 'English',
+      opt_lang_sound_label: 'Language / Sound',
       opt_prototype_note: '※ This page is a visual prototype only for now. Real settings persistence is coming soon.',
       cal_title: "This Month's Record", cal_days: 'Days Logged', cal_exp: 'Total EXP', cal_items: 'Total Picks',
       cal_chart_title: 'EXP Trend (Last 14 Days)', cal_hint: '📍 Tap a logged day to see details',
@@ -3879,51 +3931,54 @@
       ph_mood_journal: "Today's mood, how you're feeling, whatever's on your mind. Anything goes.",
       ph_focus_target: 'e.g. Prep for the research presentation', ph_focus_reason: "e.g. The presentation is close and I can't focus on anything else",
       ph_add_task_label: 'e.g. Yoga, journaling', ph_note_editor: "e.g. Even 10 minutes of practice is fine",
-      focus_banner_label: '🎯 Focused', focus_settings_label: 'Focus Mode',
+      focus_banner_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> Focused', focus_settings_label: 'Focus Mode',
       focus_settings_desc: "Set a period to dive deep into just one thing. During that time, routine tasks show up in an \"it's fine to skip today\" color.",
-      focus_start_btn: '🎯 Start Focus Mode', focus_modal_title: '🎯 Start Focus Mode',
+      focus_start_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> Start Focus Mode', focus_modal_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> Start Focus Mode',
       focus_modal_desc: 'Pick one thing to dive deep into for this period. It can be rest itself.',
       focus_target_label: 'What will you focus on?', focus_reason_label: 'Why this? (optional)',
       focus_days_label: 'Duration (days)', focus_start_confirm_btn: 'Start', focus_cancel_btn: 'Never mind',
       focus_log_btn: 'Faced it again today', focus_log_done_btn: "✓ Logged today", focus_end_btn: 'End',
       focus_subitem_section: '🔽 Steps Worked Backward From the Goal', focus_subitem_placeholder: 'Add the next small step',
       focus_note_placeholder: "Today's note (optional)", focus_note_save_btn: 'Save',
-      data_viewer_title: '🔍 View Saved Data', data_viewer_recent_mood: 'Recent Mood Entries',
-      badge_list_title: '🏅 Achievement Badges', badge_list_settings_btn: '🏅 View Achievement Badges', badge_list_empty: "No achievement badges yet. Try issuing your first one from achievement verification.",
-      routine_stock_title: '📦 Routine Stock',
+      data_viewer_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg> View Saved Data', data_viewer_recent_mood: 'Recent Mood Entries',
+      badge_list_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg> Achievement Badges', badge_list_settings_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg> View Achievement Badges', badge_list_empty: "No achievement badges yet. Try issuing your first one from achievement verification.",
+      routine_stock_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> Routine Stock',
       routine_stock_desc: "Turn off routines you don't need right now and hide them from the list (nothing is deleted). Routines only needed occasionally (like before a race) can be switched back on anytime from here.",
       week_compare_title: 'Last Week vs This Week', week_compare_last: 'Last Week', week_compare_this: 'This Week',
-      week_compare_days: '{n} active days', flex_card_btn: "📊 View This Week's Recap Card",
+      week_compare_days: '{n} active days', flex_card_btn: "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><path d='M3 3v18h18'></path><rect x='7' y='12' width='3' height='6'></rect><rect x='12' y='8' width='3' height='10'></rect><rect x='17' y='5' width='3' height='13'></rect></svg> View This Week's Recap Card",
       flex_card_this_week: 'THIS WEEK', flex_card_streak: 'DAY STREAK', flex_card_active: 'ACTIVE DAYS',
       flex_card_tasks: 'TASKS DONE', flex_card_footer: 'Screenshot this to keep a record',
-      surprise_draw_btn: "🎲 Draw Today's Bonus Quest", surprise_label: '✨ Surprise Offer',
+      surprise_draw_btn: "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><rect x='3' y='3' width='18' height='18' rx='3'></rect><circle cx='8' cy='8' r='1.3' fill='currentColor'></circle><circle cx='16' cy='8' r='1.3' fill='currentColor'></circle><circle cx='12' cy='12' r='1.3' fill='currentColor'></circle><circle cx='8' cy='16' r='1.3' fill='currentColor'></circle><circle cx='16' cy='16' r='1.3' fill='currentColor'></circle></svg> Draw Today's Bonus Quest", surprise_label: '✨ Surprise Offer',
       surprise_accept_btn: 'Accept', surprise_decline_btn: 'Pass',
-      dev_section_label: '🛠️ Developer Only (remove before launch)',
-      today_tasks_header: "📋 Today's Tasks", today_tasks_add_btn: '+ Add',
-      opt_bgview_btn: '🌌 View Background Only', opt_diagnostic_btn: '🔧 Diagnose Storage',
+      dev_section_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"></path></svg> Developer Only (remove before launch)',
+      today_tasks_header: "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><rect x='4' y='3' width='16' height='18' rx='2'></rect><path d='M9 3v3h6V3'></path><path d='M8 11h8'></path><path d='M8 15h8'></path></svg> Today's Tasks", today_tasks_add_btn: '+ Add',
+      opt_bgview_btn: '🌌 View Background Only', opt_diagnostic_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"></path></svg> Diagnose Storage',
       opt_achievements_label: 'Achievements',
       mood_journal_title: 'Diary', mood_status_empty: 'Not written yet',
-      mood_tag_default: '🙂 Log Mood', mood_add_photo_btn: '📷 Add Photo', mood_save_btn: 'Save',
+      diary_history_label: 'Past Entries',
+      mood_tag_default: '🙂 Log Mood', mood_add_photo_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 8h3l2-2h6l2 2h3v11H4z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg> Add Photo', mood_save_btn: 'Save',
       dev_desc: 'Test buttons for checking level-unlock visuals (like the cosmic background). Not shown to real users.',
-      dev_add_exp_btn: '➕ Test: +500 EXP', dev_reset_exp_btn: '🔄 Test: Reset EXP to 0',
-      tutorial_label: '💡 How to Use', tutorial_btn: 'View Tutorial',
+      dev_add_exp_btn: '➕ Test: +500 EXP', dev_reset_exp_btn: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg> Test: Reset EXP to 0',
+      tutorial_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.3h6c0-1.1.4-1.8 1-2.3A7 7 0 0 0 12 2z"></path></svg> How to Use', tutorial_btn: 'View Tutorial',
+      opt_howto_support_label: 'How to Use / Support',
       memento_label: '📖 Memento',
       memento_desc: "Once written, these stack up instead of being overwritten. Look back anytime at what you're working on or one-off experiences.",
       memento_add_btn: '＋ Add', memento_add_title: '📖 Add a Memento', memento_save_btn: 'Save',
       memento_empty: 'Nothing here yet', memento_confirm_delete: 'Delete this?',
+      agent_hub_label: 'Agent',
       alarm_label: '⏰ Alarm',
       alarm_desc: 'While the app is open, you\'ll get sound and vibration alerts at the time you set.',
       alarm_enabled_label: 'Enabled', alarm_set_btn: 'Set This Time',
       alarm_saved_toast: '⏰ Set for {time}', alarm_disabled_toast: 'Alarm disabled',
       alarm_fired_toast: "⏰ It's alarm time",
-      notify_label: '🔔 Notifications (beta)',
+      notify_label: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg> Notifications (beta)',
       notify_desc: "Even when the app is closed, you'll be notified when the time comes. This is an experimental feature.",
       notify_enable_btn: 'Enable Notifications',
       notify_type_reminder: '⏰ Event Reminders', notify_type_morning: '☀️ Morning Greeting',
-      notify_type_absence: '💤 Inactivity Check-in', notify_type_overdue: '🔁 Overdue Follow-up',
+      notify_type_absence: '💤 Inactivity Check-in', notify_type_overdue: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M17 2l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg> Overdue Follow-up',
       misc_other_title: '⋯ Other', misc_other_tile: '⋯ Other',
-      misc_proof_tile: '📷<br>Verify', misc_restday_tile: '😮‍💨<br>Skip Today', misc_surprise_tile: '🎲<br>Bonus Quest',
-      agent_suggest_title: '💬 What next?', agent_suggest_skip: 'Not now',
+      misc_proof_tile: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 8h3l2-2h6l2 2h3v11H4z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg><br>Verify', misc_restday_tile: '😮‍💨<br>Skip Today', misc_surprise_tile: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="3"></rect><circle cx="8" cy="8" r="1.3" fill="currentColor"></circle><circle cx="16" cy="8" r="1.3" fill="currentColor"></circle><circle cx="12" cy="12" r="1.3" fill="currentColor"></circle><circle cx="8" cy="16" r="1.3" fill="currentColor"></circle><circle cx="16" cy="16" r="1.3" fill="currentColor"></circle></svg><br>Bonus Quest',
+      agent_suggest_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> What next?', agent_suggest_skip: 'Not now',
       agent_suggest_when: '⏰ When?', agent_suggest_confirm: 'Set This Time',
       daily_briefing_start_btn: 'Start Today',
       new_routine_title: 'Add a Routine', new_routine_emoji_label: 'Emoji (optional)', new_routine_name_label: 'Routine Name',
@@ -3931,10 +3986,10 @@
       today_task_desc: "Add one-off things you want to do today or in the next few days. They'll appear alongside your chosen routines in \"Today's Tasks\".",
       missed_tasks_desc: "These are yesterday's unfinished \"Today's Tasks\". If any were actually done, tap to clear them.",
       missed_tasks_close_btn: "Close (these carry over to today)",
-      today_completed_title: '✅ Completed Today', close_btn: 'Close',
+      today_completed_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> Completed Today', close_btn: 'Close',
       note_editor_title: 'Edit Note', note_editor_desc: 'Write a caution or a quick note here',
       note_editor_save_btn: 'Save',
-      drop_zone_low: '🌿<br>Light', drop_zone_mid: '⚙️<br>Medium', drop_zone_high: '🔥<br>Heavy', drop_zone_delete: '🗑️<br>Delete',
+      drop_zone_low: '🌿<br>Light', drop_zone_mid: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><br>Medium', drop_zone_high: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg><br>Heavy', drop_zone_delete: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 7h16"></path><path d="M9 7V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V7"></path><path d="M6 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5L18 7"></path></svg>️<br>Delete',
       bg_view_hint: 'Tap to return',
       cal_secondary_other: 'Other',
       cal_search_placeholder: '', cal_search_prompt: '',
@@ -3957,7 +4012,7 @@
     }
     return str;
   }
-  const LEVEL_EMOJI = { low: '🌿', mid: '⚙️', high: '🔥' };
+  const LEVEL_EMOJI = { low: '🌿', mid: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>', high: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg>' };
   function levelDisplayName(lv, withEmoji) {
     const name = t(`levelhead_${lv}_name`);
     return withEmoji ? `${LEVEL_EMOJI[lv]}${name}` : name;
@@ -3975,7 +4030,7 @@
     const dict = I18N_DICT[currentLang];
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
-      if (dict[key] !== undefined) el.textContent = dict[key];
+      if (dict[key] !== undefined) el.innerHTML = dict[key];
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
       const key = el.getAttribute('data-i18n-placeholder');
@@ -4012,8 +4067,8 @@
     { id: 't2', label: "読書", emoji: "📖", level: "low", tag: "自宅" },
     { id: 't3', label: "水を飲む", emoji: "💧", level: "low", tag: "自宅" },
     { id: 't4', label: "ジョギング", emoji: "🏃", level: "mid", tag: "外出" },
-    { id: 't5', label: "部屋の掃除", emoji: "🧹", level: "mid", tag: "自宅" },
-    { id: 't6', label: "研究のまとめ作業", emoji: "📝", level: "high", tag: "重量級" },
+    { id: 't5', label: "部屋の掃除", emoji: "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><path d='M19 5L9 15'></path><path d='M9 15l-5 5 3-8z'></path><path d='M13 9l2 2'></path></svg>", level: "mid", tag: "自宅" },
+    { id: 't6', label: "研究のまとめ作業", emoji: "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><path d='M12 20h9'></path><path d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z'></path></svg>", level: "high", tag: "重量級" },
   ];
 
   let taskList = []; // 実際に画面に表示・編集される、現在のタスク一覧
@@ -5470,11 +5525,11 @@
         // window.storage.set は失敗時に例外を投げず null を返す設計のため、try/catchだけでは検知できない。
         // 戻り値を明示的に確認し、失敗時はここで初めて可視化する(v99で追加)。
         console.error('saveProgress failed: window.storage.set returned null', window.__storageLastError);
-        showToast(`⚠️ 保存に失敗しました: ${window.__storageLastError || '原因不明'}`);
+        showToast(`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 3l10 18H2z"></path><path d="M12 10v4"></path><circle cx="12" cy="17.5" r="0.6" fill="currentColor"></circle></svg> 保存に失敗しました: ${window.__storageLastError || '原因不明'}`);
       }
     } catch (e) {
       console.error('saveProgress threw', e);
-      showToast(`⚠️ 保存中にエラー: ${e.message || e}`);
+      showToast(`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 3l10 18H2z"></path><path d="M12 10v4"></path><circle cx="12" cy="17.5" r="0.6" fill="currentColor"></circle></svg> 保存中にエラー: ${e.message || e}`);
     }
   }
 
@@ -5527,7 +5582,7 @@
           </div>
           ${noteHtml}
         </div>
-        <button class="item-note-btn" data-task-id="${task.id}">✎</button>
+        <button class="item-note-btn" data-task-id="${task.id}"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg></button>
       `;
       div.querySelector('.item-main').onclick = () => toggleItem(div, key);
       div.querySelector('.check-box').onclick = () => toggleItem(div, key);
@@ -5765,14 +5820,14 @@
     }
     const newTask = {
       id: 'custom_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-      label, emoji: emoji || '📌', level: addTaskTargetLevel, tag: 'カスタム',
+      label, emoji: emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>', level: addTaskTargetLevel, tag: 'カスタム',
     };
     taskList.push(newTask);
     if (time) {
       // 日課に時刻を設定した場合、独自の通知経路は作らず、既存のカレンダー(毎日の繰り返し予定)にそのまま繋げる。
       // これで、リマインド設定・完了の連動も、カレンダーの予定と同じ仕組みがそのまま使える。
       const todayKey = logicalDateKey(trustedNow);
-      addScheduledEvent(todayKey, time, `${emoji || '📌'} ${label}`, 'daily', null, {
+      addScheduledEvent(todayKey, time, `${emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>'} ${label}`, 'daily', null, {
         linkedTaskKey: `${newTask.level}|${newTask.label}`,
       });
     }
@@ -5822,7 +5877,7 @@
     } else {
       body.innerHTML = badgeHistory.map(b => `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.08);">
-          <span>🏅 ${escapeHtml(b.name)}</span>
+          <span><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg> ${escapeHtml(b.name)}</span>
           <span style="color:var(--ink-dim); font-size:10.5px; font-family:'Orbitron',sans-serif;">${b.date}</span>
         </div>
       `).join('') + `<div style="margin-top:10px; font-size:10.5px; color:var(--ink-dim);">合計 ${badgeHistory.length} 枚</div>`;
@@ -5848,9 +5903,9 @@
         saveStreakMilestone(),
         saveMoodJournalData(),
       ]);
-      showToast('💾 全項目を保存しました(次回はここから始まります)');
+      showToast('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg> 全項目を保存しました(次回はここから始まります)');
     } catch (e) {
-      showToast(`⚠️ 保存中にエラー: ${e.message || e}`);
+      showToast(`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 3l10 18H2z"></path><path d="M12 10v4"></path><circle cx="12" cy="17.5" r="0.6" fill="currentColor"></circle></svg> 保存中にエラー: ${e.message || e}`);
     }
   }
 
@@ -5887,26 +5942,26 @@
       const testVal = 'ok_' + Date.now();
       const setResult = await window.storage.set('quest-diagnostic-test', testVal);
       if (!setResult) {
-        lines.push('❌ window.storage.set が失敗(nullが返りました)');
+        lines.push('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M5 5l14 14"></path><path d="M19 5L5 19"></path></svg> window.storage.set が失敗(nullが返りました)');
       } else {
         const getResult = await window.storage.get('quest-diagnostic-test');
         if (getResult && getResult.value === testVal) {
-          lines.push('✅ window.storage 経由の保存・読み込み: 成功');
+          lines.push('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> window.storage 経由の保存・読み込み: 成功');
         } else {
-          lines.push('❌ 保存はできたが、読み込みで一致しませんでした');
+          lines.push('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M5 5l14 14"></path><path d="M19 5L5 19"></path></svg> 保存はできたが、読み込みで一致しませんでした');
         }
       }
     } catch (e) {
-      lines.push(`❌ window.storage呼び出しで例外: ${e.message || e}`);
+      lines.push(`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M5 5l14 14"></path><path d="M19 5L5 19"></path></svg> window.storage呼び出しで例外: ${e.message || e}`);
     }
 
     // ② ブラウザのlocalStorageそのものが使えるかの直接テスト(プライベートブラウズ検知用)
     try {
       localStorage.setItem('quest_raw_test', '1');
       localStorage.removeItem('quest_raw_test');
-      lines.push('✅ ブラウザのlocalStorage自体: 利用可能');
+      lines.push('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> ブラウザのlocalStorage自体: 利用可能');
     } catch (e) {
-      lines.push(`❌ ブラウザのlocalStorage自体が使えません: ${e.message || e}`);
+      lines.push(`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M5 5l14 14"></path><path d="M19 5L5 19"></path></svg> ブラウザのlocalStorage自体が使えません: ${e.message || e}`);
       lines.push('→ プライベートブラウズモードで開いている可能性が高いです。通常モードで開き直してください。');
     }
 
@@ -5919,13 +5974,13 @@
       const bigVal = 'x'.repeat(200000); // 約200KB
       const bigResult = await window.storage.set('quest-diagnostic-big-test', bigVal);
       if (!bigResult) {
-        lines.push('❌ 大きめデータ(約200KB)の書き込みに失敗。保存容量が逼迫している可能性があります');
+        lines.push('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M5 5l14 14"></path><path d="M19 5L5 19"></path></svg> 大きめデータ(約200KB)の書き込みに失敗。保存容量が逼迫している可能性があります');
       } else {
-        lines.push('✅ 大きめデータ(約200KB)の書き込み: 成功');
+        lines.push('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M7 12.5l3 3 7-7"></path></svg> 大きめデータ(約200KB)の書き込み: 成功');
         await window.storage.delete('quest-diagnostic-big-test');
       }
     } catch (e) {
-      lines.push(`❌ 大きめデータの書き込みで例外: ${e.message || e}`);
+      lines.push(`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M5 5l14 14"></path><path d="M19 5L5 19"></path></svg> 大きめデータの書き込みで例外: ${e.message || e}`);
     }
 
     // ④ 現在の使用容量の目安(v99で追加)
@@ -5960,10 +6015,10 @@
           lines.push(`前回保存からの経過時間: 約${hrs}時間`);
         }
       } else {
-        lines.push('⚠️ quest-progress-v2 が保存されていません(一度もタスクを選んだことが無いか、保存に失敗し続けている可能性)');
+        lines.push('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 3l10 18H2z"></path><path d="M12 10v4"></path><circle cx="12" cy="17.5" r="0.6" fill="currentColor"></circle></svg> quest-progress-v2 が保存されていません(一度もタスクを選んだことが無いか、保存に失敗し続けている可能性)');
       }
     } catch (e) {
-      lines.push(`❌ 保存済みデータの確認で例外: ${e.message || e}`);
+      lines.push(`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M5 5l14 14"></path><path d="M19 5L5 19"></path></svg> 保存済みデータの確認で例外: ${e.message || e}`);
     }
 
     alert(lines.join('\n'));
@@ -6210,6 +6265,7 @@
     await loadOtherPinState();
     await loadMultiPageModePref();
     await loadAlarmDismissMethod();
+    renderDiaryDateHeader();
     renderTodaysPeekCat();
     await loadDebugLogPref();
     try {
@@ -6288,7 +6344,7 @@
         renderTodayTasksList();
         renderMoodJournalUI();
         if (carried.length > 0) openMissedTasksReview(carried);
-        showToast('📅 日付が変わりました。今日の分を記録しました');
+        showToast('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> 日付が変わりました。今日の分を記録しました');
       }
     }, 60000); // 1分ごとにチェック
   }
@@ -6435,10 +6491,64 @@
       updateSummaryInner();
     } catch (e) {
       console.error('updateSummary threw', e);
-      showToast(`⚠️ 更新処理でエラー: ${e.message || e}`);
+      showToast(`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 3l10 18H2z"></path><path d="M12 10v4"></path><circle cx="12" cy="17.5" r="0.6" fill="currentColor"></circle></svg> 更新処理でエラー: ${e.message || e}`);
       // 途中で失敗していても、経験値・選択状態の保存だけは可能な限り試みる
       try { saveProgress(currentTodayExp || 0); } catch (e2) {}
     }
+  }
+  let diaryHistoryOpen = false;
+  function toggleDiaryHistory() {
+    playUIClick();
+    diaryHistoryOpen = !diaryHistoryOpen;
+    document.getElementById('diaryHistoryList').classList.toggle('show', diaryHistoryOpen);
+    document.getElementById('diaryHistoryChevron').style.transform = diaryHistoryOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+    if (diaryHistoryOpen) renderDiaryHistory();
+  }
+  function renderDiaryHistory() {
+    const el = document.getElementById('diaryHistoryList');
+    if (!el) return;
+    const dowNames = currentLang === 'en' ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] : ['日','月','火','水','木','金','土'];
+    const keys = Object.keys(moodJournalData).filter(k => (moodJournalData[k] || []).some(e => e.text && e.text.trim())).sort().reverse();
+    if (keys.length === 0) {
+      el.innerHTML = `<div style="font-size:11px; color:var(--ink-dim); opacity:0.6; padding:6px 0;">${currentLang === 'en' ? 'No entries yet' : 'まだ日記がありません'}</div>`;
+      return;
+    }
+    el.innerHTML = keys.slice(0, 60).map(key => {
+      const [y, m, d] = key.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      const dow = dowNames[dateObj.getDay()];
+      const entries = moodJournalData[key].filter(e => e.text && e.text.trim());
+      const preview = entries.map(e => e.text).join(' / ');
+      return `
+        <div class="diary-history-row" onclick="jumpToDiaryDate('${key}')">
+          <div class="diary-history-row-date">
+            <div class="diary-history-row-daynum">${d}</div>
+            <div class="diary-history-row-dow">${dow}</div>
+          </div>
+          <div class="diary-history-row-text">${escapeHtml(preview)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+  function jumpToDiaryDate(key) {
+    showDayDetail(key, dailyHistory[key] || { count: 0, exp: 0, items: [] });
+  }
+  function renderDiaryDateHeader() {
+    const el = document.getElementById('diaryBigDateRow');
+    if (!el) return;
+    const now = trustedNow;
+    const dowNames = currentLang === 'en'
+      ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+      : ['日','月','火','水','木','金','土'];
+    const dow = dowNames[now.getDay()];
+    const dowColor = now.getDay() === 0 ? '#F0906B' : (now.getDay() === 6 ? 'var(--cyan)' : 'var(--ink)');
+    el.innerHTML = `
+      <div class="diary-big-date-num">${now.getDate()}</div>
+      <div class="diary-big-date-sub">
+        <div class="diary-big-date-ym">${now.getFullYear()}/${now.getMonth() + 1}</div>
+        <div class="diary-big-date-dow" style="color:${dowColor};">${dow}${currentLang === 'en' ? '' : '曜日'}</div>
+      </div>
+    `;
   }
   function updateSummaryInner() {
     const count = picked.size;
@@ -6522,7 +6632,7 @@
 
     if (level > prevLevel && !isInitializing) {
       showGrandModal({
-        icon: '🏅', label: 'LEVEL UP', title: t('levelup_title', { n: String(level).padStart(2, '0') }),
+        icon: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg>', label: 'LEVEL UP', title: t('levelup_title', { n: String(level).padStart(2, '0') }),
         exp: expIntoLevel, sub: 'よくがんばりました！',
         tone: null, isLevelUp: true,
       });
@@ -6580,7 +6690,7 @@
     overlay.appendChild(titleEl);
     overlay.appendChild(subEl);
     document.body.appendChild(overlay);
-    revealTextByChar(titleEl, `🔥 ${days}`, 45);
+    revealTextByChar(titleEl, `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg> ${days}`, 45);
     setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 2200);
   }
 
@@ -6590,7 +6700,7 @@
     const streak = calculateStreak();
     if (streak > 0) {
       el.classList.remove('reset');
-      el.textContent = (currentLang === 'en') ? `🔥 ${streak}-day streak` : `🔥 ${streak}日連続`;
+      el.textContent = (currentLang === 'en') ? `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg> ${streak}-day streak` : `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg> ${streak}日連続`;
       if (STREAK_MILESTONES.includes(streak) && streak > highestCelebratedMilestone) {
         highestCelebratedMilestone = streak;
         saveStreakMilestone();
@@ -6864,7 +6974,7 @@
         <div class="check-box" onclick="toggleTodayTask('${t.id}')">✓</div>
         <div class="item-main" onclick="toggleTodayTask('${t.id}')">
           <div class="item-main-row">
-            <span class="item-emoji">📌</span>
+            <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
             <span class="item-label">${escapeHtml(t.text)}${carryLabel ? ` <span class="today-task-carry-tag">${escapeHtml(carryLabel)}</span>` : ''}</span>
           </div>
         </div>
@@ -6880,7 +6990,7 @@
         <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();">✓</div>
         <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();">
           <div class="item-main-row">
-            <span class="item-emoji">📅</span>
+            <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg></span>
             <span class="item-label">${dot}${ev.time ? `${ev.time} ` : ''}${escapeHtml(ev.text)}</span>
           </div>
         </div>
@@ -6895,7 +7005,7 @@
         <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();">✓</div>
         <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();">
           <div class="item-main-row">
-            <span class="item-emoji">📅</span>
+            <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg></span>
             <span class="item-label">${escapeHtml(ev.text)} <span class="today-task-carry-tag">${escapeHtml(overdueLabel)}</span></span>
           </div>
         </div>
@@ -7050,7 +7160,7 @@
         <div class="check-box" onclick="confirmMissedTaskDone('${t.id}')"></div>
         <div class="item-main">
           <div class="item-main-row">
-            <span class="item-emoji">📌</span>
+            <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
             <span class="item-label">${escapeHtml(t.text)}</span>
           </div>
         </div>
@@ -7192,7 +7302,7 @@
     const levelLabel = { low: '軽量級', mid: '中量級', high: '重量級' };
     el.innerHTML = taskList.map(task => `
       <div class="stock-item${task.active === false ? ' inactive' : ''}">
-        <span class="stock-item-emoji">${task.emoji || '📌'}</span>
+        <span class="stock-item-emoji">${task.emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>'}</span>
         <span class="stock-item-label">${escapeHtml(task.label)}</span>
         <span class="stock-item-level">${levelLabel[task.level] || ''}</span>
         <label class="toggle-switch">
@@ -7775,7 +7885,7 @@
 
   // ---- ファンシーテーマ専用: レベルに応じて宇宙の景色が広がっていく演出(v48で追加) ----
   // ==================================================================
-  // 🛠️ 開発者専用デバッグ関数(v49で追加)。レベル解放演出の検証用。
+  // <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"></path></svg> 開発者専用デバッグ関数(v49で追加)。レベル解放演出の検証用。
   // 本番公開前に、この関数とオプション画面の対応ボタンをまとめて削除すること。
   // ==================================================================
   function enterBgViewMode() {
@@ -8316,7 +8426,7 @@
       return `<div class="mood-entry-card" onclick="editMoodEntry('${entry.id}')">
         <div class="mood-entry-card-time">${entry.time || ''}</div>
         <div class="mood-entry-card-preview">${moodEmoji}${escapeHtml(preview)}</div>
-        <div class="mood-entry-card-meta">${imgCount > 0 ? `📷${imgCount}枚` : ''}</div>
+        <div class="mood-entry-card-meta">${imgCount > 0 ? `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 8h3l2-2h6l2 2h3v11H4z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg>${imgCount}枚` : ''}</div>
       </div>`;
     }).join('');
   }
@@ -8444,7 +8554,7 @@
 
     try {
       await navigator.clipboard.writeText(prompt);
-      showToast(currentLang === 'en' ? '📋 Copied — paste it into an AI chat' : '📋 コピーしました。AIとのチャットに貼り付けてください');
+      showToast(currentLang === 'en' ? '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> Copied — paste it into an AI chat' : '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> コピーしました。AIとのチャットに貼り付けてください');
     } catch (e) {
       showToast(currentLang === 'en' ? 'Copy failed' : 'コピーに失敗しました');
     }
@@ -8514,10 +8624,10 @@
     }
 
     document.getElementById('moodJournalSavedInfo').textContent =
-      `💾 ${currentLang === 'en' ? 'Saved' : '保存済み'}: ${new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}${isAutosave ? (currentLang === 'en' ? ' (auto)' : '(自動)') : ''}`;
+      `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg> ${currentLang === 'en' ? 'Saved' : '保存済み'}: ${new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}${isAutosave ? (currentLang === 'en' ? ' (auto)' : '(自動)') : ''}`;
     showSaveFlourish();
   }
-  // 保存された瞬間、💾を画面の端にふわっと出して、視覚的にも「保存された」と分かりやすくする
+  // 保存された瞬間、<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg>を画面の端にふわっと出して、視覚的にも「保存された」と分かりやすくする
   let saveFlourishTimer = null;
   function showSaveFlourish() {
     let el = document.getElementById('saveFlourishIcon');
@@ -8525,7 +8635,7 @@
       el = document.createElement('div');
       el.id = 'saveFlourishIcon';
       el.className = 'save-flourish-icon';
-      el.textContent = '💾';
+      el.textContent = '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg>';
       document.body.appendChild(el);
     }
     el.classList.remove('show');
@@ -8736,7 +8846,7 @@
         const streak = calculateStreak();
         const streakEl = document.getElementById('reportStreakLine');
         if (streakEl) {
-          const label = (streak > 0) ? `🔥 ${streak}${isEn ? '-day streak' : '日連続'}` : (isEn ? '🌱 Start today' : '🌱 今日からまた始めよう');
+          const label = (streak > 0) ? `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg> ${streak}${isEn ? '-day streak' : '日連続'}` : (isEn ? '🌱 Start today' : '🌱 今日からまた始めよう');
           streakEl.innerHTML = (streak > 0) ? `<span class="premium-gold-text">${label}</span>` : `<span style="color:var(--ink-dim);">${label}</span>`;
         }
       }
@@ -8847,7 +8957,7 @@
       <div class="week-view-day${isToday ? ' is-today' : ''}" onclick="showDayDetail('${key}', dailyHistory['${key}'] || {count:0,exp:0,items:[]})">
         <div class="week-view-daylabel">${isToday ? '今日' : `${d.getMonth() + 1}/${d.getDate()}`}</div>
         <div class="week-view-events">
-          <div class="week-view-event-row">${dot}${timeLabel ? `<span class="week-view-event-time">${timeLabel}</span>` : ''}${ev.recurrence ? '🔁 ' : ''}${escapeHtml(ev.text)}</div>
+          <div class="week-view-event-row">${dot}${timeLabel ? `<span class="week-view-event-time">${timeLabel}</span>` : ''}${ev.recurrence ? '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M17 2l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg> ' : ''}${escapeHtml(ev.text)}</div>
         </div>
       </div>`;
     }).join('');
@@ -8925,7 +9035,7 @@
         <div onclick="toggleScheduledEvent('${ev.id}','${key}'); renderDayViewEvents('${key}'); renderCalendar();" style="width:16px; height:16px; border-radius:4px; border:1.5px solid var(--magenta); flex-shrink:0; cursor:pointer; ${isDone ? 'background:var(--magenta);' : ''}"></div>
         ${dot}
         ${ev.time ? `<span style="font-size:10.5px; color:var(--magenta); font-family:'Orbitron',sans-serif; flex-shrink:0;">${ev.time}</span>` : ''}
-        <span style="font-size:12px; color:#fff; flex:1; ${isDone ? 'text-decoration:line-through;' : ''}">${ev.recurrence ? '🔁 ' : ''}${escapeHtml(ev.text)}</span>
+        <span style="font-size:12px; color:#fff; flex:1; ${isDone ? 'text-decoration:line-through;' : ''}">${ev.recurrence ? '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M17 2l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg> ' : ''}${escapeHtml(ev.text)}</span>
         <span onclick="deleteScheduledEvent('${ev.id}'); renderDayViewEvents('${key}'); renderCalendar();" style="color:var(--ink-dim); font-size:13px; padding:2px 4px; cursor:pointer;">✕</span>
       </div>
     `;
@@ -9281,7 +9391,7 @@
   async function saveMementoCards() {
     try { await window.storage.set('quest-memento-cards-v1', JSON.stringify(mementoCards)); } catch (e) {}
   }
-  const MEMENTO_PAGE_SIZE = 5;
+  const MEMENTO_PAGE_SIZE = 4;
   let mementoPage = 0;
   function shiftMementoPage(delta) {
     const totalPages = Math.max(1, Math.ceil(mementoCards.length / MEMENTO_PAGE_SIZE));
@@ -9389,7 +9499,7 @@
           <span style="font-size:9.5px; color:var(--ink-dim); font-family:'Orbitron',sans-serif;">${dateLabel}</span>
           <div style="display:flex; gap:10px; align-items:center;">
             <span onclick="toggleMementoFavorite('${card.id}')" style="font-size:14px; cursor:pointer; color:${card.favorite ? 'var(--yellow)' : 'var(--ink-dim)'};">${card.favorite ? '★' : '☆'}</span>
-            <span onclick="openEditMemento('${card.id}')" style="color:var(--ink-dim); font-size:12px; cursor:pointer; padding:2px 4px;">✎</span>
+            <span onclick="openEditMemento('${card.id}')" style="color:var(--ink-dim); font-size:12px; cursor:pointer; padding:2px 4px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg></span>
             <span onclick="deleteMemento('${card.id}')" style="color:var(--ink-dim); font-size:13px; cursor:pointer; padding:2px 4px;">✕</span>
           </div>
         </div>
@@ -9495,14 +9605,26 @@
 
   // ---- チュートリアル(手動呼び出し。開発中に毎回自動表示されるとだるいので、設定ページから任意のタイミングで見る形にする) ----
   const TUTORIAL_STEPS_JA = [
-    '📅 カレンダーは、左右にスワイプすると、月→週→日を切り替えられます。下のカードを、実際に左右にスワイプしてみてください。',
+    '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダーは、左右にスワイプすると、月→週→日を切り替えられます。下のカードを、実際に左右にスワイプしてみてください。',
     '📍 記録のある日をタップすると、その日の詳細が見られます。',
-    '🤖 日記の「コピー」ボタンで、記録をAIに相談しやすい形でコピーできます。お気に入りのAIチャットに貼り付けて、率直な感想をもらってみましょう。',
+    '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="8" width="16" height="12" rx="2"></rect><path d="M12 8V4"></path><circle cx="12" cy="3" r="1"></circle><circle cx="9" cy="14" r="1.3" fill="currentColor"></circle><circle cx="15" cy="14" r="1.3" fill="currentColor"></circle><path d="M9 18h6"></path></svg> 日記の「コピー」ボタンで、記録をAIに相談しやすい形でコピーできます。お気に入りのAIチャットに貼り付けて、率直な感想をもらってみましょう。',
+    '⏰ アラームは、指定した時刻に、音・振動でお知らせします。通知が有効なら、アプリを閉じていても届きます。',
+    '🎯 全集中モードは、期間を決めて、1つのことだけに深く向き合うモードです。その間、日課タスクは「今はやらなくていい」色で表示されます。',
+    '📖 備忘録は、1度書いたら、上書きされずに積み上がっていく記録です。今取り組んでいることや、一度きりの体験を、あとでいつでも見返せます。',
+    '1日の区切りの時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。',
+    '🔔 通知は、アプリを閉じていても、時間が来たらお知らせします。試験的な機能です。',
+    '⬇️ データ管理から、経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。',
   ];
   const TUTORIAL_STEPS_EN = [
-    '📅 In the calendar, swipe left or right to switch between month, week, and day views. Try swiping the card below.',
+    '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> In the calendar, swipe left or right to switch between month, week, and day views. Try swiping the card below.',
     '📍 Tap a day with a record to see its details.',
-    "🤖 The diary's Copy button copies your entry in a format that's easy to share with an AI. Paste it into your favorite AI chat for an honest take.",
+    "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><rect x='4' y='8' width='16' height='12' rx='2'></rect><path d='M12 8V4'></path><circle cx='12' cy='3' r='1'></circle><circle cx='9' cy='14' r='1.3' fill='currentColor'></circle><circle cx='15' cy='14' r='1.3' fill='currentColor'></circle><path d='M9 18h6'></path></svg> The diary's Copy button copies your entry in a format that's easy to share with an AI. Paste it into your favorite AI chat for an honest take.",
+    '⏰ Alarms notify you with sound and vibration at the set time. With notifications enabled, this works even if the app is closed.',
+    '🎯 Focus Mode lets you set a time period to concentrate on just one thing. During that time, routine tasks show in a "not now" color.',
+    '📖 Memento is an append-only log — nothing gets overwritten. Great for ongoing projects or one-time experiences you want to look back on.',
+    'Activity before the daily boundary time is logged as the previous day. 4-5 AM suits night owls; midnight suits early sleepers.',
+    '🔔 Notifications reach you even with the app closed, once the set time arrives. This is an experimental feature.',
+    "⬇️ From Data Management, you can save your XP, history, and task list to a file. It's a good idea to back up occasionally in case you switch devices or lose data.",
   ];
   let tutorialStepIndex = 0;
   function openMiscGrid() {
@@ -9562,7 +9684,7 @@
         const [level, label] = key.split('|');
         if (byLevel[level]) byLevel[level].push(label);
       });
-      const levelNames = { low: '🌿 軽量級', mid: '⚙️ 中量級', high: '🔥 重量級' };
+      const levelNames = { low: '🌿 軽量級', mid: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> 中量級', high: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg> 重量級' };
       ['low', 'mid', 'high'].forEach(lv => {
         if (byLevel[lv].length > 0) {
           sections.push(`<div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin:10px 0 4px;">${levelNames[lv]}</div>` +
@@ -9573,13 +9695,13 @@
     // 今日のタスク(完了分)
     const doneToday = todayTasks.filter(t => t.done);
     if (doneToday.length > 0) {
-      sections.push(`<div style="font-size:10px; color:var(--yellow); font-family:'Orbitron',sans-serif; margin:10px 0 4px;">📌 今日のタスク</div>` +
+      sections.push(`<div style="font-size:10px; color:var(--yellow); font-family:'Orbitron',sans-serif; margin:10px 0 4px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg> 今日のタスク</div>` +
         doneToday.map(t => `<div style="font-size:12.5px; color:#fff; padding:3px 0;">✓ ${escapeHtml(t.text)}</div>`).join(''));
     }
     // カレンダーの予定(完了分)
     const doneEvents = eventsForDate(todayKey).filter(ev => ev.recurrence ? (ev.doneOccurrences || []).includes(todayKey) : ev.done);
     if (doneEvents.length > 0) {
-      sections.push(`<div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin:10px 0 4px;">📅 予定</div>` +
+      sections.push(`<div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin:10px 0 4px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> 予定</div>` +
         doneEvents.map(ev => `<div style="font-size:12.5px; color:#fff; padding:3px 0;">✓ ${escapeHtml(ev.text)}</div>`).join(''));
     }
 
@@ -9729,7 +9851,7 @@
     list.innerHTML = events.map(ev => {
       const isDone = ev.recurrence ? (ev.doneOccurrences || []).includes(key) : ev.done;
       const dot = ev.color ? `<span style="width:7px; height:7px; border-radius:50%; background:${ev.color}; flex-shrink:0;"></span>` : '';
-      const recurIcon = ev.recurrence ? '🔁 ' : '';
+      const recurIcon = ev.recurrence ? '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M17 2l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg> ' : '';
       const timeLabel = ev.allDay ? '終日' : (ev.time ? (ev.endTime ? `${ev.time}-${ev.endTime}` : ev.time) : '');
       const subLine = (ev.location || ev.note)
         ? `<div style="font-size:10px; color:var(--ink-dim); margin-top:2px;">${ev.location ? `📍${escapeHtml(ev.location)} ` : ''}${ev.note ? escapeHtml(ev.note) : ''}</div>`
@@ -9864,7 +9986,7 @@
 
     try {
       await navigator.clipboard.writeText(prompt);
-      showToast(currentLang === 'en' ? '📋 Copied — paste it into an AI chat' : '📋 コピーしました。AIとのチャットに貼り付けてください');
+      showToast(currentLang === 'en' ? '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> Copied — paste it into an AI chat' : '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> コピーしました。AIとのチャットに貼り付けてください');
     } catch (e) {
       showToast(currentLang === 'en' ? 'Copy failed' : 'コピーに失敗しました');
     }
@@ -10502,7 +10624,7 @@
         alert(`サーバーへの登録に失敗しました(status:${res.status})\n\n${resText}`);
         return false;
       }
-      showToast(currentLang === 'en' ? '🔔 Notifications enabled' : '🔔 通知を有効にしました');
+      showToast(currentLang === 'en' ? '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg> Notifications enabled' : '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg> 通知を有効にしました');
       syncRemindersToServer();
       pingNotifyServer();
       return true;
