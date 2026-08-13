@@ -977,10 +977,9 @@
   }
   .unified-task-card {
     background: linear-gradient(160deg, rgba(22,26,34,0.92), rgba(12,15,20,0.92));
-    border: 1.5px solid rgba(255,255,255,0.14); border-radius: 20px;
+    border: 1.5px solid rgba(255,255,255,0.14); border-radius: 0 20px 20px 20px;
     padding: 18px 16px 10px; margin-bottom: 4px;
     position: relative; overflow: hidden;
-    box-shadow: inset 0 0.47px 0 0 rgba(255,255,255,0.55), inset 0 3px 4px -3px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(0,0,0,0.3);
   }
   .unified-task-card::before {
     content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
@@ -1008,26 +1007,39 @@
     font-family: "Orbitron", sans-serif; font-size: 11px; color: var(--ink-dim);
     margin: 18px 0 10px; padding-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1);
   }
-  /* クリアファイルの見出しタブのような、手前(選択中)と奥(非選択)で高さ・色に差をつけた切り替えタブ */
-  .folder-tab-row {
-    display: flex; margin-bottom: -1px; position: relative; z-index: 1;
-  }
+  /* 「タスク/日課」の切り替え。位置(タスク=左、日課=右)は、常に固定。
+     "選ばれている側"だけが、色・影・前後関係を、手前(カードと1枚に繋がる紙)に切り替える。
+     位置そのものが、左右で入れ替わることは無い。 */
+  .folder-stack { position: relative; filter: drop-shadow(0 8px 14px rgba(0,0,0,0.3)); }
+  .folder-tab-row { display: flex; position: relative; z-index: 2; }
   .folder-tab {
-    flex: 0 0 38%; text-align: center; padding: 9px 6px 8px;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    width: 50%; height: 35px; box-sizing: border-box;
     font-family: "Orbitron", sans-serif; font-size: 11.5px; font-weight: 700;
-    border-radius: 12px 12px 0 0; cursor: pointer;
-    background: rgba(255,255,255,0.03); color: var(--ink-dim);
-    border: 1.5px solid rgba(255,255,255,0.1); border-bottom: none;
-    transform: translateY(4px);
-    transition: all 0.18s ease;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
   }
-  .folder-tab + .folder-tab { margin-left: -10px; flex: 0 0 45%; }
   .folder-tab.active {
-    background: linear-gradient(160deg, rgba(26,30,38,0.97), rgba(11,14,19,0.97));
-    color: #F0906B; border-color: rgba(255,138,92,0.4);
-    transform: translateY(0); z-index: 2; position: relative;
-    text-shadow: 0 0 8px rgba(255,138,92,0.4);
+    background: linear-gradient(160deg, rgba(26,30,38,0.97), rgba(12,15,20,0.97));
+    color: #F0906B; text-shadow: 0 0 8px rgba(255,138,92,0.4);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    z-index: 2; position: relative;
   }
+  #folderTabTask.active { border-radius: 14px 14px 0 0; }
+  #folderTabRoutine.active { border-radius: 14px 14px 0 0; }
+  .folder-tab:not(.active) {
+    background: linear-gradient(160deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+    color: rgba(255,255,255,0.5);
+    transform: translateY(2px); /* 奥にあることを示す、ごくわずかな沈み込み(透け防止のため、控えめに) */
+    z-index: 1;
+  }
+  #folderTabTask:not(.active) { border-radius: 14px 14px 0 0; }
+  #folderTabRoutine:not(.active) { border-radius: 14px 14px 0 0; }
+  .folder-tab:not(.active):active { background: linear-gradient(160deg, rgba(255,255,255,0.22), rgba(255,255,255,0.1)); }
+  /* カード本体: "選ばれている側のタブ"と、継ぎ目なく繋がるよう、その角だけ丸めない */
+  .unified-task-card.corner-left { border-radius: 0 20px 20px 20px; }
+  .unified-task-card.corner-right { border-radius: 20px 0 20px 20px; }
   .folder-panel { display: none; }
   /* アプリを構成する「機能群」を、見た目にもはっきり分けるための見出し(カレンダー・タスク管理・日記・その他) */
   .app-group-label {
@@ -1603,6 +1615,13 @@
     margin-top: 20px; background: transparent; border: 1px solid var(--cyan); color: var(--cyan);
     padding: 9px 24px; font-family: "Orbitron", sans-serif; font-size: 11px; font-weight: 700; cursor: pointer;
   }
+  /* アラーム停止用: 寝ぼけていても、迷わず押せるよう、控えめさより視認性を優先した、はっきりした塗りつぶしボタン */
+  .alarm-action-btn {
+    background: linear-gradient(160deg, var(--cyan), #1E9EA0); border: none; color: #04262b;
+    border-radius: 16px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(43,201,204,0.35);
+  }
+  .alarm-action-btn:active { transform: scale(0.97); }
   /* ================= ページ切り替え ================= */
   .page { display: none; padding-bottom: 76px; }
   .page.show { display: block; }
@@ -2162,12 +2181,16 @@
   .alarm-row {
     display: flex; align-items: center; justify-content: space-between;
     padding: 10px 2px; border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: #14171c; /* 透明のままだと、スワイプ削除用の赤いゴミ箱が、下から透けて見えてしまうため */
   }
+  body.theme-simple:not(.theme-dark) .alarm-row { background: #FFFFFF; }
   .alarm-row:last-child { border-bottom: none; }
   .alarm-row-info { cursor: pointer; flex: 1; min-width: 0; }
   .alarm-row-time {
     font-family: "Orbitron", sans-serif; font-size: 30px; font-weight: 800; color: var(--ink); line-height: 1.1;
+    display: flex; align-items: center; gap: 8px;
   }
+  .alarm-row-time-icon { font-size: 20px; opacity: 0.85; }
   .alarm-row.disabled .alarm-row-time, .alarm-row.disabled .alarm-row-sub { opacity: 0.4; }
   .alarm-row-sub { font-size: 11px; color: var(--ink-dim); margin-top: 2px; }
   .alarm-empty-hint { font-size: 11px; color: var(--ink-dim); text-align: center; padding: 14px 0; }
@@ -2561,7 +2584,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_ALARM_DISMISS_V318</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0809_ALARM_TIME_ICON_V335</div>
   <div class="app-group-label" data-i18n="group_calendar">📅 カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
@@ -2759,12 +2782,13 @@
 
   <!-- ================= 今日限定の単発タスク(v62で追加) ================= -->
   <div class="app-group-label" data-i18n="group_task">✅ タスク管理</div>
-  <div id="tabsPanelsWrap" class="unified-task-card">
+  <div class="folder-stack">
+    <div class="folder-tab-row">
+      <div class="folder-tab active" id="folderTabTask" data-i18n="folder_tab_task" onclick="switchTaskRoutineFolder('task')">📋 タスク</div>
+      <div class="folder-tab" id="folderTabRoutine" data-i18n="folder_tab_routine" onclick="switchTaskRoutineFolder('routine')">📦 日課</div>
+    </div>
+  <div id="tabsPanelsWrap" class="unified-task-card corner-left">
     <div class="card-accent-dot tab-task"></div>
-  <div class="folder-tab-row">
-    <div class="folder-tab active" id="folderTabTask" data-i18n="folder_tab_task" onclick="switchTaskRoutineFolder('task')">📋 タスク</div>
-    <div class="folder-tab" id="folderTabRoutine" data-i18n="folder_tab_routine" onclick="switchTaskRoutineFolder('routine')">📦 日課</div>
-  </div>
 
   <div id="folderPanelTask" class="folder-panel show">
     <div id="todayTasksList"></div>
@@ -2797,6 +2821,7 @@
     <div class="combo-hint" id="comboHint-high"></div>
     <div id="list-high"></div>
     <button class="add-task-btn" onclick="openAddTask('high')">＋</button>
+  </div>
   </div>
   </div>
   </div>
@@ -3051,33 +3076,8 @@
     <div class="settings-label" data-i18n="opt_support_label">サポート</div>
     <button class="settings-btn" data-i18n="opt_contact_btn" onclick="contactSupport()">運営に連絡する</button>
     <button class="settings-btn" data-i18n="opt_policy_btn" onclick="showPolicy()">利用規約・プライバシー</button>
-    <div style="margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12);">
-      <div style="font-size:11px; font-weight:700; color:var(--ink); margin-bottom:6px;" data-i18n="opt_credits_label">🙏 クレジット</div>
-      <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:8px;" data-i18n="opt_credits_desc">このアプリで使用している、外部素材の制作者の方々です。</div>
-      <div id="creditsList" style="font-size:11px; color:var(--ink); line-height:2;">
-        <div>🔊 <span data-i18n="credit_cat_meow">猫の鳴き声</span> — <a href="https://pixabay.com/ja/users/dragon-studio-38165424/" target="_blank" rel="noopener" style="color:var(--cyan);">DRAGON-STUDIO</a> (Pixabay)</div>
-      </div>
-    </div>
-    <div style="margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12);">
-      <div style="font-size:11px; font-weight:700; color:var(--ink); margin-bottom:6px;" data-i18n="opt_sources_label">📚 機能の根拠・出典</div>
-      <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:8px;" data-i18n="opt_sources_desc">現役医学生として、"なんとなく良さそう"ではなく、根拠を大事にしたいという考えから、主な機能の元になっている研究を、正直にまとめています。</div>
-      <details style="margin-bottom:8px;">
-        <summary style="font-size:11px; color:var(--cyan); cursor:pointer;" data-i18n="src_pomo_title">⏱️ ポモドーロ(25分集中+5分休憩)</summary>
-        <div style="font-size:10px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_pomo_body">2025年の研究では、解剖学のような高負荷な学習において、自己ペースの休憩と比べ、疲労度が約20%低下、集中力が15〜25%向上、学習効率が約12%向上したとの報告があります。理論的な背景として、ノーベル賞受賞者ダニエル・カーネマンの「注意資源理論」があり、人の集中力はおよそ20〜30分で低下し始めるとされています。</div>
-      </details>
-      <details style="margin-bottom:8px;">
-        <summary style="font-size:11px; color:var(--cyan); cursor:pointer;" data-i18n="src_sleep_title">🌙 睡眠記録・起こすタイミング</summary>
-        <div style="font-size:10px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_sleep_body">起床直後、一時的に認知機能・反応速度が落ちる現象は「睡眠慣性」と呼ばれ、広く実証されています。特に、深い眠り(徐波睡眠)の最中に急に起こされると、浅い眠りの時に比べて、この慣性がより強く出ることが分かっています。</div>
-      </details>
-      <details style="margin-bottom:8px;">
-        <summary style="font-size:11px; color:var(--cyan); cursor:pointer;" data-i18n="src_ebbing_title">🧠 忘却曲線と、復習リマインダー</summary>
-        <div style="font-size:10px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_ebbing_body">1885年、心理学者エビングハウスが、記憶は学習直後から急速に失われることを示しました。一方、カナダ・ウォータールー大学の研究では、「学習から24時間以内に、10分間復習する」ことで、記憶がほぼ元の水準まで戻るとの報告があります。</div>
-      </details>
-      <details>
-        <summary style="font-size:11px; color:var(--cyan); cursor:pointer;" data-i18n="src_mathalarm_title">🔢 アラームの計算問題について(正直な位置づけ)</summary>
-        <div style="font-size:10px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_mathalarm_body">正直にお伝えすると、「計算問題を解くこと自体が、睡眠慣性を早く解消する」という直接的な研究は見つけられませんでした。ただし、起床直後は判断力・反応速度が落ちやすいことは実証されているため、この機能は「本当に目が覚めているかを確かめる、実用的なチェック」としての位置づけです。</div>
-      </details>
-    </div>
+    <button class="settings-btn" data-i18n="opt_credits_label" onclick="showCredits()">クレジット</button>
+    <button class="settings-btn" data-i18n="opt_sources_label" onclick="showSources()">機能の根拠・出典</button>
   </div>
   <div class="settings-group" style="border: 1.5px dashed rgba(255,80,80,0.5);">
     <div class="settings-label" style="color:#FF5050;" data-i18n="dev_section_label">🛠️ 開発者用(本番公開前に削除)</div>
@@ -3117,6 +3117,41 @@
       <p style="color:var(--ink-dim); font-size:11px; margin-top:16px;">最終更新日：試作版のため未定。本文はハリボテのサンプルテキストです。</p>
     </div>
     <button class="badge-close-btn" style="margin-top:16px;" data-i18n="btn_close" onclick="closePolicy()">閉じる</button>
+  </div>
+</div>
+
+<div class="grand-modal" id="creditsModal" onclick="closeCredits()">
+  <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:26px 22px; max-width:min(360px,88vw); max-height:74vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
+    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:6px;" data-i18n="opt_credits_label">クレジット</div>
+    <div style="font-size:11px; color:var(--ink-dim); line-height:1.6; margin-bottom:12px;" data-i18n="opt_credits_desc">このアプリで使用している、外部素材の制作者の方々です。</div>
+    <div id="creditsList" style="font-size:12px; color:var(--ink); line-height:2;">
+      <div>🔊 <span data-i18n="credit_cat_meow">猫の鳴き声</span> — <a href="https://pixabay.com/ja/users/dragon-studio-38165424/" target="_blank" rel="noopener" style="color:var(--cyan);">DRAGON-STUDIO</a> (Pixabay)</div>
+    </div>
+    <button class="badge-close-btn" style="margin-top:16px;" data-i18n="btn_close" onclick="closeCredits()">閉じる</button>
+  </div>
+</div>
+
+<div class="grand-modal" id="sourcesModal" onclick="closeSources()">
+  <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:26px 22px; max-width:min(360px,88vw); max-height:74vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
+    <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:6px;" data-i18n="opt_sources_label">機能の根拠・出典</div>
+    <div style="font-size:11px; color:var(--ink-dim); line-height:1.6; margin-bottom:12px;" data-i18n="opt_sources_desc">現役医学生として、"なんとなく良さそう"ではなく、根拠を大事にしたいという考えから、主な機能の元になっている研究を、正直にまとめています。</div>
+    <details style="margin-bottom:8px;">
+      <summary style="font-size:12px; color:var(--cyan); cursor:pointer;" data-i18n="src_pomo_title">⏱️ ポモドーロ(25分集中+5分休憩)</summary>
+      <div style="font-size:11px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_pomo_body">2025年の研究では、解剖学のような高負荷な学習において、自己ペースの休憩と比べ、疲労度が約20%低下、集中力が15〜25%向上、学習効率が約12%向上したとの報告があります。理論的な背景として、ノーベル賞受賞者ダニエル・カーネマンの「注意資源理論」があり、人の集中力はおよそ20〜30分で低下し始めるとされています。</div>
+    </details>
+    <details style="margin-bottom:8px;">
+      <summary style="font-size:12px; color:var(--cyan); cursor:pointer;" data-i18n="src_sleep_title">🌙 睡眠記録・起こすタイミング</summary>
+      <div style="font-size:11px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_sleep_body">起床直後、一時的に認知機能・反応速度が落ちる現象は「睡眠慣性」と呼ばれ、広く実証されています。特に、深い眠り(徐波睡眠)の最中に急に起こされると、浅い眠りの時に比べて、この慣性がより強く出ることが分かっています。</div>
+    </details>
+    <details style="margin-bottom:8px;">
+      <summary style="font-size:12px; color:var(--cyan); cursor:pointer;" data-i18n="src_ebbing_title">🧠 忘却曲線と、復習リマインダー</summary>
+      <div style="font-size:11px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_ebbing_body">1885年、心理学者エビングハウスが、記憶は学習直後から急速に失われることを示しました。一方、カナダ・ウォータールー大学の研究では、「学習から24時間以内に、10分間復習する」ことで、記憶がほぼ元の水準まで戻るとの報告があります。</div>
+    </details>
+    <details>
+      <summary style="font-size:12px; color:var(--cyan); cursor:pointer;" data-i18n="src_mathalarm_title">🔢 アラームの計算問題について(正直な位置づけ)</summary>
+      <div style="font-size:11px; color:var(--ink-dim); line-height:1.7; margin:6px 0 0 4px;" data-i18n="src_mathalarm_body">正直にお伝えすると、「計算問題を解くこと自体が、睡眠慣性を早く解消する」という直接的な研究は見つけられませんでした。ただし、起床直後は判断力・反応速度が落ちやすいことは実証されているため、この機能は「本当に目が覚めているかを確かめる、実用的なチェック」としての位置づけです。</div>
+    </details>
+    <button class="badge-close-btn" style="margin-top:16px;" data-i18n="btn_close" onclick="closeSources()">閉じる</button>
   </div>
 </div>
 
@@ -3369,12 +3404,12 @@
     <div style="font-size:15px; color:var(--ink-dim); margin-bottom:6px;" id="alarmFiringTime">--:--</div>
     <div style="font-family:'Orbitron',sans-serif; font-size:26px; color:var(--cyan); font-weight:800; margin-bottom:28px;" id="alarmFiringLabel">⏰ アラーム</div>
     <div id="alarmDismissTapArea" style="display:none;">
-      <button class="badge-close-btn" style="width:100%; padding:16px; font-size:15px;" onclick="dismissFiringAlarm()" data-i18n="alarm_stop_btn">停止</button>
+      <button class="alarm-action-btn" style="width:100%; padding:20px; font-size:17px;" onclick="dismissFiringAlarm()" data-i18n="alarm_stop_btn">停止</button>
     </div>
     <div id="alarmDismissMathArea" style="display:none;">
       <div style="font-size:20px; color:#fff; margin-bottom:14px;" id="alarmMathQuestion">? + ? = ?</div>
       <input type="number" id="alarmMathAnswer" inputmode="numeric" style="width:100%; box-sizing:border-box; font-size:20px; text-align:center; padding:12px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.06); color:#fff; margin-bottom:12px;">
-      <button class="badge-close-btn" style="width:100%; padding:14px; font-size:14px;" onclick="checkAlarmMathAnswer()" data-i18n="alarm_answer_btn">答える</button>
+      <button class="alarm-action-btn" style="width:100%; padding:18px; font-size:16px;" onclick="checkAlarmMathAnswer()" data-i18n="alarm_answer_btn">答える</button>
       <div id="alarmMathWrong" style="display:none; color:#FF6B6B; font-size:12px; margin-top:8px;" data-i18n="alarm_wrong">違います、もう一度</div>
     </div>
     <div id="alarmDismissShakeArea" style="display:none;">
@@ -3663,9 +3698,9 @@
       opt_clearcache_btn: '🧹 アプリのキャッシュを削除',
       opt_clearcache_desc: 'アプリ本体の中身(機能・見た目)を最新版に更新します。※ホーム画面のアイコン画像は、これでは変わりません(削除して再追加が必要)',
       opt_support_label: 'サポート', opt_contact_btn: '運営に連絡する', opt_policy_btn: '利用規約・プライバシー',
-      opt_credits_label: '🙏 クレジット', opt_credits_desc: 'このアプリで使用している、外部素材の制作者の方々です。',
+      opt_credits_label: 'クレジット', opt_credits_desc: 'このアプリで使用している、外部素材の制作者の方々です。',
       credit_cat_meow: '猫の鳴き声',
-      opt_sources_label: '📚 機能の根拠・出典',
+      opt_sources_label: '機能の根拠・出典',
       opt_sources_desc: '現役医学生として、"なんとなく良さそう"ではなく、根拠を大事にしたいという考えから、主な機能の元になっている研究を、正直にまとめています。',
       src_pomo_title: '⏱️ ポモドーロ(25分集中+5分休憩)',
       src_pomo_body: '2025年の研究では、解剖学のような高負荷な学習において、自己ペースの休憩と比べ、疲労度が約20%低下、集中力が15〜25%向上、学習効率が約12%向上したとの報告があります。理論的な背景として、ノーベル賞受賞者ダニエル・カーネマンの「注意資源理論」があり、人の集中力はおよそ20〜30分で低下し始めるとされています。',
@@ -3807,9 +3842,9 @@
       opt_clearcache_btn: '🧹 Clear App Cache',
       opt_clearcache_desc: "Refreshes the app's files (features & appearance) to the latest version. Note: this does NOT change the home screen icon image (delete & re-add is still required for that).",
       opt_support_label: 'Support', opt_contact_btn: 'Contact Support', opt_policy_btn: 'Terms & Privacy',
-      opt_credits_label: '🙏 Credits', opt_credits_desc: 'External assets used in this app, and their creators.',
+      opt_credits_label: 'Credits', opt_credits_desc: 'External assets used in this app, and their creators.',
       credit_cat_meow: 'Cat meow sound',
-      opt_sources_label: '📚 Feature Sources & Evidence',
+      opt_sources_label: 'Feature Sources & Evidence',
       opt_sources_desc: 'As a current medical student, I care about evidence over "seems good." Here are the studies behind the main features, presented honestly.',
       src_pomo_title: '⏱️ Pomodoro (25 min focus + 5 min break)',
       src_pomo_body: 'A 2025 study on high-cognitive-load learning (e.g., anatomy) found about a 20% reduction in fatigue, 15-25% improvement in concentration, and roughly 12% improvement in learning efficiency compared to self-paced breaks. Theoretically, this is grounded in Nobel laureate Daniel Kahneman\u2019s attention resource theory, which holds that attention begins to decline after roughly 20-30 minutes.',
@@ -4760,10 +4795,13 @@
       const subLabel = a.repeatDays.length > 0
         ? a.repeatDays.slice().sort().map(d => ALARM_DAY_LABELS[d]).join('')
         : (a.label || '1回のみ');
+      // 時間帯によって、控えめなアイコンを添える(清潔なレイアウトは保ちつつ、少しだけ温かみを足す)
+      const hourNum = parseInt(a.time.split(':')[0], 10);
+      const timeIcon = (hourNum >= 4 && hourNum < 11) ? '🌅' : (hourNum >= 11 && hourNum < 17) ? '☀️' : (hourNum >= 17 && hourNum < 21) ? '🌇' : '🌙';
       const inner = `
       <div class="alarm-row${a.enabled ? '' : ' disabled'}">
         <div class="alarm-row-info" onclick="openAlarmEditor('${a.id}')">
-          <div class="alarm-row-time">${a.time}</div>
+          <div class="alarm-row-time"><span class="alarm-row-time-icon">${timeIcon}</span>${a.time}</div>
           <div class="alarm-row-sub">${escapeHtml(subLabel)}</div>
         </div>
         <label class="toggle-switch">
@@ -7135,6 +7173,10 @@
     document.getElementById('folderTabRoutine').classList.toggle('active', which === 'routine');
     document.getElementById('folderPanelTask').classList.toggle('show', which === 'task');
     document.getElementById('folderPanelRoutine').classList.toggle('show', which === 'routine');
+    // カードは、「選ばれている側のタブ」と、継ぎ目なく繋がるよう、その角だけ丸めない
+    const card = document.getElementById('tabsPanelsWrap');
+    card.classList.toggle('corner-left', which === 'task');
+    card.classList.toggle('corner-right', which === 'routine');
   }
   function openRoutineStock() {
     playUIClick();
@@ -9957,6 +9999,20 @@
   }
   function closePolicy() {
     document.getElementById('policyModal').classList.remove('show');
+  }
+  function showCredits() {
+    playUIClick();
+    document.getElementById('creditsModal').classList.add('show');
+  }
+  function closeCredits() {
+    document.getElementById('creditsModal').classList.remove('show');
+  }
+  function showSources() {
+    playUIClick();
+    document.getElementById('sourcesModal').classList.add('show');
+  }
+  function closeSources() {
+    document.getElementById('sourcesModal').classList.remove('show');
   }
 
   // ---- 常時降り注ぐネオン粒子(何もしていない時の生きた動き) ----
