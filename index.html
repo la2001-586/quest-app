@@ -1109,6 +1109,41 @@
   /* カレンダーは、より多くの予定を、見やすく表示できるよう、縦方向に1.2倍広げる */
   body.multipage-mode .cal-day { min-height: 62px; }
   body.multipage-mode .cal-grid-shell { font-size: 1.15em; }
+
+  /* ========== V354: 立体影→細線 / カレンダー縦フル / 備忘録インセット線 / ページ識別バー ========== */
+  /* タスク・日課: 立体影と光沢(::before/::after)を消し、アラーム雛形と同じクッキリした細線区切りに */
+  body.multipage-mode .app-group-wrap .item::before,
+  body.multipage-mode .app-group-wrap .item::after { content: none !important; }
+  body.multipage-mode .app-group-wrap .item { border-bottom-color: rgba(255,255,255,0.13) !important; }
+  body.multipage-mode.theme-simple:not(.theme-dark) .app-group-wrap .item,
+  body.multipage-mode.theme-fancy .app-group-wrap .item { border-bottom-color: rgba(0,0,0,0.09) !important; }
+  body.multipage-mode.theme-fancy .app-group-wrap .item { background: #FFFFFF !important; }
+  /* 各リスト先頭行の上にも同じ細線(上端が開いて見えないように) */
+  body.multipage-mode .app-group-wrap .swipe-del-wrap:first-child .item { border-top: 1px solid rgba(255,255,255,0.13) !important; }
+  body.multipage-mode.theme-simple:not(.theme-dark) .app-group-wrap .swipe-del-wrap:first-child .item,
+  body.multipage-mode.theme-fancy .app-group-wrap .swipe-del-wrap:first-child .item { border-top-color: rgba(0,0,0,0.09) !important; }
+
+  /* カレンダー: 月表示を画面の縦いっぱいに伸ばし、1マスを大きく(予定を多く表示) */
+  body.multipage-mode #calSectionWrap { display: flex; flex-direction: column; }
+  body.multipage-mode #calMonthSection { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+  body.multipage-mode #calMonthSection .cal-grid-shell { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+  body.multipage-mode #calMonthSection .cal-grid { flex: 1 1 auto; grid-auto-rows: 1fr; min-height: 0; }
+  body.multipage-mode .cal-day { min-height: 56px; }
+
+  /* 備忘録: 角丸カードをやめ、左右インセットの細線区切りに(端まで線を引かない) */
+  .memento-card { position: relative; padding: 12px 6px; }
+  .memento-card:not(:last-child)::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 0; height: 1px; background: rgba(255,255,255,0.12); }
+  body.theme-simple:not(.theme-dark) .memento-card:not(:last-child)::after,
+  body.theme-fancy .memento-card:not(:last-child)::after { background: rgba(0,0,0,0.09); }
+
+  /* ページ識別バー: 各ページ最上部に、画面左右いっぱいの帯。両端はグラデーションでフェードさせ、鬱陶しくならないように */
+  .page-id-bar { display: none; }
+  body.multipage-mode .page-id-bar { display: block; height: 7px; margin: 0 -16px 14px; border-radius: 0; opacity: 1; }
+  body.multipage-mode .page-id-bar[data-g="group_other"]    { background: linear-gradient(90deg, transparent, #16b6b0 20%, #16b6b0 80%, transparent); }
+  body.multipage-mode .page-id-bar[data-g="group_calendar"] { background: linear-gradient(90deg, transparent, #4088f0 20%, #4088f0 80%, transparent); }
+  body.multipage-mode .page-id-bar[data-g="group_task"]     { background: linear-gradient(90deg, transparent, #E8971F 20%, #E8971F 80%, transparent); }
+  body.multipage-mode .page-id-bar[data-g="group_diary"]    { background: linear-gradient(90deg, transparent, #A45CF0 20%, #A45CF0 80%, transparent); }
+
   body.theme-simple .app-group-label::after { background: rgba(0,0,0,0.08); }
   .folder-panel.show { display: block; }
   body.theme-simple .folder-tab {
@@ -2174,15 +2209,19 @@
   .quick-memo-header span:first-child { flex: 1; }
   #quickMemoText {
     flex: 1; width: 100%; box-sizing: border-box; resize: none;
-    background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.12);
-    border-radius: 10px; padding: 10px; color: #fff; font-size: 13px; line-height: 1.7;
+    background-color: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 10px; padding: 8px 12px; color: #fff; font-size: 14px; line-height: 28px;
     font-family: inherit;
+    /* ノート風の罫線(区切って書けるように)。文字と一緒にスクロールするよう local 指定 */
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(255,255,255,0.10) 27px, rgba(255,255,255,0.10) 28px);
+    background-attachment: local;
+    background-position: 0 8px;
   }
   body.theme-simple #quickMemoTab, body.theme-fancy #quickMemoTab { background: linear-gradient(160deg, #FFFFFF, #F4F4F5); color: var(--cyan); }
   body.theme-fancy #quickMemoTab { background: linear-gradient(160deg, #FFFFFF, #FBF1FF); }
   body.theme-simple #quickMemoPanel, body.theme-fancy #quickMemoPanel { background: linear-gradient(160deg, #FFFFFF, #F4F4F5); }
   body.theme-fancy #quickMemoPanel { background: linear-gradient(160deg, #FFFFFF, #FBF1FF); }
-  body.theme-simple #quickMemoText, body.theme-fancy #quickMemoText { background: rgba(0,0,0,0.03); color: var(--ink); }
+  body.theme-simple #quickMemoText, body.theme-fancy #quickMemoText { background-color: rgba(0,0,0,0.02); color: var(--ink); background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(0,0,0,0.09) 27px, rgba(0,0,0,0.09) 28px); }
   body.theme-simple .quick-memo-header, body.theme-fancy .quick-memo-header { color: var(--ink); }
 
   /* ================= 設定ページ ================= */
@@ -2643,7 +2682,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0814_ALARMREFINE_V353</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0814_UIUNIFY_V355</div>
   <div class="app-group-label" data-i18n="group_calendar"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
@@ -2808,16 +2847,6 @@
         </div>
         <div id="alarmListBox"></div>
         <button class="add-task-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋</button>
-        <div style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.12);">
-          <div class="settings-row">
-            <span data-i18n="alarm_dismiss_row" style="font-size:12px;">止め方</span>
-            <select id="alarmDismissMethod" onchange="saveAlarmDismissMethod(this.value)" style="background:rgba(255,255,255,0.06); color:var(--ink); border:1.5px solid rgba(255,255,255,0.15); border-radius:8px; padding:6px 8px; font-size:11px;">
-              <option value="tap" data-i18n="alarm_dismiss_tap">普通にタップ</option>
-              <option value="math" data-i18n="alarm_dismiss_math">計算問題を解く</option>
-              <option value="shake" data-i18n="alarm_dismiss_shake">スマホを振る</option>
-            </select>
-          </div>
-        </div>
       </div>
     </div>
     <div class="hud-agent-hub-label">
@@ -3491,6 +3520,12 @@
     <div id="alarmEditorDays" style="display:flex; justify-content:space-between; gap:4px; margin-bottom:16px;"></div>
     <div style="font-size:10.5px; color:var(--ink-dim); margin-bottom:6px;">ラベル</div>
     <input type="text" id="alarmEditorLabel" placeholder="アラーム" style="width:100%; box-sizing:border-box; font-size:13px; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:18px;">
+    <div style="font-size:10.5px; color:var(--ink-dim); margin-bottom:6px;">止め方</div>
+    <select id="alarmEditorDismiss" style="width:100%; box-sizing:border-box; font-size:13px; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:18px;">
+      <option value="tap">普通にタップ</option>
+      <option value="math">計算問題を解く</option>
+      <option value="shake">スマホを振る</option>
+    </select>
     <button class="badge-close-btn" onclick="confirmAlarmEditor()" style="width:100%; box-sizing:border-box; font-weight:700;">保存</button>
     <button class="badge-close-btn" id="alarmEditorDeleteBtn" onclick="deleteAlarmFromEditor()" style="width:100%; box-sizing:border-box; margin-top:8px; border-color:var(--magenta); color:var(--magenta); display:none;">削除</button>
     <button class="badge-close-btn" onclick="closeAlarmEditor()" style="width:100%; box-sizing:border-box; margin-top:8px; background:transparent; border-color:rgba(255,255,255,0.15); color:var(--ink-dim);">キャンセル</button>
@@ -3505,7 +3540,13 @@
     <span id="quickMemoSaveStatus" style="font-size:9px; color:var(--ink-dim);"></span>
     <span onclick="toggleQuickMemo()" style="cursor:pointer; font-size:16px; color:var(--ink-dim);">✕</span>
   </div>
-  <textarea id="quickMemoText" placeholder="ちょっとしたメモに" oninput="handleQuickMemoInput()"></textarea>
+  <textarea id="quickMemoText" placeholder="ここに自由にメモを残せます
+
+・買い物リスト
+・ふと思いついたこと
+・あとで調べたいこと
+
+入力すると自動で保存されます" oninput="handleQuickMemoInput()"></textarea>
 </div>
 
 <div class="grand-modal" id="todayCompletedModal" onclick="closeTodayCompletedModal()">
@@ -4914,6 +4955,7 @@
         style="flex:1; text-align:center; padding:8px 0; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); font-size:12px; cursor:pointer; ${selectedDays.includes(i) ? 'background:var(--cyan); color:var(--bg); border-color:var(--cyan);' : 'color:var(--ink-dim);'}"
         >${label}</span>
     `).join('');
+    document.getElementById('alarmEditorDismiss').value = a ? (a.dismissMethod || 'tap') : 'tap';
     document.getElementById('alarmEditorDeleteBtn').style.display = id ? 'block' : 'none';
     document.getElementById('alarmEditorModal').classList.add('show');
     playUIClick();
@@ -4927,11 +4969,12 @@
     if (!time) return;
     const label = document.getElementById('alarmEditorLabel').value.trim();
     const repeatDays = Array.from(document.querySelectorAll('#alarmEditorDays .alarm-day-btn.picked')).map(el => parseInt(el.dataset.day, 10));
+    const dismissMethod = document.getElementById('alarmEditorDismiss').value || 'tap';
     if (editingAlarmId) {
       const a = alarms.find(x => x.id === editingAlarmId);
-      if (a) { a.time = time; a.label = label; a.repeatDays = repeatDays; }
+      if (a) { a.time = time; a.label = label; a.repeatDays = repeatDays; a.dismissMethod = dismissMethod; }
     } else {
-      alarms.push({ id: 'alarm_' + Date.now(), time, label, enabled: true, repeatDays });
+      alarms.push({ id: 'alarm_' + Date.now(), time, label, enabled: true, repeatDays, dismissMethod });
     }
     persistAlarms();
     renderAlarmList();
@@ -4985,14 +5028,15 @@
     alarmLoopStartedAt = Date.now();
     playAlarmLoopStep();
 
-    // 止め方(タップ・計算問題・振る)に応じて、対応するエリアだけを表示する
+    // 止め方(タップ・計算問題・振る)に応じて、対応するエリアだけを表示する。各アラームごとの設定を優先し、無ければ従来の既定値
+    const method = (alarm && alarm.dismissMethod) ? alarm.dismissMethod : alarmDismissMethod;
     document.getElementById('alarmDismissTapArea').style.display = 'none';
     document.getElementById('alarmDismissMathArea').style.display = 'none';
     document.getElementById('alarmDismissShakeArea').style.display = 'none';
-    if (alarmDismissMethod === 'math') {
+    if (method === 'math') {
       setupAlarmMathChallenge();
       document.getElementById('alarmDismissMathArea').style.display = 'block';
-    } else if (alarmDismissMethod === 'shake') {
+    } else if (method === 'shake') {
       setupAlarmShakeChallenge();
       document.getElementById('alarmDismissShakeArea').style.display = 'block';
     } else {
@@ -7205,6 +7249,11 @@
         wrapper.appendChild(sib); // 既存のDOMノードをそのまま移動(クローンではないので、中の状態はそのまま保たれる)
         sib = next;
       }
+      // ページ識別バー(下ナビ色)を、そのページの最上部に差し込む
+      const bar = document.createElement('div');
+      bar.className = 'page-id-bar';
+      bar.setAttribute('data-g', groupKey);
+      wrapper.insertBefore(bar, wrapper.firstChild);
       label.after(wrapper);
     });
   }
@@ -7232,7 +7281,10 @@
     if (on) {
       // 複数ページモードの間だけ、時計・ポモドーロ・猫などのエリアを、「ホーム」グループの先頭へ、一時的に移動する
       if (hudHeader && otherWrap && !otherWrap.contains(hudHeader)) {
-        otherWrap.insertBefore(hudHeader, otherWrap.firstChild);
+        // ページ識別バーを最上部に保つため、HUDはバーの直後に差し込む
+        const bar = otherWrap.querySelector(':scope > .page-id-bar');
+        if (bar) bar.after(hudHeader);
+        else otherWrap.insertBefore(hudHeader, otherWrap.firstChild);
       }
       switchAppGroup('group_other');
     } else {
@@ -9175,7 +9227,7 @@
       const rec = dailyHistory[key];
       const items = rec ? (rec.items || []) : [];
       const all = [...evs, ...items];
-      return all.slice(0, 3).map(t => t.length > 7 ? t.slice(0, 6) + '…' : t);
+      return all.slice(0, 6).map(t => t.length > 7 ? t.slice(0, 6) + '…' : t);
     }
     function makeCell(dateNum, key, isOtherMonth) {
       const cell = document.createElement('div');
@@ -9478,7 +9530,7 @@
       const d = new Date(card.createdAt);
       const dateLabel = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
       return `
-      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px; margin-bottom:8px;">
+      <div class="memento-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
           <span style="font-size:9.5px; color:var(--ink-dim); font-family:'Orbitron',sans-serif;">${dateLabel}</span>
           <div style="display:flex; gap:10px; align-items:center;">
