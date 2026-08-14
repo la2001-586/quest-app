@@ -1294,16 +1294,37 @@
 
   /* ---- スワイプで削除(iOSメール等の定石: 左スワイプで赤いゴミ箱が現れ、指を離すと開いた状態で固定、タップで削除) ---- */
   .swipe-del-wrap { position: relative; overflow: hidden; border-radius: 20px; margin-bottom: 9px; }
-  .swipe-del-wrap .item, .swipe-del-wrap .alarm-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 62px; margin: 0; padding: 8px 16px; background: rgba(30,34,44,0.96); box-sizing: border-box; touch-action: pan-y !important; }
-  body.theme-simple .alarm-row, body.theme-fancy .alarm-row { background: #ffffff; }
-  #alarmListBox .swipe-del-wrap { position: relative; margin-bottom: 10px; border: 1.5px solid rgba(130,130,145,0.3); border-radius: 14px; overflow: hidden; }
-  body.theme-simple #alarmListBox .swipe-del-wrap, body.theme-fancy #alarmListBox .swipe-del-wrap { border-color: rgba(0,0,0,0.14); }
-  .alarm-row-days { font-family: inherit; font-size: 12.5px; font-weight: 600; opacity: 0.5; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .swipe-del-wrap .item, .swipe-del-wrap .alarm-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 60px; margin: 0; padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,0.24); background: #1b1f28; box-sizing: border-box; touch-action: pan-y !important; }
+  body.theme-simple .alarm-row, body.theme-fancy .alarm-row { background: #ffffff; border-bottom-color: rgba(0,0,0,0.2); }
+  #alarmListBox { border: 1px solid rgba(130,130,145,0.28); border-radius: 14px; overflow: hidden; }
+  body.theme-simple #alarmListBox, body.theme-fancy #alarmListBox { border-color: rgba(0,0,0,0.12); }
+  #alarmListBox.empty { border: none; }
+  #alarmListBox .swipe-del-wrap { position: relative; }
+  #alarmListBox .swipe-del-wrap:last-child .alarm-row { border-bottom: none; }
+  /* ===== 施策C + 左インセント: 柔らかい影のカード / 区切り線を左インセット / トグルをティール ===== */
+  #alarmListBox { border: none; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 26px rgba(20,20,40,0.10), 0 1px 3px rgba(0,0,0,0.05); }
+  /* 暗い背景(cyber / dark)は影が沈むので、影ではなく淡い枠で縁取る */
+  body:not(.theme-simple):not(.theme-fancy) #alarmListBox,
+  body.theme-dark #alarmListBox { box-shadow: none; border: 1px solid rgba(130,130,145,0.22); }
+  #alarmListBox.empty { border: none; box-shadow: none; }
+  #alarmListBox .alarm-row { position: relative; min-height: 64px; padding: 12px 20px; border-bottom: none; }
+  /* 左インセントの区切り線(左端を空け、右も少し内側で終える) */
+  #alarmListBox .swipe-del-wrap:not(:last-child) .alarm-row::after {
+    content: ""; position: absolute; left: 58px; right: 18px; bottom: 0; height: 1px;
+    background: rgba(255,255,255,0.13); pointer-events: none;
+  }
+  body.theme-simple:not(.theme-dark) #alarmListBox .swipe-del-wrap:not(:last-child) .alarm-row::after,
+  body.theme-fancy #alarmListBox .swipe-del-wrap:not(:last-child) .alarm-row::after { background: rgba(0,0,0,0.09); }
+  /* トグルを一貫したティールに(施策Cのアクセント) */
+  #alarmListBox .toggle-switch input:checked + .toggle-track { background: #17b6b0 !important; border-color: rgba(23,182,176,0.5) !important; }
+  .alarm-row-days { font-family: inherit; font-size: 10.5px; font-weight: 500; opacity: 0.33; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .swipe-del-trash {
     position: absolute; top: 0; right: 0; bottom: 0; width: 76px;
     background: #E5484D; display: flex; align-items: center; justify-content: center;
     color: #fff; font-size: 22px; cursor: pointer; z-index: 0;
   }
+  .swipe-fav-bg { position: absolute; top: 0; left: 0; bottom: 0; width: 76px; background: #D9A84E; display: flex; align-items: center; justify-content: center; z-index: 0; }
+  .fav-star { display: inline-flex; align-items: center; font-size: 14px; margin-right: 4px; line-height: 1; }
   .item {
     display: flex; align-items: center; gap: 10px;
     padding: 13px 12px; margin-bottom: 9px; cursor: pointer; user-select: none;
@@ -2221,7 +2242,7 @@
     background: linear-gradient(160deg, rgba(22,26,34,1), rgba(12,15,20,1)); /* カードと完全に同じグラデーションにして、透け・色ズレを防ぐ */
   }
   body.theme-simple:not(.theme-dark) .alarm-row { background: #FFFFFF; }
-  .alarm-row:last-child { border-bottom: none; }
+  /* 旧: .alarm-row:last-child border-bottom none — 各行がswipe-wrapの最後の子なので全行に誤適用されるため撤去。最終行は #alarmListBox .swipe-del-wrap:last-child .alarm-row で処理 */
   .alarm-row-info { cursor: pointer; flex: 1; min-width: 0; }
   .alarm-row-time {
     font-family: inherit; font-size: 23px; font-weight: 700; color: var(--ink); line-height: 1.15;
@@ -2622,7 +2643,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0814_NAVCOLOR_V349</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0814_ALARMREFINE_V353</div>
   <div class="app-group-label" data-i18n="group_calendar"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
@@ -4572,9 +4593,11 @@
     <path d="M6 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5L18 7"></path>
     <path d="M10 11v6"></path><path d="M14 11v6"></path>
   </svg>`;
-  function wrapForSwipeDelete(innerHtml, deleteJsCall) {
-    return `<div class="swipe-del-wrap">
-      <div class="swipe-del-trash" onclick="${deleteJsCall}">${TRASH_ICON_SVG}</div>
+  function wrapForSwipeDelete(innerHtml, deleteJsCall, favoriteJsCall) {
+    const favAttr = favoriteJsCall ? ` data-fav="${favoriteJsCall.replace(/"/g,'&quot;')}"` : '';
+    const favBg = favoriteJsCall ? `<div class="swipe-fav-bg"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M12 2l2.9 6.26L21.5 9.27l-4.75 4.63 1.12 6.54L12 17.27l-5.87 3.17 1.12-6.54L2.5 9.27l6.6-1.01z"></path></svg></div>` : '';
+    return `<div class="swipe-del-wrap"${favAttr}>
+      ${favBg}<div class="swipe-del-trash" onclick="${deleteJsCall}">${TRASH_ICON_SVG}</div>
       ${innerHtml}
     </div>`;
   }
@@ -4585,6 +4608,8 @@
     const contentEl = wrapEl.querySelector('.item, .alarm-row');
     if (!contentEl) return;
     const TRASH_WIDTH = 76;
+    const FAV_WIDTH = 76;
+    const hasFav = !!wrapEl.getAttribute('data-fav');
     let startX = 0, startY = 0, currentX = 0, dragging = false, axisLocked = null;
 
     function setX(x, animate) {
@@ -4606,7 +4631,7 @@
       if (axisLocked === null) axisLocked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
       if (axisLocked === 'y') return; // 縦方向の動きは、通常のスクロールに譲る
       let x = currentX + dx;
-      x = Math.max(-TRASH_WIDTH - 10, Math.min(0, x));
+      x = Math.max(-TRASH_WIDTH - 10, Math.min(hasFav ? FAV_WIDTH + 10 : 0, x));
       setX(x, false);
     }, { passive: true });
     contentEl.addEventListener('touchend', () => {
@@ -4617,6 +4642,10 @@
       if (finalX < -TRASH_WIDTH / 2) {
         setX(-TRASH_WIDTH, true);
         wrapEl.classList.add('swipe-open');
+      } else if (finalX > FAV_WIDTH / 2 && hasFav) {
+        setX(0, true);
+        wrapEl.classList.remove('swipe-open');
+        try { new Function(wrapEl.getAttribute('data-fav'))(); } catch (e) {}
       } else {
         setX(0, true);
         wrapEl.classList.remove('swipe-open');
@@ -4825,11 +4854,12 @@
   function renderAlarmList() {
     const box = document.getElementById('alarmListBox');
     if (!box) return;
+    box.classList.toggle('empty', alarms.length === 0);
     if (alarms.length === 0) {
       box.innerHTML = `<div class="alarm-empty-hint">まだアラームがありません</div>`;
       return;
     }
-    const sorted = [...alarms].sort((a, b) => a.time.localeCompare(b.time));
+    const sorted = [...alarms].sort((a, b) => ((b.favorite ? 1 : 0) - (a.favorite ? 1 : 0)) || a.time.localeCompare(b.time));
     box.innerHTML = sorted.map(a => {
       const weekLabel = a.repeatDays.length === 7 ? '毎日'
         : a.repeatDays.length > 0
@@ -4841,14 +4871,14 @@
       const inner = `
       <div class="alarm-row${a.enabled ? '' : ' disabled'}">
         <div class="alarm-row-info" onclick="openAlarmEditor('${a.id}')">
-          <div class="alarm-row-time"><span class="alarm-row-time-num">${a.time}</span><span class="alarm-row-days">${escapeHtml(weekLabel)}${a.label ? '　' + escapeHtml(a.label) : ''}</span></div>
+          <div class="alarm-row-time">${a.favorite ? '<span class="fav-star"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="#D9A84E" stroke="#D9A84E" stroke-width="2" stroke-linejoin="round"><path d="M12 2l2.9 6.26L21.5 9.27l-4.75 4.63 1.12 6.54L12 17.27l-5.87 3.17 1.12-6.54L2.5 9.27l6.6-1.01z"></path></svg></span>' : ''}<span class="alarm-row-time-num">${a.time}</span><span class="alarm-row-days">${escapeHtml(weekLabel)}${a.label ? '　' + escapeHtml(a.label) : ''}</span></div>
         </div>
         <label class="toggle-switch">
           <input type="checkbox" ${a.enabled ? 'checked' : ''} onchange="toggleAlarmEnabled('${a.id}', this.checked)">
           <span class="toggle-track"></span>
         </label>
       </div>`;
-      return wrapForSwipeDelete(inner, `deleteAlarmDirect('${a.id}')`);
+      return wrapForSwipeDelete(inner, `deleteAlarmDirect('${a.id}')`, `toggleAlarmFavorite('${a.id}')`);
     }).join('');
     initAllSwipeDelete(box);
   }
@@ -4862,6 +4892,13 @@
     const a = alarms.find(x => x.id === id);
     if (!a) return;
     a.enabled = enabled;
+    persistAlarms();
+    renderAlarmList();
+  }
+  function toggleAlarmFavorite(id) {
+    const a = alarms.find(x => x.id === id);
+    if (!a) return;
+    a.favorite = !a.favorite;
     persistAlarms();
     renderAlarmList();
   }
