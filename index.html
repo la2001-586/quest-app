@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -1111,9 +1111,31 @@
   body.multipage-mode .cal-grid-shell { font-size: 1.15em; }
 
   /* ========== V354: 立体影→細線 / カレンダー縦フル / 備忘録インセット線 / ページ識別バー ========== */
-  /* タスク・日課: 立体影と光沢(::before/::after)を消し、アラーム雛形と同じクッキリした細線区切りに */
-  body.multipage-mode .app-group-wrap .item::before,
+  /* タスク・日課: 立体影と光沢を消し、アラーム雛形と同じクッキリした細線区切りに。
+     左アクセントは、ハードな縦線ではなく、角丸のインセット帯(ピル)で洗練させる */
   body.multipage-mode .app-group-wrap .item::after { content: none !important; }
+  .item { --item-accent: #60D69F; }
+  .item.today-routine { --item-accent: var(--low); }
+  .item.today-custom { --item-accent: rgba(255,138,92,0.85); }
+  .item.today-custom.done { --item-accent: #F0906B; }
+  .item.picked { --item-accent: var(--cyan); }
+  body.multipage-mode .app-group-wrap .item { border-left: none !important; padding-left: 22px; }
+  /* 左に「帽子が被さる」小さな丸タブ(案B・少し淡め)。色は属性ごとのミュート配色 */
+  body.multipage-mode .app-group-wrap .item::before {
+    content: "" !important; position: absolute !important; inset: auto !important;
+    left: 0 !important; top: 11px !important; bottom: 11px !important; transform: none !important;
+    width: 11px !important; height: auto !important; border-radius: 0 8px 8px 0 !important;
+    background: var(--item-accent, #5E9A85) !important; opacity: 0.8; z-index: 2;
+  }
+  /* かつてページ色分けの名残だった、カード右下の色つき丸は廃止 */
+  .card-accent-dot { display: none !important; }
+  /* カレンダー各予定行の、属性色の小さなドット */
+  .cal-line-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-right: 3px; vertical-align: middle; }
+  .cal-attr-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 8px 2px 2px; font-size: 9.5px; color: var(--ink-dim); }
+  .cal-attr-legend span { display: inline-flex; align-items: center; }
+  /* 各行の3点リーダー(編集を開く) */
+  .row-kebab { color: var(--ink-dim); cursor: pointer; padding: 4px 6px; flex: 0 0 auto; opacity: 0.5; font-size: 18px; display: inline-flex; align-items: center; }
+  .row-kebab:active { opacity: 0.9; }
   body.multipage-mode .app-group-wrap .item { border-bottom-color: rgba(255,255,255,0.13) !important; }
   body.multipage-mode.theme-simple:not(.theme-dark) .app-group-wrap .item,
   body.multipage-mode.theme-fancy .app-group-wrap .item { border-bottom-color: rgba(0,0,0,0.09) !important; }
@@ -1138,11 +1160,18 @@
 
   /* ページ識別バー: 各ページ最上部に、画面左右いっぱいの帯。両端はグラデーションでフェードさせ、鬱陶しくならないように */
   .page-id-bar { display: none; }
-  body.multipage-mode .page-id-bar { display: block; height: 7px; margin: 0 -16px 14px; border-radius: 0; opacity: 1; }
-  body.multipage-mode .page-id-bar[data-g="group_other"]    { background: linear-gradient(90deg, transparent, #16b6b0 20%, #16b6b0 80%, transparent); }
-  body.multipage-mode .page-id-bar[data-g="group_calendar"] { background: linear-gradient(90deg, transparent, #4088f0 20%, #4088f0 80%, transparent); }
-  body.multipage-mode .page-id-bar[data-g="group_task"]     { background: linear-gradient(90deg, transparent, #E8971F 20%, #E8971F 80%, transparent); }
-  body.multipage-mode .page-id-bar[data-g="group_diary"]    { background: linear-gradient(90deg, transparent, #A45CF0 20%, #A45CF0 80%, transparent); }
+  body.multipage-mode .page-id-bar {
+    display: block; height: 7px; margin: 0 -16px 14px; border-radius: 0; opacity: 1;
+    background-repeat: no-repeat; background-position: 50% center; background-size: 132% 100%;
+    animation: pageBarWaver 6.5s ease-in-out infinite alternate;
+  }
+  /* 両端フェードが、ゆっくり左右に揺らいで動く(不自然にならない範囲で) */
+  @keyframes pageBarWaver { from { background-position: 40% center; } to { background-position: 60% center; } }
+  @media (prefers-reduced-motion: reduce) { body.multipage-mode .page-id-bar { animation: none; background-position: 50% center; } }
+  body.multipage-mode .page-id-bar[data-g="group_other"]    { background-image: linear-gradient(90deg, transparent, #16b6b0 20%, #16b6b0 80%, transparent); }
+  body.multipage-mode .page-id-bar[data-g="group_calendar"] { background-image: linear-gradient(90deg, transparent, #4088f0 20%, #4088f0 80%, transparent); }
+  body.multipage-mode .page-id-bar[data-g="group_task"]     { background-image: linear-gradient(90deg, transparent, #E8971F 20%, #E8971F 80%, transparent); }
+  body.multipage-mode .page-id-bar[data-g="group_diary"]    { background-image: linear-gradient(90deg, transparent, #A45CF0 20%, #A45CF0 80%, transparent); }
 
   body.theme-simple .app-group-label::after { background: rgba(0,0,0,0.08); }
   .folder-panel.show { display: block; }
@@ -1352,7 +1381,7 @@
   body.theme-fancy #alarmListBox .swipe-del-wrap:not(:last-child) .alarm-row::after { background: rgba(0,0,0,0.09); }
   /* トグルを一貫したティールに(施策Cのアクセント) */
   #alarmListBox .toggle-switch input:checked + .toggle-track { background: #17b6b0 !important; border-color: rgba(23,182,176,0.5) !important; }
-  .alarm-row-days { font-family: inherit; font-size: 10.5px; font-weight: 500; opacity: 0.33; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .alarm-row-days { font-family: inherit; font-size: 12px; font-weight: 500; opacity: 0.52; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .swipe-del-trash {
     position: absolute; top: 0; right: 0; bottom: 0; width: 76px;
     background: #E5484D; display: flex; align-items: center; justify-content: center;
@@ -2287,6 +2316,12 @@
     font-family: inherit; font-size: 23px; font-weight: 700; color: var(--ink); line-height: 1.15;
     display: flex; align-items: center; gap: 8px;
   }
+  /* 時刻を上品なセリフ体に(案D)。数字自体は少し控えめ、曜日は下で読みやすく */
+  #alarmListBox .alarm-row-time-num { font-family: 'Fraunces', 'Hiragino Mincho ProN', 'Yu Mincho', serif !important; font-size: 22px; font-weight: 500; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+  /* アラームのトグルは小型に(案E) */
+  #alarmListBox .toggle-switch { width: 34px; height: 20px; }
+  #alarmListBox .toggle-track::before { width: 15px; height: 15px; left: 2.5px; top: 2.5px; }
+  #alarmListBox .toggle-switch input:checked + .toggle-track::before { transform: translateX(14px); }
   .alarm-row-time-icon { font-size: 20px; opacity: 0.85; }
   .alarm-row.disabled .alarm-row-time, .alarm-row.disabled .alarm-row-sub { opacity: 0.4; }
   .alarm-row-sub { font-size: 11px; color: var(--ink-dim); margin-top: 2px; }
@@ -2682,7 +2717,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0814_UIUNIFY_V355</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0814_CAP_V360</div>
   <div class="app-group-label" data-i18n="group_calendar"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
@@ -2697,6 +2732,13 @@
           <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
         </div>
         <div class="cal-grid" id="calGrid"></div>
+      </div>
+      <div class="cal-attr-legend">
+        <span><span class="cal-line-dot" style="background:#E8971F"></span>タスク</span>
+        <span><span class="cal-line-dot" style="background:#41B38C"></span>日課</span>
+        <span><span class="cal-line-dot" style="background:#E0384A"></span>〆切</span>
+        <span><span class="cal-line-dot" style="background:#4088F0"></span>予定</span>
+        <span><span class="cal-line-dot" style="background:#8E8E93"></span>その他</span>
       </div>
     </div>
 
@@ -2843,7 +2885,7 @@
       <div id="otherWrapAlarm" style="text-align:left; margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12);" onclick="event.stopPropagation();">
         <div class="settings-row" style="margin-bottom:0;">
           <div class="settings-label" style="margin-bottom:0;" data-i18n="alarm_label">⏰ アラーム</div>
-          <span class="pin-toggle-btn" onclick="pinOtherItem('alarm')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
+          <span class="pin-toggle-btn" onclick="pinOtherItem('alarm')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M8 3.5h8"></path><path d="M9.5 3.5l-.6 6-1.8 2.2c-.3.4 0 1 .5 1h8.8c.5 0 .8-.6.5-1l-1.8-2.2-.6-6"></path><path d="M12 12.7V20"></path></svg></span>
         </div>
         <div id="alarmListBox"></div>
         <button class="add-task-btn" style="margin-top:8px;" onclick="openAlarmEditor(null)">＋</button>
@@ -2982,14 +3024,14 @@
   <div class="settings-group" id="otherWrapFocus">
     <div class="settings-row" style="margin-bottom:0;">
       <div class="settings-label" style="margin-bottom:0;" data-i18n="focus_settings_label">全集中モード</div>
-      <span class="pin-toggle-btn" onclick="pinOtherItem('focus')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
+      <span class="pin-toggle-btn" onclick="pinOtherItem('focus')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M8 3.5h8"></path><path d="M9.5 3.5l-.6 6-1.8 2.2c-.3.4 0 1 .5 1h8.8c.5 0 .8-.6.5-1l-1.8-2.2-.6-6"></path><path d="M12 12.7V20"></path></svg></span>
     </div>
     <button class="settings-btn" id="focusModeBtn" data-i18n="focus_start_btn" onclick="openFocusModeModal()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="0.8" fill="currentColor"></circle></svg> 全集中モードを始める</button>
   </div>
   <div class="settings-group" id="otherWrapMemento">
     <div class="settings-row" style="margin-bottom:0;">
       <div class="settings-label" style="margin-bottom:0;" data-i18n="memento_label">📖 備忘録</div>
-      <span class="pin-toggle-btn" onclick="pinOtherItem('memento')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
+      <span class="pin-toggle-btn" onclick="pinOtherItem('memento')"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M8 3.5h8"></path><path d="M9.5 3.5l-.6 6-1.8 2.2c-.3.4 0 1 .5 1h8.8c.5 0 .8-.6.5-1l-1.8-2.2-.6-6"></path><path d="M12 12.7V20"></path></svg></span>
     </div>
     <div id="mementoCardList"></div>
     <button class="add-task-btn" onclick="openAddMemento()">＋</button>
@@ -3270,13 +3312,13 @@
           <option value="weekly">毎週</option>
           <option value="monthly">毎月</option>
         </select>
-        <div id="dayDetailEventColorPicker" style="display:flex; gap:5px;">
-          <span data-color="" class="event-color-dot picked" style="width:16px; height:16px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.3); background:transparent; cursor:pointer;" onclick="pickEventColor(this)"></span>
-          <span data-color="#2BC9CC" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#2BC9CC; cursor:pointer;" onclick="pickEventColor(this)"></span>
-          <span data-color="#E0357A" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#E0357A; cursor:pointer;" onclick="pickEventColor(this)"></span>
-          <span data-color="#E8FF4E" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#E8FF4E; cursor:pointer;" onclick="pickEventColor(this)"></span>
-          <span data-color="#60D69F" class="event-color-dot" style="width:16px; height:16px; border-radius:50%; background:#60D69F; cursor:pointer;" onclick="pickEventColor(this)"></span>
-        </div>
+        <select id="dayDetailEventAttr" title="属性" style="flex:1; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+          <option value="event">予定</option>
+          <option value="task">タスク</option>
+          <option value="routine">日課</option>
+          <option value="deadline">〆切</option>
+          <option value="other">その他</option>
+        </select>
       </div>
       <div style="display:flex; align-items:center; gap:6px; margin-top:8px;">
         <span style="font-size:10.5px; color:var(--ink-dim); flex-shrink:0;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>リマインド</span>
@@ -3384,9 +3426,106 @@
     <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;" data-i18n="new_routine_name_label">日課名</div>
     <input id="addTaskLabel" type="text" data-i18n-placeholder="ph_add_task_label" placeholder="例: ヨガ、日記を書く" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px; box-sizing:border-box;">
     <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">時刻（任意・毎日この時間にやる場合）</div>
-    <input id="addTaskTime" type="time" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:18px; box-sizing:border-box;">
+    <input id="addTaskTime" type="time" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px; box-sizing:border-box;">
+    <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">属性（色分け）</div>
+    <select id="addTaskAttr" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:18px; box-sizing:border-box;">
+      <option value="routine">日課</option>
+      <option value="task">タスク</option>
+      <option value="deadline">〆切</option>
+      <option value="event">予定</option>
+      <option value="other">その他</option>
+    </select>
     <button class="badge-close-btn" style="width:100%; margin-top:0;" data-i18n="confirm_add_btn" onclick="confirmAddTask()">追加する</button>
     <button class="badge-close-btn" style="width:100%; margin-top:8px; background:transparent; border-color:rgba(255,255,255,0.15); color:var(--ink-dim);" data-i18n="cancel_btn" onclick="closeAddTask()">キャンセル</button>
+  </div>
+</div>
+
+<!-- 日課の編集(鉛筆から) -->
+<div class="grand-modal" id="routineEditModal" onclick="closeRoutineEdit()">
+  <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:26px 24px; max-width:min(320px,86vw); text-align:left; max-height:84vh; overflow-y:auto;" onclick="event.stopPropagation()">
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--cyan); font-weight:800; margin-bottom:16px;">日課を編集</div>
+    <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">絵文字（任意）</div>
+    <input id="routineEditEmoji" type="text" maxlength="4" placeholder="🎯" style="width:56px; text-align:center; font-size:20px; padding:8px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px;">
+    <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">日課名</div>
+    <input id="routineEditLabel" type="text" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px; box-sizing:border-box;">
+    <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">階級</div>
+    <select id="routineEditLevel" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px; box-sizing:border-box;">
+      <option value="low">軽量級</option>
+      <option value="mid">中量級</option>
+      <option value="high">重量級</option>
+    </select>
+    <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">属性（色分け）</div>
+    <select id="routineEditAttr" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px; box-sizing:border-box;">
+      <option value="routine">日課</option>
+      <option value="task">タスク</option>
+      <option value="deadline">〆切</option>
+      <option value="event">予定</option>
+      <option value="other">その他</option>
+    </select>
+    <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">メモ（任意）</div>
+    <textarea id="routineEditNote" rows="3" style="width:100%; font-size:13px; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:18px; box-sizing:border-box; font-family:inherit;"></textarea>
+    <button class="badge-close-btn" style="width:100%; margin-top:0;" onclick="confirmRoutineEdit()">保存する</button>
+    <button class="badge-close-btn" style="width:100%; margin-top:8px; background:transparent; border-color:rgba(255,255,255,0.15); color:var(--ink-dim);" onclick="closeRoutineEdit()">キャンセル</button>
+  </div>
+</div>
+
+<!-- 予定/タスクの編集(3点リーダーから) -->
+<div class="grand-modal" id="eventEditModal" onclick="closeEventEditor()">
+  <div class="modal-card" style="border:1.5px solid var(--magenta); border-radius:18px; padding:24px 22px; max-width:min(340px,88vw); text-align:left; max-height:86vh; overflow-y:auto;" onclick="event.stopPropagation()">
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--magenta); font-weight:800; margin-bottom:14px;">予定を編集</div>
+    <input type="text" id="eventEditText" placeholder="予定を入力" style="width:100%; box-sizing:border-box; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:10px;">
+    <div style="display:flex; gap:6px; align-items:center; margin-bottom:10px;">
+      <input type="time" id="eventEditTime" style="width:70px; flex-shrink:0; font-size:12px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+      <span style="color:var(--ink-dim); font-size:10px;">〜</span>
+      <input type="time" id="eventEditEndTime" style="width:70px; flex-shrink:0; font-size:12px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+      <label style="display:flex; align-items:center; gap:4px; font-size:11px; color:var(--ink-dim); margin-left:4px;">
+        <input type="checkbox" id="eventEditAllDay" onchange="document.getElementById('eventEditTime').disabled=this.checked; document.getElementById('eventEditEndTime').disabled=this.checked;"> 終日
+      </label>
+    </div>
+    <div style="display:flex; gap:6px; margin-bottom:10px;">
+      <select id="eventEditRecur" style="flex:1; font-size:11px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+        <option value="">繰り返さない</option>
+        <option value="daily">毎日</option>
+        <option value="weekdays">平日のみ</option>
+        <option value="weekly">毎週</option>
+        <option value="monthly">毎月</option>
+      </select>
+      <select id="eventEditAttr" title="属性" style="flex:1; font-size:11px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+        <option value="event">予定</option>
+        <option value="task">タスク</option>
+        <option value="routine">日課</option>
+        <option value="deadline">〆切</option>
+        <option value="other">その他</option>
+      </select>
+    </div>
+    <div style="display:flex; align-items:center; gap:6px; margin-bottom:10px;">
+      <span style="font-size:10.5px; color:var(--ink-dim); flex-shrink:0;">リマインド</span>
+      <select id="eventEditReminder" onchange="document.getElementById('eventEditReminderCustom').style.display=(this.value==='custom')?'inline-block':'none';" style="flex:1; font-size:11px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+        <option value="">なし</option>
+        <option value="10">10分前</option>
+        <option value="60">1時間前</option>
+        <option value="180">3時間前</option>
+        <option value="1440">1日前</option>
+        <option value="10080">1週間前</option>
+        <option value="custom">カスタム</option>
+      </select>
+      <input type="number" id="eventEditReminderCustom" placeholder="分前" min="1" style="display:none; width:60px; font-size:11px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+    </div>
+    <input type="text" id="eventEditLocation" placeholder="場所(任意)" style="width:100%; box-sizing:border-box; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:8px;">
+    <textarea id="eventEditNote" placeholder="メモ(任意)" style="width:100%; box-sizing:border-box; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; min-height:44px; font-family:inherit; margin-bottom:16px;"></textarea>
+    <button class="badge-close-btn" style="width:100%; font-weight:700;" onclick="confirmEventEditor()">保存する</button>
+    <button class="badge-close-btn" id="eventEditDeleteBtn" style="width:100%; margin-top:8px; background:transparent; border-color:var(--magenta); color:var(--magenta);" onclick="deleteEventFromEditor()">削除</button>
+    <button class="badge-close-btn" style="width:100%; margin-top:8px; background:transparent; border-color:rgba(255,255,255,0.15); color:var(--ink-dim);" onclick="closeEventEditor()">キャンセル</button>
+  </div>
+</div>
+
+<!-- 今日の単発タスクの編集(3点リーダーから) -->
+<div class="grand-modal" id="todayTaskEditModal" onclick="closeTodayTaskEdit()">
+  <div class="modal-card" style="border:1.5px solid rgba(240,144,107,0.5); border-radius:18px; padding:24px 22px; max-width:min(320px,86vw); text-align:left;" onclick="event.stopPropagation()">
+    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:#F0906B; font-weight:800; margin-bottom:14px;">タスクを編集</div>
+    <input type="text" id="todayTaskEditText" style="width:100%; box-sizing:border-box; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:18px;">
+    <button class="badge-close-btn" style="width:100%; font-weight:700;" onclick="confirmTodayTaskEdit()">保存する</button>
+    <button class="badge-close-btn" style="width:100%; margin-top:8px; background:transparent; border-color:rgba(255,255,255,0.15); color:var(--ink-dim);" onclick="closeTodayTaskEdit()">キャンセル</button>
   </div>
 </div>
 
@@ -4914,6 +5053,7 @@
         <div class="alarm-row-info" onclick="openAlarmEditor('${a.id}')">
           <div class="alarm-row-time">${a.favorite ? '<span class="fav-star"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="#D9A84E" stroke="#D9A84E" stroke-width="2" stroke-linejoin="round"><path d="M12 2l2.9 6.26L21.5 9.27l-4.75 4.63 1.12 6.54L12 17.27l-5.87 3.17 1.12-6.54L2.5 9.27l6.6-1.01z"></path></svg></span>' : ''}<span class="alarm-row-time-num">${a.time}</span><span class="alarm-row-days">${escapeHtml(weekLabel)}${a.label ? '　' + escapeHtml(a.label) : ''}</span></div>
         </div>
+        <span class="row-kebab" onclick="event.stopPropagation(); openAlarmEditor('${a.id}')">${KEBAB_SVG}</span>
         <label class="toggle-switch">
           <input type="checkbox" ${a.enabled ? 'checked' : ''} onchange="toggleAlarmEnabled('${a.id}', this.checked)">
           <span class="toggle-track"></span>
@@ -5390,6 +5530,22 @@
   // 未来の日付にも登録できる、本来の意味での"予定"データ。
   // { id, dateKey: "YYYY-M-D", time: "18:00" | null, text, done }
   // ==================================================================
+  // ---- 属性(タスク/日課/〆切/予定/その他)。ラベル(付箋)ではなく、アラームの止め方と同じ「選ぶだけ」の属性。カレンダーの色分けの元になる ----
+  const ATTR_DEFS = [
+    { key: 'task', label: 'タスク', color: '#E8971F' },
+    { key: 'routine', label: '日課', color: '#41B38C' },
+    { key: 'deadline', label: '〆切', color: '#E0384A' },
+    { key: 'event', label: '予定', color: '#4088F0' },
+    { key: 'other', label: 'その他', color: '#8E8E93' },
+  ];
+  const ATTR_COLOR = Object.fromEntries(ATTR_DEFS.map(a => [a.key, a.color]));
+  function attrColor(k) { return ATTR_COLOR[k] || null; }
+  // 行の左タブ用の、くすんだ上品なトーン(高級感)。カレンダーのドットはビビッド、行タブはミュート、と役割で使い分ける
+  const ATTR_MUTED = { task: '#C68A3C', routine: '#5E9A85', deadline: '#C0616A', event: '#5B82B8', other: '#9AA0A8' };
+  function attrMuted(k) { return ATTR_MUTED[k] || '#9AA0A8'; }
+  // 各行の「3点リーダー(⋯)」= 後から編集を開くボタン
+  const KEBAB_SVG = '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:-0.15em;"><circle cx="5" cy="12" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="19" cy="12" r="1.7"></circle></svg>';
+
   let scheduledEvents = [];
   async function loadScheduledEvents() {
     try {
@@ -5425,7 +5581,7 @@
     scheduledEvents.push({
       id: 'ev_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
       dateKey, time: time || null, text: text.trim(), done: false,
-      recurrence: recurrence || null, color: color || null,
+      recurrence: recurrence || null, color: color || null, attr: extra.attr || null,
       endTime: extra.endTime || null, allDay: !!extra.allDay,
       location: extra.location || null, note: extra.note || null,
       linkedTaskKey: extra.linkedTaskKey || null,
@@ -5634,6 +5790,7 @@
       if (isFocusModeActive() && picked.has(key)) div.classList.add('focus-bonus');
       div.dataset.key = key;
       div.dataset.taskId = task.id;
+      div.style.setProperty('--item-accent', attrMuted(task.attr || 'routine'));
       const noteHtml = task.note
         ? `<div class="item-note">${escapeHtml(task.note)}</div>`
         : '';
@@ -5653,7 +5810,7 @@
       div.querySelector('.check-box').onclick = () => toggleItem(div, key);
       div.querySelector('.item-note-btn').onclick = (e) => {
         e.stopPropagation();
-        openNoteEditor(task.id);
+        openRoutineEdit(task.id);
       };
       attachDragHandlers(div, task);
       wrap.appendChild(div);
@@ -5879,21 +6036,22 @@
     const label = document.getElementById('addTaskLabel').value.trim();
     const emoji = document.getElementById('addTaskEmoji').value.trim();
     const time = document.getElementById('addTaskTime').value;
+    const attr = (document.getElementById('addTaskAttr') || {}).value || 'routine';
     if (!label) {
       showToast('タスク名を入力してください');
       return;
     }
     const newTask = {
       id: 'custom_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-      label, emoji: emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>', level: addTaskTargetLevel, tag: 'カスタム',
+      label, emoji: emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>', level: addTaskTargetLevel, tag: 'カスタム', attr,
     };
     taskList.push(newTask);
     if (time) {
       // 日課に時刻を設定した場合、独自の通知経路は作らず、既存のカレンダー(毎日の繰り返し予定)にそのまま繋げる。
       // これで、リマインド設定・完了の連動も、カレンダーの予定と同じ仕組みがそのまま使える。
       const todayKey = logicalDateKey(trustedNow);
-      addScheduledEvent(todayKey, time, `${emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>'} ${label}`, 'daily', null, {
-        linkedTaskKey: `${newTask.level}|${newTask.label}`,
+      addScheduledEvent(todayKey, time, `${emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>'} ${label}`, 'daily', attrColor(attr), {
+        linkedTaskKey: `${newTask.level}|${newTask.label}`, attr,
       });
     }
     saveTasks();
@@ -5929,6 +6087,138 @@
     closeNoteEditor();
     playUIClick();
     showToast(text ? 'メモを保存しました' : 'メモを削除しました');
+  }
+
+  // ---- 日課の編集(鉛筆から。名前・絵文字・階級・属性・メモをまとめて変更) ----
+  let editingRoutineId = null;
+  function openRoutineEdit(id) {
+    const task = taskList.find(t => t.id === id);
+    if (!task) return;
+    editingRoutineId = id;
+    document.getElementById('routineEditEmoji').value = (task.emoji && task.emoji.indexOf('<') === -1) ? task.emoji : '';
+    document.getElementById('routineEditLabel').value = task.label || '';
+    document.getElementById('routineEditLevel').value = task.level || 'low';
+    document.getElementById('routineEditAttr').value = task.attr || 'routine';
+    document.getElementById('routineEditNote').value = task.note || '';
+    document.getElementById('routineEditModal').classList.add('show');
+    playUIClick();
+  }
+  function closeRoutineEdit() {
+    document.getElementById('routineEditModal').classList.remove('show');
+    editingRoutineId = null;
+  }
+  function confirmRoutineEdit() {
+    const task = taskList.find(t => t.id === editingRoutineId);
+    if (!task) return;
+    const label = document.getElementById('routineEditLabel').value.trim();
+    if (!label) { showToast('日課名を入力してください'); return; }
+    const emoji = document.getElementById('routineEditEmoji').value.trim();
+    task.label = label;
+    if (emoji) task.emoji = emoji; // 空欄なら今の絵文字(またはSVG)をそのまま残す
+    task.level = document.getElementById('routineEditLevel').value || task.level;
+    task.attr = document.getElementById('routineEditAttr').value || 'routine';
+    task.note = document.getElementById('routineEditNote').value.trim();
+    saveTasks();
+    renderAllTasks();
+    if (typeof updateSummary === 'function') updateSummary();
+    closeRoutineEdit();
+    playUIClick();
+    showToast('保存しました');
+  }
+
+  // ---- 予定/タスク(カレンダーの予定)の編集(3点リーダーから) ----
+  let editingEventId = null;
+  function openEventEditor(id) {
+    const ev = scheduledEvents.find(e => e.id === id);
+    if (!ev) { showToast('この項目は編集できません'); return; }
+    editingEventId = id;
+    document.getElementById('eventEditText').value = ev.text || '';
+    document.getElementById('eventEditTime').value = ev.time || '';
+    document.getElementById('eventEditEndTime').value = ev.endTime || '';
+    document.getElementById('eventEditAllDay').checked = !!ev.allDay;
+    document.getElementById('eventEditTime').disabled = !!ev.allDay;
+    document.getElementById('eventEditEndTime').disabled = !!ev.allDay;
+    document.getElementById('eventEditRecur').value = ev.recurrence || '';
+    document.getElementById('eventEditAttr').value = ev.attr || 'event';
+    document.getElementById('eventEditLocation').value = ev.location || '';
+    document.getElementById('eventEditNote').value = ev.note || '';
+    const remSel = document.getElementById('eventEditReminder');
+    const remCustom = document.getElementById('eventEditReminderCustom');
+    const rem = ev.reminderMinutes;
+    const known = ['10', '60', '180', '1440', '10080'];
+    if (rem === null || rem === undefined) { remSel.value = ''; remCustom.style.display = 'none'; remCustom.value = ''; }
+    else if (known.includes(String(rem))) { remSel.value = String(rem); remCustom.style.display = 'none'; }
+    else { remSel.value = 'custom'; remCustom.style.display = 'inline-block'; remCustom.value = rem; }
+    document.getElementById('eventEditModal').classList.add('show');
+    playUIClick();
+  }
+  function closeEventEditor() {
+    document.getElementById('eventEditModal').classList.remove('show');
+    editingEventId = null;
+  }
+  function confirmEventEditor() {
+    const ev = scheduledEvents.find(e => e.id === editingEventId);
+    if (!ev) return;
+    const text = document.getElementById('eventEditText').value.trim();
+    if (!text) { showToast('予定名を入力してください'); return; }
+    const allDay = document.getElementById('eventEditAllDay').checked;
+    ev.text = text;
+    ev.allDay = allDay;
+    ev.time = allDay ? null : (document.getElementById('eventEditTime').value || null);
+    ev.endTime = allDay ? null : (document.getElementById('eventEditEndTime').value || null);
+    ev.recurrence = document.getElementById('eventEditRecur').value || null;
+    ev.attr = document.getElementById('eventEditAttr').value || 'event';
+    ev.color = attrColor(ev.attr);
+    ev.location = document.getElementById('eventEditLocation').value || null;
+    ev.note = document.getElementById('eventEditNote').value || null;
+    const remSel = document.getElementById('eventEditReminder').value;
+    if (remSel === 'custom') { const c = document.getElementById('eventEditReminderCustom').value; ev.reminderMinutes = c ? parseInt(c, 10) : null; }
+    else ev.reminderMinutes = remSel ? parseInt(remSel, 10) : null;
+    saveScheduledEvents();
+    if (typeof syncRemindersToServer === 'function') syncRemindersToServer();
+    renderCalendar();
+    if (typeof renderTodayTasksList === 'function') renderTodayTasksList();
+    if (typeof dayDetailCurrentKey !== 'undefined' && dayDetailCurrentKey) renderDayDetailEvents(dayDetailCurrentKey);
+    closeEventEditor();
+    playUIClick();
+    showToast('保存しました');
+  }
+  function deleteEventFromEditor() {
+    if (!editingEventId) return;
+    if (!confirm('この予定を削除しますか？')) return;
+    deleteScheduledEvent(editingEventId);
+    renderCalendar();
+    if (typeof renderTodayTasksList === 'function') renderTodayTasksList();
+    if (typeof dayDetailCurrentKey !== 'undefined' && dayDetailCurrentKey) renderDayDetailEvents(dayDetailCurrentKey);
+    closeEventEditor();
+    showToast('削除しました');
+  }
+
+  // ---- 今日の単発タスクの編集(3点リーダーから。テキストのみ) ----
+  let editingTodayTaskId = null;
+  function openTodayTaskEdit(id) {
+    const t = todayTasks.find(x => x.id === id);
+    if (!t) return;
+    editingTodayTaskId = id;
+    document.getElementById('todayTaskEditText').value = t.text || '';
+    document.getElementById('todayTaskEditModal').classList.add('show');
+    playUIClick();
+  }
+  function closeTodayTaskEdit() {
+    document.getElementById('todayTaskEditModal').classList.remove('show');
+    editingTodayTaskId = null;
+  }
+  function confirmTodayTaskEdit() {
+    const t = todayTasks.find(x => x.id === editingTodayTaskId);
+    if (!t) return;
+    const text = document.getElementById('todayTaskEditText').value.trim();
+    if (!text) { showToast('内容を入力してください'); return; }
+    t.text = text;
+    if (typeof saveTodayTasks === 'function') saveTodayTasks();
+    renderTodayTasksList();
+    closeTodayTaskEdit();
+    playUIClick();
+    showToast('保存しました');
   }
 
   // ---- タスクリストの永続化 ----
@@ -6998,7 +7288,7 @@
         ? (currentLang === 'en' ? ` (carried over, missed ${formatShortDate(t.carriedFrom)})` : `(未完了${formatShortDate(t.carriedFrom)}から持ち越し)`)
         : '';
       const inner = `
-      <div class="item today-custom${t.done ? ' done' : ''}">
+      <div class="item today-custom${t.done ? ' done' : ''}" style="--item-accent:${attrMuted('task')}">
         <div class="check-box" onclick="toggleTodayTask('${t.id}')">✓</div>
         <div class="item-main" onclick="toggleTodayTask('${t.id}')">
           <div class="item-main-row">
@@ -7006,6 +7296,7 @@
             <span class="item-label">${escapeHtml(t.text)}${carryLabel ? ` <span class="today-task-carry-tag">${escapeHtml(carryLabel)}</span>` : ''}</span>
           </div>
         </div>
+        <span class="row-kebab" onclick="event.stopPropagation(); openTodayTaskEdit('${t.id}')">${KEBAB_SVG}</span>
       </div>
     `;
       return wrapForSwipeDelete(inner, `deleteTodayTask('${t.id}')`);
@@ -7014,7 +7305,7 @@
       const isDone = ev.recurrence ? (ev.doneOccurrences || []).includes(todayKey) : ev.done;
       const dot = ev.color ? `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${ev.color}; margin-right:3px;"></span>` : '';
       const inner = `
-      <div class="item today-custom${isDone ? ' done' : ''}">
+      <div class="item today-custom${isDone ? ' done' : ''}" style="--item-accent:${attrMuted(ev.attr || 'event')}">
         <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();">✓</div>
         <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();">
           <div class="item-main-row">
@@ -7022,6 +7313,7 @@
             <span class="item-label">${dot}${ev.time ? `${ev.time} ` : ''}${escapeHtml(ev.text)}</span>
           </div>
         </div>
+        <span class="row-kebab" onclick="event.stopPropagation(); openEventEditor('${ev.id}')">${KEBAB_SVG}</span>
       </div>
     `;
       return wrapForSwipeDelete(inner, `deleteScheduledEvent('${ev.id}'); renderTodayTasksList();`);
@@ -7029,7 +7321,7 @@
     const overdueHtml = overdue.map(ev => {
       const overdueLabel = currentLang === 'en' ? ` (overdue, was ${formatShortDate(ev.dateKey)})` : `(未完了${formatShortDate(ev.dateKey)}から持ち越し)`;
       const inner = `
-      <div class="item today-custom${ev.done ? ' done' : ''}">
+      <div class="item today-custom${ev.done ? ' done' : ''}" style="--item-accent:${attrMuted(ev.attr || 'event')}">
         <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();">✓</div>
         <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();">
           <div class="item-main-row">
@@ -7037,6 +7329,7 @@
             <span class="item-label">${escapeHtml(ev.text)} <span class="today-task-carry-tag">${escapeHtml(overdueLabel)}</span></span>
           </div>
         </div>
+        <span class="row-kebab" onclick="event.stopPropagation(); openEventEditor('${ev.id}')">${KEBAB_SVG}</span>
       </div>
     `;
       return wrapForSwipeDelete(inner, `deleteScheduledEvent('${ev.id}'); renderTodayTasksList();`);
@@ -9223,17 +9516,19 @@
     grid.innerHTML = '';
 
     function buildCellLines(key) {
-      const evs = eventsForDate(key).map(e => e.text);
+      // 予定は属性色(なければ従来のcolor)で、履歴の日課は緑で色分けする
+      const evs = eventsForDate(key).map(e => ({ text: e.text, color: attrColor(e.attr) || e.color || null }));
       const rec = dailyHistory[key];
       const items = rec ? (rec.items || []) : [];
-      const all = [...evs, ...items];
-      return all.slice(0, 6).map(t => t.length > 7 ? t.slice(0, 6) + '…' : t);
+      const itemObjs = items.map(t => ({ text: t, color: attrColor('routine') }));
+      const all = [...evs, ...itemObjs];
+      return all.slice(0, 6).map(o => ({ text: o.text.length > 7 ? o.text.slice(0, 6) + '…' : o.text, color: o.color || null }));
     }
     function makeCell(dateNum, key, isOtherMonth) {
       const cell = document.createElement('div');
       cell.className = 'cal-day' + (isOtherMonth ? ' other-month' : '');
       const lines = buildCellLines(key);
-      cell.innerHTML = `<span class="cal-day-num">${dateNum}</span>` + lines.map(l => `<span class="cal-day-line">${escapeHtml(l)}</span>`).join('');
+      cell.innerHTML = `<span class="cal-day-num">${dateNum}</span>` + lines.map(l => `<span class="cal-day-line">${l.color ? `<span class="cal-line-dot" style="background:${l.color}"></span>` : ''}${escapeHtml(l.text)}</span>`).join('');
       return cell;
     }
 
@@ -9903,6 +10198,7 @@
           </div>
           ${subLine}
         </div>
+        <span onclick="openEventEditor('${ev.id}')" style="color:var(--ink-dim); padding:2px 4px; cursor:pointer; flex-shrink:0;" title="編集">${KEBAB_SVG}</span>
         <span onclick="deleteScheduledEvent('${ev.id}'); renderDayDetailEvents('${key}'); renderCalendar();" style="color:var(--ink-dim); font-size:13px; padding:2px 4px; cursor:pointer;">✕</span>
       </div>
     `;
@@ -9930,7 +10226,8 @@
     const noteEl = document.getElementById('dayDetailEventNote');
     const reminderEl = document.getElementById('dayDetailEventReminder');
     const reminderCustomEl = document.getElementById('dayDetailEventReminderCustom');
-    const pickedColorEl = document.querySelector('#dayDetailEventColorPicker .event-color-dot.picked');
+    const attrEl = document.getElementById('dayDetailEventAttr');
+    const attrVal = attrEl ? attrEl.value : 'event';
     if (!textEl.value.trim() || !dayDetailCurrentKey) return;
     let reminderMinutes = null;
     if (reminderEl.value === 'custom') {
@@ -9938,9 +10235,9 @@
     } else if (reminderEl.value) {
       reminderMinutes = parseInt(reminderEl.value, 10);
     }
-    addScheduledEvent(dayDetailCurrentKey, timeEl.value, textEl.value, recurEl.value || null, pickedColorEl ? pickedColorEl.dataset.color : null, {
+    addScheduledEvent(dayDetailCurrentKey, timeEl.value, textEl.value, recurEl.value || null, attrColor(attrVal), {
       allDay: allDayEl.checked, endTime: endTimeEl.value, location: locationEl.value, note: noteEl.value,
-      reminderMinutes: reminderMinutes,
+      reminderMinutes: reminderMinutes, attr: attrVal,
     });
     textEl.value = '';
     timeEl.value = '';
@@ -9954,7 +10251,7 @@
     reminderEl.value = '';
     reminderCustomEl.value = '';
     reminderCustomEl.style.display = 'none';
-    pickEventColor(document.querySelector('#dayDetailEventColorPicker .event-color-dot'));
+    if (attrEl) attrEl.value = 'event';
     renderDayDetailEvents(dayDetailCurrentKey);
     renderCalendar();
     renderTodayTasksList();
