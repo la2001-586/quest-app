@@ -557,6 +557,19 @@
   body.theme-fancy .shootingstar-fx {
     display: block; position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
   }
+  /* ダーク(theme-simple.theme-dark)専用: 星空。たくさんの白い星が、ゆっくり漂いながら明滅する(流れ星ではない) */
+  #nightStars { display: none; }
+  body.theme-simple.theme-dark #nightStars {
+    display: block; position: fixed; inset: -14%; z-index: 0; pointer-events: none; overflow: hidden;
+    animation: nightStarsDrift 55s ease-in-out infinite alternate;
+  }
+  .night-star { position: absolute; border-radius: 50%; background: #fff; will-change: opacity; }
+  @keyframes nightStarTwinkle { from { opacity: 0.18; } to { opacity: 1; } }
+  @keyframes nightStarsDrift { from { transform: translate(0,0); } to { transform: translate(-8%, 6%); } }
+  @media (prefers-reduced-motion: reduce) {
+    body.theme-simple.theme-dark #nightStars { animation: none; }
+    .night-star { animation: none !important; opacity: 0.7 !important; }
+  }
   .shooting-star {
     position: absolute; width: 70px; height: 2px; border-radius: 2px;
     background: linear-gradient(90deg, transparent, #FFD9F0 55%, #FFFFFF 100%);
@@ -1208,6 +1221,19 @@
   body.multipage-mode .page-id-bar[data-g="group_calendar"] { background-image: linear-gradient(90deg, transparent, #4088f0 20%, #4088f0 80%, transparent); }
   body.multipage-mode .page-id-bar[data-g="group_task"]     { background-image: linear-gradient(90deg, transparent, #E8971F 20%, #E8971F 80%, transparent); }
   body.multipage-mode .page-id-bar[data-g="group_diary"]    { background-image: linear-gradient(90deg, transparent, #A45CF0 20%, #A45CF0 80%, transparent); }
+  /* ===== 上部固定バー(バージョン＋ページ色)。スクロールしても動かない ===== */
+  body.multipage-mode .page-id-bar { display: none !important; } /* 固定バーに置き換えたため、インラインの色バーは隠す */
+  #stickyTopBar { position: fixed; top: 0; left: 0; right: 0; z-index: 52; pointer-events: none; }
+  #stickyTopBar .stb-bar { height: 4px; width: 100%; background: var(--cyan); transition: background 0.25s ease; }
+  #stickyTopBar .stb-version { pointer-events: auto; text-align: center; font-family: 'Orbitron', sans-serif; font-size: 9px; letter-spacing: 0.05em; color: rgba(255,255,255,0.5); padding: 3px 0 4px; background: rgba(10,14,20,0.5); -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px); }
+  body.multipage-mode #stickyTopBar[data-g="group_other"] .stb-bar { background: #16b6b0; }
+  body.multipage-mode #stickyTopBar[data-g="group_calendar"] .stb-bar { background: #4088f0; }
+  body.multipage-mode #stickyTopBar[data-g="group_task"] .stb-bar { background: #E8971F; }
+  body.multipage-mode #stickyTopBar[data-g="group_diary"] .stb-bar { background: #A45CF0; }
+  body.multipage-mode #stickyTopBar[data-g="settings"] .stb-bar { background: var(--cyan); }
+  body.theme-simple:not(.theme-dark) #stickyTopBar .stb-version { background: rgba(255,255,255,0.62); }
+  body.theme-fancy #stickyTopBar .stb-version { background: rgba(255,240,248,0.6); }
+  .page { padding-top: 22px; } /* 固定バーの下に本文が隠れないように */
 
   body.theme-simple .app-group-label::after { background: rgba(0,0,0,0.08); }
   .folder-panel.show { display: block; }
@@ -2046,6 +2072,27 @@
   }
 
   .mood-entry-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .mood-entry-list:empty { display: none; margin: 0; }
+  /* インライン版「これまでの日記」(常時展開・直近10日・6行プレビュー) */
+  .dhi-shell { margin-top: 12px; }
+  .dhi-head { font-family: 'Yu Mincho','Hiragino Mincho ProN',serif; font-size: 17px; font-weight: 500; color: var(--ink); letter-spacing: 0.06em; margin-bottom: 8px; }
+  .dhi-list { display: flex; flex-direction: column; }
+  .dhi-row { display: flex; gap: 12px; align-items: flex-start; padding: 14px 2px; border-top: 1px solid rgba(128,128,128,0.22); }
+  .dhi-row:first-child { border-top: none; }
+  .dhi-date { width: 42px; flex: 0 0 auto; text-align: center; padding-top: 2px; }
+  .dhi-dn { font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 23px; color: var(--ink); display: block; line-height: 1; }
+  .dhi-wd { font-size: 11px; color: var(--ink-dim); }
+  .dhi-body { flex: 1; min-width: 0; }
+  .dhi-pv { font-size: 14.5px; line-height: 1.65; color: var(--ink); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; white-space: pre-wrap; word-break: break-word; }
+  .dhi-full { display: none; font-size: 14.5px; line-height: 1.75; color: var(--ink); white-space: pre-wrap; word-break: break-word; }
+  .dhi-row.open .dhi-pv { display: none; }
+  .dhi-row.open .dhi-full { display: block; }
+  .dhi-meta { font-size: 11px; color: var(--ink-dim); margin-top: 5px; }
+  .dhi-more { display: inline-block; margin-top: 7px; font-size: 13px; color: var(--cyan); cursor: pointer; font-weight: 600; }
+  .dhi-more::before { content: '続きを読む ▾'; }
+  .dhi-row.open .dhi-more::before { content: '閉じる ▴'; }
+  .dhi-all-btn { width: 100%; margin-top: 14px; padding: 11px; border: 1px dashed rgba(128,128,128,0.35); border-radius: 12px; background: transparent; color: var(--ink-dim); font-size: 13.5px; cursor: pointer; font-family: inherit; }
+  .dhi-empty { color: var(--ink-dim); font-size: 13px; text-align: center; padding: 18px 0; }
   .mood-entry-card {
     background: linear-gradient(160deg, rgba(24,28,36,0.97), rgba(12,15,20,0.97));
     border: 1.5px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 10px 12px;
@@ -2311,14 +2358,14 @@
   .pin-toggle-btn.pinned { opacity: 1; filter: none; }
 
   .theme-switch { display: flex; gap: 6px; }
-  .theme-btn, .lang-btn {
+  .theme-btn, .lang-btn, .textscale-btn {
     background: rgba(255,255,255,0.05); border: 1.2px solid rgba(255,255,255,0.15);
     color: var(--ink-dim); font-size: 10.5px; font-weight: 700; padding: 6px 12px;
     border-radius: 8px; cursor: pointer; font-family: "Orbitron", sans-serif;
     transition: all 0.15s cubic-bezier(.2,.9,.3,1);
   }
-  .theme-btn:active, .lang-btn:active { transform: scale(0.92); }
-  .theme-btn.active, .lang-btn.active { background: var(--cyan); color: var(--bg); border-color: var(--cyan); }
+  .theme-btn:active, .lang-btn:active, .textscale-btn:active { transform: scale(0.92); }
+  .theme-btn.active, .lang-btn.active, .textscale-btn.active { background: var(--cyan); color: var(--bg); border-color: var(--cyan); }
 
   .volume-slider {
     width: 100%; accent-color: var(--cyan);
@@ -2752,8 +2799,12 @@
 </svg></div>
 
 
+<div id="stickyTopBar" data-g="group_task">
+  <div class="stb-bar"></div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0820_STARDRIFT_V372</div>
+</div>
+
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0820_DIARYHIST2_V365</div>
   <div class="app-group-label" data-i18n="group_calendar"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
@@ -3053,7 +3104,14 @@
       </div>
       <input type="file" id="moodImageInput" accept="image/*" multiple style="display:none;">
       <div id="moodJournalSavedInfo" class="mood-journal-saved-info"></div>
-      <button class="mood-journal-btn dh-open-btn" onclick="openDiaryHistory()">📖 <span data-i18n="diary_history_label">これまでの日記</span></button>
+    </div>
+  </div>
+
+  <div class="cal-section" style="margin-top:0;">
+    <div class="mood-journal-shell dhi-shell">
+      <div class="dhi-head">📖 <span data-i18n="diary_history_label">これまでの日記</span></div>
+      <div id="diaryInlineList" class="dhi-list"></div>
+      <button class="dhi-all-btn" onclick="openDiaryHistory()">🔍 すべての日記を見る（検索）</button>
     </div>
   </div>
 
@@ -3175,6 +3233,18 @@
       </label>
     </div>
     <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_multipage_desc">カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。</div>
+  </div>
+  <div class="settings-group">
+    <div class="settings-label">表示サイズ</div>
+    <div class="settings-row">
+      <span>文字・UIの大きさ</span>
+      <div class="theme-switch">
+        <button class="textscale-btn" data-scale="small" onclick="applyTextScale('small')">小</button>
+        <button class="textscale-btn active" data-scale="medium" onclick="applyTextScale('medium')">中</button>
+        <button class="textscale-btn" data-scale="large" onclick="applyTextScale('large')">大</button>
+      </div>
+    </div>
+    <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;">アプリ全体の表示を拡大・縮小します（小＝標準サイズ）。読みやすい大きさに調整できます。</div>
   </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="opt_lang_sound_label">言語 / サウンド</div>
@@ -4519,6 +4589,48 @@
   function comboDisplayName(name) {
     return currentLang === 'en' ? (COMBO_NAME_EN[name] || name) : name;
   }
+  // ---- 星空(ダーク専用): たくさんの白い星が明滅しながらゆっくり漂う ----
+  function buildNightStars() {
+    if (document.getElementById('nightStars')) return;
+    const box = document.createElement('div');
+    box.id = 'nightStars';
+    const N = 140;
+    let html = '';
+    for (let i = 0; i < N; i++) {
+      const top = (Math.random() * 100).toFixed(2);
+      const left = (Math.random() * 100).toFixed(2);
+      const sz = (0.8 + Math.random() * 1.8).toFixed(2);
+      const dur = (2.6 + Math.random() * 4.0).toFixed(2);
+      const delay = (-Math.random() * 7).toFixed(2);
+      const glow = (+sz > 2.0) ? ('box-shadow:0 0 ' + (+sz * 1.6).toFixed(1) + 'px rgba(255,255,255,0.75);') : '';
+      html += '<div class="night-star" style="top:' + top + '%;left:' + left + '%;width:' + sz + 'px;height:' + sz + 'px;' + glow + 'animation:nightStarTwinkle ' + dur + 's ease-in-out ' + delay + 's infinite alternate;"></div>';
+    }
+    box.innerHTML = html;
+    document.body.appendChild(box);
+  }
+
+  const TEXT_SCALE_MAP = { small: 1.0, medium: 1.08, large: 1.16 };
+  let currentTextScale = 'medium';
+  function applyTextScale(level, skipSave) {
+    if (!TEXT_SCALE_MAP[level]) level = 'medium';
+    currentTextScale = level;
+    // アプリ全体を一律に拡大(zoomは可変幅レイアウトなので横崩れしないことを検証済み)
+    document.body.style.zoom = TEXT_SCALE_MAP[level];
+    document.querySelectorAll('.textscale-btn').forEach(b => b.classList.toggle('active', b.dataset.scale === level));
+    if (!skipSave) {
+      try { window.storage.set('quest-textscale-v1', level); } catch (e) {}
+      if (typeof playUIClick === 'function') playUIClick();
+    }
+  }
+  async function loadTextScale() {
+    let level = 'medium';
+    try {
+      const s = await window.storage.get('quest-textscale-v1');
+      if (s && s.value && TEXT_SCALE_MAP[s.value]) level = s.value;
+    } catch (e) {}
+    applyTextScale(level, true);
+  }
+
   function applyLanguage(lang) {
     currentLang = (lang === 'en') ? 'en' : (lang === 'ar') ? 'ar' : 'ja';
     const dict = I18N_DICT[currentLang] || I18N_DICT.ja;
@@ -6964,6 +7076,7 @@
     renderFocusBanner();
     await loadMoodJournal();
     renderMoodJournalUI();
+    await loadTextScale();
     // 保存されていた「今日すでに選んでいた項目」をDOMに反映
     picked.forEach(key => {
       const el = document.querySelector(`.item[data-key="${CSS.escape(key)}"]`);
@@ -6974,6 +7087,7 @@
     renderCalendar();
     renderTodayTasksList();
     startDateBoundaryWatcher();
+    buildNightStars();
   }
 
   // ---- アプリを開きっぱなしにしていても、論理日付が変わった瞬間を検知する ----
@@ -7874,6 +7988,7 @@
       if (wrap) wrap.style.display = show ? '' : 'none';
     });
     document.querySelectorAll('.home-tab[data-group]').forEach(t => t.classList.toggle('active', t.dataset.group === groupKey));
+    const stbEl = document.getElementById('stickyTopBar'); if (stbEl) stbEl.setAttribute('data-g', groupKey);
     window.scrollTo(0, 0);
   }
   async function toggleMultiPageMode(on) {
@@ -8854,6 +8969,7 @@
     if (pageTransitionInProgress) return; // 前の切り替えアニメーションが終わるまで、次の操作は受け付けない
     playUIClick();
     document.querySelectorAll('.home-tab').forEach(t => t.classList.toggle('active', t.dataset.page === pageName));
+    if (pageName === 'settings') { const stbS = document.getElementById('stickyTopBar'); if (stbS) stbS.setAttribute('data-g', 'settings'); }
     const targetPage = document.getElementById('page-' + pageName);
     const currentPage = document.querySelector('.page.show');
 
@@ -9017,15 +9133,33 @@
   let moodLastSavedImagesJson = '[]';
 
   function renderMoodJournalUI() {
-    editingMoodEntryId = null;
-    document.getElementById('moodJournalText').value = '◇今日の目標\n\n\n◇今日の振り返り\n\n\n◇その他\n\n';
-    currentMoodImages = [];
+    // 1日1本運用: 今日すでに書いたものがあれば、開いた時にそのまま続きから書ける状態にする。
+    // 無ければテンプレで新規。日付が変われば自動的に新しい日の日記になる。
+    const key = logicalDateKey(trustedNow);
+    const entries = moodJournalData[key] || [];
+    const entry = entries.length > 0 ? entries[entries.length - 1] : null;
+    if (entry) {
+      editingMoodEntryId = entry.id;
+      document.getElementById('moodJournalText').value = entry.text || '';
+      currentMoodImages = entry.images ? [...entry.images] : [];
+      currentMoodTag = entry.mood || null;
+      moodLastSavedText = entry.text || '';
+      moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
+    } else {
+      editingMoodEntryId = null;
+      document.getElementById('moodJournalText').value = '◇今日の目標\n\n\n◇今日の振り返り\n\n\n◇その他\n\n';
+      currentMoodImages = [];
+      currentMoodTag = null;
+      moodLastSavedText = '';
+      moodLastSavedImagesJson = '[]';
+    }
+    document.querySelectorAll('.mood-tag-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mood === currentMoodTag));
+    updateMoodTagToggleUI();
     renderMoodImageThumbs();
-    moodLastSavedText = '';
-    moodLastSavedImagesJson = '[]';
     document.getElementById('moodJournalSavedInfo').textContent = '';
     document.getElementById('moodResetBtn').style.display = 'none';
     renderMoodEntryList();
+    renderDiaryHistoryInline();
   }
 
   const MOOD_TAG_EMOJI = { good: '😊', neutral: '😐', bad: '😞' };
@@ -9056,14 +9190,53 @@
     }
   }
 
+  function renderDiaryHistoryInline() {
+    const box = document.getElementById('diaryInlineList');
+    if (!box) return;
+    const WD = ['日','月','火','水','木','金','土'];
+    const todayKey = logicalDateKey(trustedNow);
+    const items = [];
+    Object.keys(moodJournalData || {}).forEach(key => {
+      if (key === todayKey) return; // 今日は上の記入欄が担当。履歴は過去のみ。
+      const p = key.split('-'); const y = +p[0], m = +p[1], d = +p[2];
+      if (!y || !m || !d) return;
+      const wd = WD[new Date(y, m - 1, d).getDay()];
+      (moodJournalData[key] || []).forEach(e => {
+        if (!e) return;
+        const hasImg = !!(e.images && e.images.length);
+        if (!e.text && !hasImg) return;
+        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', hasImg });
+      });
+    });
+    items.sort((a, b) => (b.y - a.y) || (b.m - a.m) || (b.d - a.d) || b.time.localeCompare(a.time));
+    const recent = items.slice(0, 10); // 直近10日ぶん
+    if (recent.length === 0) {
+      box.innerHTML = `<div class="dhi-empty">${currentLang === 'en' ? 'No past entries yet' : 'まだ過去の日記はありません'}</div>`;
+      return;
+    }
+    box.innerHTML = recent.map(i => {
+      const full = i.text || (i.hasImg ? '（写真）' : '');
+      const longEnough = (full.split('\n').length > 6) || (full.length > 140); // 6行を超えそうな時だけ「続きを読む」
+      const more = longEnough ? `<span class="dhi-more" onclick="this.closest('.dhi-row').classList.toggle('open')"></span>` : '';
+      return `<div class="dhi-row">
+        <div class="dhi-date"><span class="dhi-dn">${i.d}</span><span class="dhi-wd">${i.wd}</span></div>
+        <div class="dhi-body">
+          <div class="dhi-pv">${escapeHtml(full)}</div>
+          <div class="dhi-full">${escapeHtml(full)}</div>
+          <div class="dhi-meta">${i.y}/${i.m}${i.time ? ' ・ ' + i.time : ''}${i.hasImg ? ' ・ 📷' : ''}</div>
+          ${more}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
   function renderMoodEntryList() {
     const key = logicalDateKey(trustedNow);
     const entries = moodJournalData[key] || [];
     const el = document.getElementById('moodEntryList');
-    if (entries.length === 0) {
-      el.innerHTML = '';
-      return;
-    }
+    // 1日1本運用に変更したため、日別の複数エントリー履歴リストは廃止(常に空)。
+    if (el) el.innerHTML = '';
+    return;
     el.innerHTML = entries.map(entry => {
       const preview = (entry.text || '').slice(0, 40) || '（本文なし）';
       const imgCount = entry.images ? entry.images.length : 0;
@@ -9316,7 +9489,7 @@
     moodLastSavedText = text;
     moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
     renderMoodEntryList();
-    document.getElementById('moodResetBtn').style.display = 'block';
+    document.getElementById('moodResetBtn').style.display = 'none';
 
     if (!isAutosave) {
       // 保存ボタン自体を一瞬「保存しました」に変えて、押した手応えをはっきり示す(自動保存の時は出さない)
