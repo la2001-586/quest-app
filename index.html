@@ -1136,6 +1136,42 @@
   /* 各行の3点リーダー(編集を開く) */
   .row-kebab { color: var(--ink-dim); cursor: pointer; padding: 4px 6px; flex: 0 0 auto; opacity: 0.5; font-size: 18px; display: inline-flex; align-items: center; }
   .row-kebab:active { opacity: 0.9; }
+
+  /* これまでの日記(過去閲覧) — 紙テクスチャ・一本線・90°角・小さな気分ドット(案1) */
+  #diaryHistoryModal .dh-card {
+    width: min(432px, 94vw); max-height: 84vh; padding: 0; overflow: hidden;
+    border-radius: 4px; border: 1px solid rgba(120,100,70,0.28);
+    background-color: #F4EEE1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    background-blend-mode: multiply;
+    display: flex; flex-direction: column;
+  }
+  #diaryHistoryModal .dh-head { display:flex; align-items:center; justify-content:space-between; padding:15px 16px 9px; }
+  #diaryHistoryModal .dh-title { font-family:'Fraunces','Yu Mincho','Hiragino Mincho ProN',serif !important; font-weight:600; font-size:17px; color:#3a342a; }
+  #diaryHistoryModal .dh-close { color:#a89e8c; font-size:18px; cursor:pointer; padding:2px 8px; }
+  #diaryHistoryModal .dh-filter { display:flex; gap:8px; padding:0 16px 8px; }
+  #diaryHistoryModal .dh-chip { font-size:12px; padding:5px 13px; border-radius:2px; background:rgba(70,55,30,0.08); color:#7a7060; cursor:pointer; }
+  #diaryHistoryModal .dh-chip.on { background:#7b3fd0; color:#fff; }
+  #diaryHistoryModal .dh-list { overflow-y:auto; padding:0 16px 16px; }
+  #diaryHistoryModal .dh-row { display:flex; align-items:flex-start; gap:11px; padding:13px 2px; border-bottom:1px solid #ddd0b8; cursor:pointer; }
+  #diaryHistoryModal .dh-row:last-child { border-bottom:none; }
+  #diaryHistoryModal .dh-date { width:38px; flex:0 0 auto; text-align:center; }
+  #diaryHistoryModal .dh-dn { font-family:'Fraunces','Yu Mincho','Hiragino Mincho ProN',serif !important; font-weight:600; font-size:20px; color:#3a342a; display:block; line-height:1; }
+  #diaryHistoryModal .dh-wd { font-size:10px; color:#a89e8c; }
+  #diaryHistoryModal .dh-dot { width:9px; height:9px; border-radius:50%; flex:0 0 auto; margin-top:6px; }
+  #diaryHistoryModal .dh-body { flex:1; min-width:0; }
+  #diaryHistoryModal .dh-pv { font-size:13px; color:#5a5245; line-height:1.55; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; }
+  #diaryHistoryModal .dh-full { display:none; font-size:13px; color:#3a342a; line-height:1.7; white-space:pre-wrap; word-break:break-word; }
+  #diaryHistoryModal .dh-row.open .dh-pv { display:none; }
+  #diaryHistoryModal .dh-row.open .dh-full { display:block; }
+  #diaryHistoryModal .dh-meta { font-size:9.5px; color:#a89e8c; margin-top:3px; font-family:'Fraunces',serif; }
+  #diaryHistoryModal .dh-emoji { font-size:15px; flex:0 0 auto; }
+  #diaryHistoryModal .dh-empty { text-align:center; color:#a89e8c; font-size:12px; padding:34px 0; }
+  #diaryHistoryModal .dh-month { position:sticky; top:0; background:#F4EEE1; font-size:11.5px; font-weight:700; color:#8a8275; padding:10px 2px 5px; border-bottom:1px solid #e6dcc8; z-index:2; letter-spacing:0.02em; }
+  #diaryHistoryModal .dh-search { display:flex; align-items:center; gap:7px; margin:0 16px 9px; padding:8px 12px; background:rgba(70,55,30,0.06); border-radius:9px; color:#9a9080; }
+  #diaryHistoryModal .dh-search input { flex:1; border:none; background:transparent; font-size:13.5px; color:#3a342a; outline:none; font-family:inherit; }
+  #diaryHistoryModal .dh-search input::placeholder { color:#b3a894; }
+  .dh-open-btn { margin-top:8px; }
   body.multipage-mode .app-group-wrap .item { border-bottom-color: rgba(255,255,255,0.13) !important; }
   body.multipage-mode.theme-simple:not(.theme-dark) .app-group-wrap .item,
   body.multipage-mode.theme-fancy .app-group-wrap .item { border-bottom-color: rgba(0,0,0,0.09) !important; }
@@ -2717,7 +2753,7 @@
 
 
 <div class="wrap page show" id="page-task">
-  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0814_CAP_V360</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.3); margin-bottom:6px; letter-spacing:0.05em;">BUILD 0820_DIARYHIST2_V365</div>
   <div class="app-group-label" data-i18n="group_calendar"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
@@ -3017,6 +3053,7 @@
       </div>
       <input type="file" id="moodImageInput" accept="image/*" multiple style="display:none;">
       <div id="moodJournalSavedInfo" class="mood-journal-saved-info"></div>
+      <button class="mood-journal-btn dh-open-btn" onclick="openDiaryHistory()">📖 <span data-i18n="diary_history_label">これまでの日記</span></button>
     </div>
   </div>
 
@@ -3037,6 +3074,23 @@
     <button class="add-task-btn" onclick="openAddMemento()">＋</button>
   </div>
 
+</div>
+
+<div class="grand-modal" id="diaryHistoryModal" onclick="closeDiaryHistory()">
+  <div class="modal-card dh-card" onclick="event.stopPropagation()">
+    <div class="dh-head">
+      <span class="dh-title">📖 <span data-i18n="diary_history_label">これまでの日記</span></span>
+      <span class="dh-close" onclick="closeDiaryHistory()">✕</span>
+    </div>
+    <div class="dh-filter" id="dhFilter">
+      <span class="dh-chip on" data-f="all" onclick="setDiaryHistoryFilter('all',this)">すべて</span>
+      <span class="dh-chip" data-f="good" onclick="setDiaryHistoryFilter('good',this)">😊</span>
+      <span class="dh-chip" data-f="neutral" onclick="setDiaryHistoryFilter('neutral',this)">😐</span>
+      <span class="dh-chip" data-f="bad" onclick="setDiaryHistoryFilter('bad',this)">😞</span>
+    </div>
+    <div class="dh-search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.3-4.3"></path></svg><input id="dhSearch" type="text" placeholder="本文を検索" oninput="renderDiaryHistory()"></div>
+    <div class="dh-list" id="diaryHistoryList"></div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -3125,7 +3179,7 @@
   <div class="settings-group">
     <div class="settings-label" data-i18n="opt_lang_sound_label">言語 / サウンド</div>
     <div class="settings-row">
-      <span>Language</span>
+      <span data-i18n="opt_lang_label">Language</span>
       <div class="theme-switch">
         <button class="lang-btn active" data-lang="ja" data-i18n="lang_ja_btn">日本語</button>
         <button class="lang-btn" data-lang="en" data-i18n="lang_en_btn">English</button>
@@ -3137,7 +3191,7 @@
     </div>
     <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" style="width:100%; margin-bottom:10px;">
     <div class="settings-row">
-      <span>BGMを流す</span>
+      <span data-i18n="opt_bgm_row">BGMを流す</span>
       <label class="toggle-switch">
         <input type="checkbox" id="bgmToggle" checked>
         <span class="toggle-track"></span>
@@ -3207,13 +3261,13 @@
     <div style="font-size:10px; color:var(--ink-dim); line-height:1.6; margin-bottom:10px;" data-i18n="dev_desc">レベル解放演出(宇宙背景の見え方など)を確認するための検証用ボタンです。実際のユーザーには見せません。</div>
     <button class="settings-btn" style="border-color:#FF5050; color:#FF5050;" data-i18n="dev_add_exp_btn" onclick="devAddExp(500)">➕ 検証用: EXPを500増やす</button>
     <div style="display:flex; gap:6px; margin-bottom:10px;">
-      <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" onclick="applyCyberDailyMood('pink')">🌸 ピンク系</button>
-      <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" onclick="applyCyberDailyMood('blue')">🌌 青系</button>
-      <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" onclick="applyCyberDailyMood('vapor')">🌴 ウェイブ系</button>
+      <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" data-i18n="theme_test_pink" onclick="applyCyberDailyMood('pink')">🌸 ピンク系</button>
+      <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" data-i18n="theme_test_blue" onclick="applyCyberDailyMood('blue')">🌌 青系</button>
+      <button class="settings-btn" style="flex:1; border-color:#FF5050; color:#FF5050; margin-bottom:0;" data-i18n="theme_test_vapor" onclick="applyCyberDailyMood('vapor')">🌴 ウェイブ系</button>
     </div>
     <button class="settings-btn" style="border-color:#FF5050; color:#FF5050;" data-i18n="dev_reset_exp_btn" onclick="devResetExp()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg> 検証用: EXPを0に戻す</button>
     <div class="settings-row" style="margin-top:10px;">
-      <span style="color:#FF5050; font-size:12px;">デバッグログ表示(最終的には削除予定)</span>
+      <span data-i18n="opt_debuglog_row" style="color:#FF5050; font-size:12px;">デバッグログ表示(最終的には削除予定)</span>
       <label class="toggle-switch">
         <input type="checkbox" id="debugLogToggle" onchange="handleDebugLogToggle(this.checked)">
         <span class="toggle-track"></span>
@@ -3891,6 +3945,262 @@
   // 今回まだ未対応(次回以降のパスで追加予定)。
   // ==================================================================
   const I18N_DICT = {
+    // かくし言語「アラビア語」(5秒長押しで解放。全UIをアラビア語化＋RTL。日本語/Englishボタンだけは戻れるよう非アラビア語)
+    ar: {
+      "brand": "Daily Station",
+      "app_tagline": "تطبيق مساعد عام يرافق حياتك بلطف",
+      "alarm_desc_v2": "ينبّهك بالصوت والاهتزاز في الوقت المحدد. مع تفعيل الإشعارات، يعمل حتى لو كان التطبيق مغلقًا.",
+      "alarm_dismiss_row": "طريقة الإيقاف",
+      "alarm_dismiss_tap": "نقرة عادية",
+      "alarm_dismiss_math": "حل مسألة حسابية",
+      "alarm_dismiss_shake": "هزّ الهاتف",
+      "alarm_stop_btn": "إيقاف",
+      "alarm_answer_btn": "إجابة",
+      "alarm_wrong": "خطأ، حاول مجددًا",
+      "alarm_shake_desc": "هزّ هاتفك بقوة",
+      "sub_main": "كم يمكنك أن تُنجز اليوم؟",
+      "tab_low": "خفيف",
+      "tab_mid": "متوسط",
+      "tab_high": "ثقيل",
+      "levelhead_low_name": "خفيف",
+      "levelhead_mid_name": "متوسط",
+      "levelhead_high_name": "ثقيل",
+      "proof_btn": "[ التحقق من الإنجاز // إصدار شارة ]",
+      "add_task_btn": "＋ إضافة",
+      "hometab_task": "المهام",
+      "hometab_settings": "الإعدادات",
+      "opt_title": "الإعدادات",
+      "opt_sub": "المظهر والصوت والتواصل",
+      "opt_appearance_label": "المظهر",
+      "opt_theme_row": "سمة التصميم",
+      "theme_cyber": "سايبر",
+      "theme_simple": "بسيط",
+      "theme_dark": "داكن",
+      "opt_sound_label": "الصوت",
+      "opt_sound_vol_row": "مستوى المؤثرات الصوتية",
+      "opt_test_sound_btn": "🔊 جرّب الصوت",
+      "opt_sound_toggle_row": "تشغيل المؤثرات الصوتية",
+      "opt_boundary_label": "بداية اليوم",
+      "opt_boundary_row": "وقت البداية",
+      "opt_boundary_desc": "ما قبل هذا الوقت يُسجَّل كـ«اليوم السابق». يُنصح بـ4–5 صباحًا لمن يسهرون، ومنتصف الليل لمن ينامون مبكرًا.",
+      "opt_manual_daychange_btn": "تبديل التاريخ",
+      "opt_manual_daychange_desc": "عند عدم انتظام نمط حياتك، يمكنك إنهاء اليوم يدويًا دون انتظار وقت البداية.",
+      "opt_multipage_label": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z\"></path><path d=\"M14 2v6h6\"></path></svg> وضع الصفحات المتعددة (تجريبي)",
+      "opt_multipage_row_label": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z\"></path><path d=\"M14 2v6h6\"></path></svg> وضع الصفحات المتعددة",
+      "opt_multipage_desc": "استخدم التقويم والمهام واليوميات وأخرى كشاشات مستقلة تتنقّل بينها.",
+      "opt_multipage_row": "تفعيل",
+      "group_calendar_short": "التقويم",
+      "group_task_short": "المهام",
+      "group_diary_short": "اليوميات",
+      "group_other_short": "أخرى",
+      "group_home_short": "الرئيسية",
+      "opt_data_label": "إدارة البيانات",
+      "opt_data_desc": "احفظ خبراتك وسجلّك وقائمة مهامك في ملف واحد. يُستحسن النسخ الاحتياطي أحيانًا تحسبًا لتغيير الجهاز أو فقدان البيانات.",
+      "group_calendar": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"></rect><path d=\"M3 10h18\"></path><path d=\"M8 3v4\"></path><path d=\"M16 3v4\"></path></svg> التقويم",
+      "group_task": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"4\"></rect><path d=\"M7 12.5l3 3 7-7\"></path></svg> المهام",
+      "group_diary": "📔 اليوميات",
+      "group_other": "✨ أخرى",
+      "folder_tab_task": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"></rect><path d=\"M9 3v3h6V3\"></path><path d=\"M8 11h8\"></path><path d=\"M8 15h8\"></path></svg> المهام",
+      "folder_tab_routine": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M3 8l9-5 9 5-9 5-9-5z\"></path><path d=\"M3 8v9l9 5 9-5V8\"></path><path d=\"M12 13v9\"></path></svg> الروتين",
+      "memento_title_ph": "العنوان (اختياري)",
+      "opt_view_data_btn": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><circle cx=\"11\" cy=\"11\" r=\"7\"></circle><path d=\"M21 21l-4.3-4.3\"></path></svg> عرض البيانات",
+      "opt_export_btn": "⬇️ تصدير نسخة احتياطية",
+      "opt_import_btn": "⬆️ استعادة من نسخة احتياطية",
+      "opt_clearcache_btn": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M19 5L9 15\"></path><path d=\"M9 15l-5 5 3-8z\"></path><path d=\"M13 9l2 2\"></path></svg> مسح ذاكرة التطبيق",
+      "opt_clearcache_desc": "يحدّث ملفات التطبيق (الميزات والمظهر) إلى أحدث إصدار. ملاحظة: هذا لا يغيّر أيقونة الشاشة الرئيسية (يلزم حذفها وإعادة إضافتها).",
+      "opt_support_label": "الدعم",
+      "opt_contact_btn": "تواصل معنا",
+      "opt_policy_btn": "الشروط والخصوصية",
+      "opt_credits_label": "شكر وتقدير",
+      "opt_credits_desc": "صنّاع المواد الخارجية المستخدمة في هذا التطبيق.",
+      "credit_cat_meow": "صوت مواء القط",
+      "opt_sources_label": "أسس الميزات ومصادرها",
+      "opt_sources_desc": "كطالب طب حالي، أهتمّ بالأدلة لا بـ«يبدو جيدًا». إليك الدراسات وراء الميزات الرئيسية بصدق.",
+      "src_pomo_title": "⏱️ بومودورو (25 دقيقة تركيز + 5 دقائق راحة)",
+      "src_pomo_body": "أشارت دراسة عام 2025 على التعلّم عالي العبء (كالتشريح) إلى انخفاض التعب بنحو 20٪، وتحسّن التركيز بنسبة 15–25٪، وتحسّن كفاءة التعلّم بنحو 12٪ مقارنةً بالراحات الذاتية. نظريًا، يستند هذا إلى «نظرية موارد الانتباه» للحائز على نوبل دانيال كانمان، التي ترى أن الانتباه يبدأ بالتراجع بعد نحو 20–30 دقيقة.",
+      "src_sleep_title": "🌙 سجل النوم وتوقيت الاستيقاظ",
+      "src_sleep_body": "يُسمّى الانخفاض المؤقت في الوظائف الإدراكية وسرعة الاستجابة بعد الاستيقاظ مباشرةً «قصور النوم»، وهو موثّق جيدًا. وبالأخص، الاستيقاظ المفاجئ أثناء النوم العميق (الموجة البطيئة) يُنتج قصورًا أقوى من الاستيقاظ في مراحل النوم الأخف.",
+      "src_ebbing_title": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z\"></path><path d=\"M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-2 5v1a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z\"></path></svg> منحنى النسيان وتذكيرات المراجعة",
+      "src_ebbing_body": "في عام 1885، أظهر عالم النفس إبنغهاوس أن الذاكرة تتلاشى بسرعة بعد التعلّم مباشرةً. في المقابل، وجدت أبحاث من جامعة واترلو أن مراجعة لمدة 10 دقائق خلال 24 ساعة من التعلّم تعيد الذاكرة إلى مستواها الأصلي تقريبًا.",
+      "src_mathalarm_title": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M4 9h16\"></path><path d=\"M4 15h16\"></path><path d=\"M10 3L8 21\"></path><path d=\"M16 3l-2 18\"></path></svg> عن مسألة المنبّه الحسابية (ملاحظة صادقة)",
+      "src_mathalarm_body": "بصراحة، لم أجد بحثًا مباشرًا يثبت أن حلّ مسألة حسابية بحدّ ذاته يسرّع التعافي من قصور النوم. لكن بما أن ضعف الحكم وسرعة الاستجابة بعد الاستيقاظ موثّق جيدًا، فهذه الميزة تُفهم كفحص عملي لليقظة الحقيقية، لا كعلاج.",
+      "opt_lang_label": "اللغة",
+      "lang_ja_btn": "日本語",
+      "lang_en_btn": "English",
+      "opt_lang_sound_label": "اللغة / الصوت",
+      "opt_prototype_note": "※ هذه الصفحة نموذج للمظهر فقط الآن. حفظ الإعدادات الفعلي قادم قريبًا.",
+      "cal_title": "سجل هذا الشهر",
+      "cal_days": "أيام مُسجّلة",
+      "cal_exp": "إجمالي الخبرة هذا الشهر",
+      "cal_items": "إجمالي الاختيارات",
+      "cal_chart_title": "تغيّر الخبرة (آخر 14 يومًا)",
+      "cal_hint": "📍 انقر يومًا مُسجّلًا لعرض التفاصيل",
+      "sync_ok": "● متزامن (وقت الشبكة)",
+      "sync_offline": "● غير متصل (وقت الجهاز)",
+      "sync_pending": "○ جارٍ المزامنة…",
+      "levelup_title": "وصلت إلى المستوى {n}!",
+      "boundary_midnight": "منتصف الليل (12:00 ص)",
+      "boundary_hour": "{n}:00 ص",
+      "boundary_toast": "تم تغيير بداية اليوم إلى {n}:00 ص",
+      "task_moved_toast": "تم نقل «{task}» إلى {level}",
+      "combo_hint": "بقي {remain} حتى {span}",
+      "combo_cleared_sub": "تم إنجاز {need}!",
+      "combo_title": "{level} {name}!",
+      "today_task_empty": "لم تختر شيئًا بعد",
+      "diversity_bonus_sub": "خفيف ومتوسط وثقيل — كلها مغطاة!",
+      "diversity_bonus_title": "مكافأة واحد من ثلاثة!",
+      "badge_checking_title": "جارٍ التحقق من الإنجاز…",
+      "badge_checking_sub": "الذكاء الاصطناعي يراجع صورتك",
+      "badge_rejected_title": "تعذّر اعتماد هذا كدليل",
+      "btn_close": "إغلاق",
+      "badge_sub_default": "سجلّ من نوع مختلف عن الخبرة اليومية",
+      "badge_default_title": "دليل الإنجاز",
+      "badge_reject_default_reason": "تعذّر تأكيد هذا كدليل كافٍ",
+      "badge_reject_error": "حدث خطأ أثناء التحقق. تحقق من اتصالك وحاول مجددًا.",
+      "badge_size_error": "حجم الصورة كبير جدًا (أبقِه دون 8 ميغابايت)",
+      "ph_focus_note": "كلمة اليوم (اختياري)",
+      "ph_focus_subitem": "أضف الخطوة الصغيرة التالية",
+      "ph_mood_journal": "مزاج اليوم، حالتك، ما يدور في ذهنك. أي شيء.",
+      "ph_focus_target": "مثال: التحضير لعرض البحث",
+      "ph_focus_reason": "مثال: العرض قريب ولا أستطيع التركيز على غيره",
+      "ph_add_task_label": "مثال: يوغا، كتابة يوميات",
+      "ph_note_editor": "مثال: حتى 10 دقائق تدريب تكفي",
+      "focus_banner_label": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" style=\"display:inline-block; vertical-align:-0.15em;\"><circle cx=\"12\" cy=\"12\" r=\"8\"></circle><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><circle cx=\"12\" cy=\"12\" r=\"0.8\" fill=\"currentColor\"></circle></svg> وضع التركيز",
+      "focus_settings_label": "وضع التركيز",
+      "focus_settings_desc": "حدّد مدة للتعمّق في شيء واحد فقط. خلالها تظهر مهام الروتين بلون «لا بأس بتخطّيها اليوم».",
+      "focus_start_btn": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" style=\"display:inline-block; vertical-align:-0.15em;\"><circle cx=\"12\" cy=\"12\" r=\"8\"></circle><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><circle cx=\"12\" cy=\"12\" r=\"0.8\" fill=\"currentColor\"></circle></svg> ابدأ وضع التركيز",
+      "focus_modal_title": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" style=\"display:inline-block; vertical-align:-0.15em;\"><circle cx=\"12\" cy=\"12\" r=\"8\"></circle><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><circle cx=\"12\" cy=\"12\" r=\"0.8\" fill=\"currentColor\"></circle></svg> ابدأ وضع التركيز",
+      "focus_modal_desc": "اختر شيئًا واحدًا للتعمّق فيه خلال هذه المدة. يمكن أن يكون الراحة نفسها.",
+      "focus_target_label": "على ماذا ستركّز؟",
+      "focus_reason_label": "لماذا هذا؟ (اختياري)",
+      "focus_days_label": "المدة (أيام)",
+      "focus_start_confirm_btn": "ابدأ",
+      "focus_cancel_btn": "لاحقًا",
+      "focus_log_btn": "واجهته اليوم أيضًا",
+      "focus_log_done_btn": "✓ سُجّل اليوم",
+      "focus_end_btn": "إنهاء",
+      "focus_subitem_section": "🔽 خطوات محسوبة عكسيًا من الهدف",
+      "focus_subitem_placeholder": "أضف الخطوة الصغيرة التالية",
+      "focus_note_placeholder": "كلمة اليوم (اختياري)",
+      "focus_note_save_btn": "حفظ",
+      "data_viewer_title": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><circle cx=\"11\" cy=\"11\" r=\"7\"></circle><path d=\"M21 21l-4.3-4.3\"></path></svg> عرض البيانات",
+      "data_viewer_recent_mood": "يوميات المزاج الأخيرة",
+      "badge_list_title": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" style=\"display:inline-block; vertical-align:-0.15em;\"><circle cx=\"12\" cy=\"9\" r=\"6\"></circle><path d=\"M9 14.5L7 22l5-3 5 3-2-7.5\"></path></svg> شارات الإنجاز",
+      "badge_list_settings_btn": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" style=\"display:inline-block; vertical-align:-0.15em;\"><circle cx=\"12\" cy=\"9\" r=\"6\"></circle><path d=\"M9 14.5L7 22l5-3 5 3-2-7.5\"></path></svg> عرض شارات الإنجاز",
+      "badge_list_empty": "لا توجد شارات إنجاز بعد. جرّب إصدار أول شارة من التحقق من الإنجاز.",
+      "routine_stock_title": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M3 8l9-5 9 5-9 5-9-5z\"></path><path d=\"M3 8v9l9 5 9-5V8\"></path><path d=\"M12 13v9\"></path></svg> مخزون الروتين",
+      "routine_stock_desc": "أوقف الروتينات غير اللازمة الآن وأخفِها من القائمة (دون حذف). الروتينات اللازمة أحيانًا (كقبل سباق) يمكن إعادة تشغيلها من هنا وقت الحاجة.",
+      "week_compare_title": "الأسبوع الماضي مقابل هذا الأسبوع",
+      "week_compare_last": "الأسبوع الماضي",
+      "week_compare_this": "هذا الأسبوع",
+      "week_compare_days": "{n} أيام نشاط",
+      "flex_card_btn": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M3 3v18h18\"></path><rect x=\"7\" y=\"12\" width=\"3\" height=\"6\"></rect><rect x=\"12\" y=\"8\" width=\"3\" height=\"10\"></rect><rect x=\"17\" y=\"5\" width=\"3\" height=\"13\"></rect></svg> عرض بطاقة سجل هذا الأسبوع",
+      "flex_card_this_week": "هذا الأسبوع",
+      "flex_card_streak": "أيام متتالية",
+      "flex_card_active": "أيام نشطة",
+      "flex_card_tasks": "مهام منجزة",
+      "flex_card_footer": "التقط لقطة شاشة للاحتفاظ بالسجل",
+      "surprise_draw_btn": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"3\"></rect><circle cx=\"8\" cy=\"8\" r=\"1.3\" fill=\"currentColor\"></circle><circle cx=\"16\" cy=\"8\" r=\"1.3\" fill=\"currentColor\"></circle><circle cx=\"12\" cy=\"12\" r=\"1.3\" fill=\"currentColor\"></circle><circle cx=\"8\" cy=\"16\" r=\"1.3\" fill=\"currentColor\"></circle><circle cx=\"16\" cy=\"16\" r=\"1.3\" fill=\"currentColor\"></circle></svg> اسحب مهمة اليوم الإضافية",
+      "surprise_label": "✨ عرض مفاجئ",
+      "surprise_accept_btn": "قبول",
+      "surprise_decline_btn": "تخطّي",
+      "dev_section_label": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z\"></path></svg> للمطوّر (يُحذف قبل الإطلاق)",
+      "today_tasks_header": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"></rect><path d=\"M9 3v3h6V3\"></path><path d=\"M8 11h8\"></path><path d=\"M8 15h8\"></path></svg> مهام اليوم",
+      "today_tasks_add_btn": "＋ إضافة",
+      "opt_bgview_btn": "🌌 عرض الخلفية فقط",
+      "opt_diagnostic_btn": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z\"></path></svg> تشخيص وظيفة الحفظ",
+      "opt_achievements_label": "الإنجازات",
+      "mood_journal_title": "اليوميات",
+      "mood_status_empty": "لم تُكتب بعد",
+      "diary_history_label": "اليوميات السابقة",
+      "mood_tag_default": "🙂 سجّل المزاج",
+      "mood_add_photo_btn": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M4 8h3l2-2h6l2 2h3v11H4z\"></path><circle cx=\"12\" cy=\"13.5\" r=\"3.5\"></circle></svg> إضافة صورة",
+      "mood_save_btn": "حفظ",
+      "dev_desc": "أزرار اختبار لمعاينة مؤثرات فتح المستويات (كخلفية الكون). لا تظهر للمستخدمين.",
+      "dev_add_exp_btn": "➕ اختبار: +500 خبرة",
+      "dev_reset_exp_btn": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M21 12a9 9 0 1 1-3-6.7\"></path><path d=\"M21 3v6h-6\"></path></svg> اختبار: إعادة الخبرة إلى 0",
+      "tutorial_label": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M9 18h6\"></path><path d=\"M10 22h4\"></path><path d=\"M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.3h6c0-1.1.4-1.8 1-2.3A7 7 0 0 0 12 2z\"></path></svg> كيفية الاستخدام",
+      "tutorial_btn": "عرض الشرح",
+      "opt_howto_support_label": "كيفية الاستخدام / الدعم",
+      "memento_label": "📖 مفكّرة",
+      "memento_desc": "ما يُكتب مرة يتراكم بدل أن يُستبدل. عُد في أي وقت إلى ما تعمل عليه أو تجارب لمرة واحدة.",
+      "memento_add_btn": "＋ إضافة",
+      "memento_add_title": "📖 إضافة مفكّرة",
+      "memento_save_btn": "حفظ",
+      "memento_empty": "لا شيء هنا بعد",
+      "memento_confirm_delete": "حذف هذا؟",
+      "agent_hub_label": "الوكيل",
+      "alarm_label": "⏰ المنبّه",
+      "alarm_desc": "أثناء فتح التطبيق، ستصلك تنبيهات بالصوت والاهتزاز في الوقت المحدد.",
+      "alarm_enabled_label": "مُفعّل",
+      "alarm_set_btn": "اضبط هذا الوقت",
+      "alarm_saved_toast": "⏰ ضُبط على {time}",
+      "alarm_disabled_toast": "تم تعطيل المنبّه",
+      "alarm_fired_toast": "⏰ حان وقت المنبّه",
+      "notify_label": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9\"></path><path d=\"M13.7 21a2 2 0 0 1-3.4 0\"></path></svg> الإشعارات (تجريبي)",
+      "notify_desc": "حتى مع إغلاق التطبيق، ستُنبَّه عند حلول الوقت. ميزة تجريبية.",
+      "notify_enable_btn": "تفعيل الإشعارات",
+      "notify_type_reminder": "⏰ تذكيرات المواعيد",
+      "notify_type_morning": "☀️ تحية الصباح",
+      "notify_type_absence": "💤 تنبيه العودة بعد الغياب",
+      "notify_type_overdue": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M17 2l4 4-4 4\"></path><path d=\"M3 11V9a4 4 0 0 1 4-4h14\"></path><path d=\"M7 22l-4-4 4-4\"></path><path d=\"M21 13v2a4 4 0 0 1-4 4H3\"></path></svg> إعادة تنبيه المتأخّر",
+      "misc_other_title": "⋯ أخرى",
+      "misc_other_tile": "⋯ أخرى",
+      "misc_proof_tile": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M4 8h3l2-2h6l2 2h3v11H4z\"></path><circle cx=\"12\" cy=\"13.5\" r=\"3.5\"></circle></svg><br>تحقّق",
+      "misc_restday_tile": "😮‍💨<br>تخطّي اليوم",
+      "misc_surprise_tile": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"3\"></rect><circle cx=\"8\" cy=\"8\" r=\"1.3\" fill=\"currentColor\"></circle><circle cx=\"16\" cy=\"8\" r=\"1.3\" fill=\"currentColor\"></circle><circle cx=\"12\" cy=\"12\" r=\"1.3\" fill=\"currentColor\"></circle><circle cx=\"8\" cy=\"16\" r=\"1.3\" fill=\"currentColor\"></circle><circle cx=\"16\" cy=\"16\" r=\"1.3\" fill=\"currentColor\"></circle></svg><br>مهمة إضافية",
+      "agent_suggest_title": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"></path></svg> ماذا بعد؟",
+      "agent_suggest_skip": "ليس الآن",
+      "agent_suggest_when": "⏰ متى؟",
+      "agent_suggest_confirm": "اضبط هذا الوقت",
+      "daily_briefing_start_btn": "ابدأ اليوم",
+      "new_routine_title": "إضافة روتين",
+      "new_routine_emoji_label": "إيموجي (اختياري)",
+      "new_routine_name_label": "اسم الروتين",
+      "confirm_add_btn": "إضافة",
+      "cancel_btn": "إلغاء",
+      "today_task_desc": "أضف مهامًا لمرة واحدة تريد إنجازها اليوم أو خلال أيام. تظهر مع روتيناتك المختارة في «مهام اليوم».",
+      "missed_tasks_desc": "هذه «مهام اليوم» غير المكتملة من الأمس. إن أُنجز بعضها فعلًا، انقر لإتمامه.",
+      "missed_tasks_close_btn": "إغلاق (تُرحَّل إلى اليوم)",
+      "today_completed_title": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"4\"></rect><path d=\"M7 12.5l3 3 7-7\"></path></svg> المكتملة اليوم",
+      "close_btn": "إغلاق",
+      "note_editor_title": "تحرير الملاحظة",
+      "note_editor_desc": "اكتب تنبيهًا أو ملاحظة سريعة هنا",
+      "note_editor_save_btn": "حفظ",
+      "drop_zone_low": "🌿<br>خفيف",
+      "drop_zone_mid": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><circle cx=\"12\" cy=\"12\" r=\"3\"></circle><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z\"></path></svg><br>متوسط",
+      "drop_zone_high": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z\"></path></svg><br>ثقيل",
+      "drop_zone_delete": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M4 7h16\"></path><path d=\"M9 7V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V7\"></path><path d=\"M6 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5L18 7\"></path></svg>️<br>حذف",
+      "bg_view_hint": "انقر للعودة",
+      "cal_secondary_other": "أخرى",
+      "cal_search_placeholder": "",
+      "cal_search_prompt": "",
+      "cal_search_no_results": "لا نتائج",
+      "stat_selected_count": "عدد المختار",
+      "stat_gained_exp": "الخبرة المكتسبة",
+      "stat_active_days": "أيام النشاط",
+      "stat_mood_count": "عدد يوميات المزاج",
+      "stat_task_total": "إجمالي المهام",
+      "recent_mood_title": "يوميات المزاج الأخيرة",
+      "no_mood_yet": "لا سجلات بعد",
+      "event_placeholder": "أدخل موعدًا",
+      "undated_task_placeholder": "إضافة دون تاريخ",
+      "location_placeholder": "المكان",
+      "note_placeholder": "ملاحظة",
+      "reminder_custom_placeholder": "دقيقة قبل",
+      "no_undated_tasks": "لا مهام بلا تاريخ",
+      "no_upcoming_events": "لا مواعيد خلال 60 يومًا القادمة",
+      "no_events_today": "لا مواعيد",
+      "more_options_label": "▾ خيارات إضافية (المكان، ملاحظة، طوال اليوم، إلخ)",
+      "today_tasks_empty2": "لا شيء هنا اليوم بعد",
+      "today_nothing_done": "لم يكتمل شيء اليوم بعد",
+      "misc_proof_tile_full": "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"display:inline-block; vertical-align:-0.15em;\"><path d=\"M4 8h3l2-2h6l2 2h3v11H4z\"></path><circle cx=\"12\" cy=\"13.5\" r=\"3.5\"></circle></svg> التحقق من الإنجاز بصورة",
+      "opt_bgm_row": "تشغيل الموسيقى",
+      "theme_test_pink": "🌸 وردي",
+      "theme_test_blue": "🌌 أزرق",
+      "theme_test_vapor": "🌴 فايبرويف",
+      "opt_debuglog_row": "عرض سجل التصحيح (سيُحذف لاحقًا)",
+    },
     ja: {
       brand: 'Daily Station',
       app_tagline: 'あなたの生活に、そっと寄り添う汎用エージェントアプリ',
@@ -3941,7 +4251,7 @@
       src_ebbing_body: '1885年、心理学者エビングハウスが、記憶は学習直後から急速に失われることを示しました。一方、カナダ・ウォータールー大学の研究では、「学習から24時間以内に、10分間復習する」ことで、記憶がほぼ元の水準まで戻るとの報告があります。',
       src_mathalarm_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 9h16"></path><path d="M4 15h16"></path><path d="M10 3L8 21"></path><path d="M16 3l-2 18"></path></svg> アラームの計算問題について(正直な位置づけ)',
       src_mathalarm_body: '正直にお伝えすると、「計算問題を解くこと自体が、睡眠慣性を早く解消する」という直接的な研究は見つけられませんでした。ただし、起床直後は判断力・反応速度が落ちやすいことは実証されているため、この機能は「本当に目が覚めているかを確かめる、実用的なチェック」としての位置づけです。',
-      opt_lang_label: '言語', lang_ja_btn: '日本語', lang_en_btn: 'English',
+      misc_proof_tile_full: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 8h3l2-2h6l2 2h3v11H4z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg> 実績を写真で照合する', opt_bgm_row: 'BGMを流す', theme_test_pink: '🌸 ピンク系', theme_test_blue: '🌌 青系', theme_test_vapor: '🌴 ウェイブ系', opt_debuglog_row: 'デバッグログ表示(最終的には削除予定)', opt_lang_label: '言語', lang_ja_btn: '日本語', lang_en_btn: 'English',
       opt_lang_sound_label: '言語 / サウンド',
       opt_prototype_note: '※ このページは見た目のみの試作（ハリボテ）です。実際の設定保存はこれから実装します。',
       cal_title: '今月の記録', cal_days: '記録した日', cal_exp: '今月の合計EXP', cal_items: '合計選択数',
@@ -4089,7 +4399,7 @@
       src_ebbing_body: 'In 1885, psychologist Hermann Ebbinghaus showed that memory decays rapidly right after learning. Separately, research from the University of Waterloo found that a 10-minute review within 24 hours of learning restores memory to near-original levels.',
       src_mathalarm_title: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 9h16"></path><path d="M4 15h16"></path><path d="M10 3L8 21"></path><path d="M16 3l-2 18"></path></svg> About the Alarm Math Problem (an honest note)',
       src_mathalarm_body: 'To be honest, I could not find direct research showing that solving a math problem itself speeds up recovery from sleep inertia. That said, since impaired judgment and reaction speed right after waking is well established, this feature is best understood as a practical check for genuine wakefulness, not a cure.',
-      opt_lang_label: 'Language', lang_ja_btn: '日本語', lang_en_btn: 'English',
+      misc_proof_tile_full: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M4 8h3l2-2h6l2 2h3v11H4z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg> Verify Achievement by Photo', opt_bgm_row: 'Play BGM', theme_test_pink: '🌸 Pink', theme_test_blue: '🌌 Blue', theme_test_vapor: '🌴 Vaporwave', opt_debuglog_row: 'Show debug log (to be removed)', opt_lang_label: 'Language', lang_ja_btn: '日本語', lang_en_btn: 'English',
       opt_lang_sound_label: 'Language / Sound',
       opt_prototype_note: '※ This page is a visual prototype only for now. Real settings persistence is coming soon.',
       cal_title: "This Month's Record", cal_days: 'Days Logged', cal_exp: 'Total EXP', cal_items: 'Total Picks',
@@ -4210,8 +4520,10 @@
     return currentLang === 'en' ? (COMBO_NAME_EN[name] || name) : name;
   }
   function applyLanguage(lang) {
-    currentLang = (lang === 'en') ? 'en' : 'ja';
-    const dict = I18N_DICT[currentLang];
+    currentLang = (lang === 'en') ? 'en' : (lang === 'ar') ? 'ar' : 'ja';
+    const dict = I18N_DICT[currentLang] || I18N_DICT.ja;
+    // かくし言語アラビア語のときだけ、右→左レイアウトに(遊び)。それ以外は通常の左→右へ戻す
+    document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if (dict[key] !== undefined) el.innerHTML = dict[key];
@@ -7678,11 +7990,13 @@
     if (!btn) return;
     if (canUseRestDayToday()) {
       btn.classList.remove('disabled');
-      btn.textContent = (currentLang === 'en') ? '😮\u200d💨 Take a rest day' : '😮\u200d💨 今日はサボる';
+      btn.textContent = (currentLang === 'ar') ? '😮\u200d💨 خُذ يوم راحة' : (currentLang === 'en') ? '😮\u200d💨 Take a rest day' : '😮\u200d💨 今日はサボる';
     } else {
       const daysLeft = 7 - daysSinceLogicalKey(restDayLog[0]);
       btn.classList.add('disabled');
-      btn.textContent = (currentLang === 'en')
+      btn.textContent = (currentLang === 'ar')
+        ? `😮\u200d💨 استُخدم هذا الأسبوع (متاح بعد ${daysLeft} يوم)`
+        : (currentLang === 'en')
         ? `😮\u200d💨 Used this week (available in ${daysLeft}d)`
         : `😮\u200d💨 今週はもう使用済み(あと${daysLeft}日で再利用可)`;
     }
@@ -8579,6 +8893,8 @@
       if (e.touches.length !== 1) return;
       if (e.target.closest('#calSectionWrap')) return; // カレンダー内は、別のスワイプ(月/週/日)が担当するので対象外
       if (e.target.closest('.swipe-del-wrap')) return; // タスク・日課・予定の削除スワイプと、ページ切り替えスワイプが競合しないよう、カードの上から始まった場合は対象外
+      // ページ左右移動は「人が見て空白と分かる場所」から始めた時だけ。カード内・テキスト・操作要素の上から始まった横操作は、粗いページ移動で奪わない(例:日記のテキスト範囲選択、カード内の横操作)
+      if (e.target.closest('input, textarea, select, button, a, [contenteditable], .item, .alarm-row, .memento-card, .card, .dh-row, .dh-card, .modal, .grand-modal')) return;
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
       swiping = true;
@@ -8889,6 +9205,68 @@
     }
   }
   let moodJournalAutosaveTimer = null;
+  // ---- これまでの日記(過去の全記録を一覧・案1紙UI) ----
+  let diaryHistoryFilter = 'all';
+  function openDiaryHistory() {
+    renderDiaryHistory();
+    document.getElementById('diaryHistoryModal').classList.add('show');
+    playUIClick();
+  }
+  function closeDiaryHistory() {
+    document.getElementById('diaryHistoryModal').classList.remove('show');
+  }
+  function setDiaryHistoryFilter(f, el) {
+    diaryHistoryFilter = f;
+    document.querySelectorAll('#dhFilter .dh-chip').forEach(c => c.classList.remove('on'));
+    if (el) el.classList.add('on');
+    renderDiaryHistory();
+  }
+  function renderDiaryHistory() {
+    const box = document.getElementById('diaryHistoryList');
+    if (!box) return;
+    const WD = ['日', '月', '火', '水', '木', '金', '土'];
+    const DOT = { good: '#E7B24A', neutral: '#C3BDB0', bad: '#8FB0E0' };
+    const items = [];
+    Object.keys(moodJournalData || {}).forEach(key => {
+      const p = key.split('-'); const y = +p[0], m = +p[1], d = +p[2];
+      if (!y || !m || !d) return;
+      const wd = WD[new Date(y, m - 1, d).getDay()];
+      (moodJournalData[key] || []).forEach(e => {
+        if (!e) return;
+        const hasImg = !!(e.images && e.images.length);
+        if (!e.text && !hasImg) return;
+        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', mood: e.mood || '', hasImg });
+      });
+    });
+    items.sort((a, b) => (b.y - a.y) || (b.m - a.m) || (b.d - a.d) || b.time.localeCompare(a.time));
+    let filtered = diaryHistoryFilter === 'all' ? items : items.filter(i => i.mood === diaryHistoryFilter);
+    const dhq = (document.getElementById('dhSearch') ? document.getElementById('dhSearch').value : '').trim().toLowerCase();
+    if (dhq) filtered = filtered.filter(i => (i.text || '').toLowerCase().includes(dhq));
+    if (filtered.length === 0) {
+      box.innerHTML = `<div class="dh-empty">${dhq ? (currentLang === 'en' ? 'No matches' : '見つかりませんでした') : (currentLang === 'en' ? 'No entries yet' : 'まだ日記がありません')}</div>`;
+      return;
+    }
+    let dhHtml = '', dhCurYM = '';
+    filtered.forEach(i => {
+      const ym = i.y + '年' + i.m + '月';
+      if (ym !== dhCurYM) { dhCurYM = ym; dhHtml += `<div class="dh-month">${ym}</div>`; }
+      const emoji = i.mood && MOOD_TAG_EMOJI[i.mood] ? MOOD_TAG_EMOJI[i.mood] : '';
+      const dot = `<span class="dh-dot" style="background:${i.mood ? (DOT[i.mood] || '#C3BDB0') : 'transparent'}"></span>`;
+      const preview = escapeHtml((i.text || '').replace(/\s+/g, ' ').trim()) || (i.hasImg ? '（写真）' : '');
+      dhHtml += `<div class="dh-row" onclick="this.classList.toggle('open')">
+        <div class="dh-date"><span class="dh-dn">${i.d}</span><span class="dh-wd">${i.wd}</span></div>
+        ${dot}
+        <div class="dh-body">
+          <div class="dh-pv">${preview}</div>
+          <div class="dh-full">${escapeHtml(i.text || '')}</div>
+          <div class="dh-meta">${i.time ? i.time : ''}${i.hasImg ? ' ・ 📷' : ''}</div>
+        </div>
+        <span class="dh-emoji">${emoji}</span>
+      </div>`;
+    });
+    box.innerHTML = dhHtml;
+  }
+
   function handleMoodJournalInput() {
     clearTimeout(moodJournalAutosaveTimer);
     moodJournalAutosaveTimer = setTimeout(() => {
@@ -8943,18 +9321,20 @@
     if (!isAutosave) {
       // 保存ボタン自体を一瞬「保存しました」に変えて、押した手応えをはっきり示す(自動保存の時は出さない)
       const btn = document.getElementById('moodSaveBtn');
-      const originalText = btn.textContent;
-      btn.textContent = '✓ 保存しました';
-      btn.classList.add('just-saved');
-      setTimeout(() => {
-        btn.textContent = originalText;
-        btn.classList.remove('just-saved');
-      }, 1400);
+      if (btn) { // 手動保存ボタンは現状DOMに無いので、存在する時だけ演出する(null参照でのクラッシュを防ぐ)
+        const originalText = btn.textContent;
+        btn.textContent = '✓ 保存しました';
+        btn.classList.add('just-saved');
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.classList.remove('just-saved');
+        }, 1400);
+      }
     }
 
-    document.getElementById('moodJournalSavedInfo').textContent =
+    document.getElementById('moodJournalSavedInfo').innerHTML =
       `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg> ${currentLang === 'en' ? 'Saved' : '保存済み'}: ${new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}${isAutosave ? (currentLang === 'en' ? ' (auto)' : '(自動)') : ''}`;
-    showSaveFlourish();
+    if (!isAutosave) showSaveFlourish(); // 自動保存では"ふわっと保存アイコン"を出さない(入力中に邪魔なため)
   }
   // 保存された瞬間、<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg>を画面の端にふわっと出して、視覚的にも「保存された」と分かりやすくする
   let saveFlourishTimer = null;
@@ -8964,7 +9344,7 @@
       el = document.createElement('div');
       el.id = 'saveFlourishIcon';
       el.className = 'save-flourish-icon';
-      el.textContent = '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg>';
+      el.innerHTML = '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M7 3v5h9V3"></path><path d="M7 21v-7h10v7"></path></svg>';
       document.body.appendChild(el);
     }
     el.classList.remove('show');
@@ -10336,7 +10716,35 @@
       applyLanguage(btn.dataset.lang);
       saveLanguage(btn.dataset.lang);
     };
+    // ---- 隠し要素: 言語ボタンを5秒長押しで「アラビア語」を解放(サイバー長押しのセルフオマージュ。実用性皆無の遊び) ----
+    let langHoldTimer = null;
+    function startLangHold() {
+      btn.style.transition = 'box-shadow 5s linear';
+      btn.style.boxShadow = '0 0 0 3px rgba(164,92,240,0.6)';
+      langHoldTimer = setTimeout(unlockArabic, 5000);
+    }
+    function cancelLangHold() {
+      clearTimeout(langHoldTimer);
+      btn.style.transition = 'box-shadow 0.2s ease';
+      btn.style.boxShadow = '';
+    }
+    btn.addEventListener('touchstart', startLangHold, { passive: true });
+    btn.addEventListener('touchend', cancelLangHold);
+    btn.addEventListener('touchcancel', cancelLangHold);
+    btn.addEventListener('mousedown', startLangHold);
+    btn.addEventListener('mouseup', cancelLangHold);
+    btn.addEventListener('mouseleave', cancelLangHold);
   });
+  function unlockArabic() {
+    applyLanguage('ar');
+    saveLanguage('ar');
+    if (navigator.vibrate) navigator.vibrate([20, 40, 20, 40, 60]);
+    try { playLevelUpSound(); } catch (e) {}
+    const flash = document.getElementById('screenFlash');
+    if (flash) { flash.classList.remove('flash'); void flash.offsetWidth; flash.classList.add('flash'); }
+    try { startConfetti('tone-magenta'); } catch (e) {}
+    showToast('🌍 かくし言語「العربية（アラビア語）」が解放された！');
+  }
 
   document.querySelectorAll('.theme-btn').forEach(btn => {
     btn.onclick = () => {
