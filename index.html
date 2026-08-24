@@ -2219,9 +2219,9 @@
   #mementoTextInput:empty::before { content: attr(data-placeholder); color: rgba(255,255,255,0.3); }
   .event-color-dot.picked { box-shadow: 0 0 0 2px #fff; }
   /* ---- 週表示: 時間軸グリッド ---- */
-  .week-grid-scroll { overflow-x: auto; }
+  .week-grid-scroll { overflow-x: hidden; touch-action: pan-y; }
   .week-grid-header {
-    display: grid; grid-template-columns: 38px repeat(7, minmax(52px, 1fr)); gap: 1px;
+    display: grid; grid-template-columns: 34px repeat(7, minmax(0, 1fr)); gap: 1px;
     margin-bottom: 2px;
   }
   .week-grid-daycell {
@@ -2230,7 +2230,7 @@
   }
   .week-grid-daycell.is-today { color: var(--cyan); font-weight: 800; }
   .week-grid-allday-row {
-    display: grid; grid-template-columns: 38px repeat(7, minmax(52px, 1fr)); gap: 1px;
+    display: grid; grid-template-columns: 34px repeat(7, minmax(0, 1fr)); gap: 1px;
     margin-bottom: 4px; min-height: 4px;
   }
   .week-grid-allday-cell { display: flex; flex-direction: column; gap: 2px; }
@@ -2239,7 +2239,7 @@
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .week-grid-body {
-    position: relative; display: grid; grid-template-columns: 38px repeat(7, minmax(52px, 1fr));
+    position: relative; display: grid; grid-template-columns: 34px repeat(7, minmax(0, 1fr));
     border-top: 1px solid rgba(255,255,255,0.08);
   }
   .week-grid-timecol { display: flex; flex-direction: column; }
@@ -2801,7 +2801,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_UIFIX_V373</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_CALSWIPE_V374</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5308,8 +5308,28 @@
       let nextIdx = idx;
       if (dx < 0 && idx < VIEW_ORDER.length - 1) nextIdx = idx + 1; // 左スワイプ → 次(月→週→日)
       if (dx > 0 && idx > 0) nextIdx = idx - 1; // 右スワイプ → 前
-      if (nextIdx !== idx) switchCalView(VIEW_ORDER[nextIdx], dx < 0 ? 'left' : 'right');
+      if (nextIdx !== idx) {
+        switchCalView(VIEW_ORDER[nextIdx], dx < 0 ? 'left' : 'right');
+      } else {
+        nudgeCalEdge(dx < 0 ? 'left' : 'right'); // これ以上進めない端: スワイプが効いたことを軽いバウンドで返す
+      }
     }, { passive: true });
+
+    // 端でこれ以上ビューが無い時、今見えているセクションを少しだけ動かして戻す(手応え)
+    function nudgeCalEdge(direction) {
+      if (typeof calTransitionInProgress !== 'undefined' && calTransitionInProgress) return;
+      const ids = ['calMonthSection','calWeekSection','calDaySection','calAgendaSection','calSearchSection','calReportSection'];
+      const el = ids.map(id => document.getElementById(id)).find(e => e && e.style.display !== 'none');
+      if (!el || el.dataset.nudging === '1') return;
+      el.dataset.nudging = '1';
+      const sign = (direction === 'left') ? -1 : 1;
+      el.style.transition = 'transform 0.13s ease-out';
+      el.style.transform = `translateX(${sign * 14}px)`;
+      setTimeout(() => {
+        el.style.transform = 'translateX(0)';
+        setTimeout(() => { el.style.transition = ''; el.style.transform = ''; delete el.dataset.nudging; }, 150);
+      }, 130);
+    }
   })();
 
   // アプリを完全には閉じず、他アプリを触ってから戻ってきた時、BGMが止まっていれば「続きから」再開する
