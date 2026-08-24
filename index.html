@@ -2268,6 +2268,36 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
   .week-grid-event-block.done { opacity: 0.45; text-decoration: line-through; }
+  /* 予定フォーム: ラベル列を右揃えで揃え、何を設定する欄かを明示する(定石: label+control) */
+  .evt-form { text-align: left; }
+  .evt-title {
+    width: 100%; box-sizing: border-box; margin: 6px 0 4px; font-size: 14px; padding: 11px 12px;
+    border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04);
+    color: #fff; font-family: inherit;
+  }
+  .evt-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .evt-row.top { align-items: flex-start; }
+  .evt-label {
+    width: 68px; flex: 0 0 auto; text-align: right; font-size: 12px; color: var(--ink-dim); font-weight: 700;
+  }
+  .evt-row.top .evt-label { margin-top: 9px; }
+  .evt-ctrl { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
+  .evt-in {
+    font-size: 12.5px; padding: 9px 10px; border-radius: 9px; border: 1.5px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.04); color: #fff; font-family: inherit; box-sizing: border-box;
+  }
+  .evt-ctrl > select.evt-in, .evt-ctrl > input.evt-grow, .evt-ctrl > textarea.evt-in { flex: 1; min-width: 0; }
+  .evt-time { width: 76px; flex: 0 0 auto; text-align: center; }
+  .evt-sep { color: var(--ink-dim); font-size: 12px; flex: 0 0 auto; }
+  .evt-allday { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--ink-dim); flex: 0 0 auto; margin-left: 2px; white-space: nowrap; }
+  .evt-rmd-custom { width: 62px; flex: 0 0 auto; }
+  .evt-add {
+    width: 100%; box-sizing: border-box; margin-top: 14px; padding: 12px; border-radius: 10px;
+    border: 1.5px solid var(--magenta); background: transparent; color: var(--magenta);
+    font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .evt-add:active { background: rgba(242,120,120,0.1); }
   .cal-primary-toggle { display: flex; gap: 6px; margin: 14px 0 4px; }
   .cal-view-btn {
     flex: 1; min-width: 0; padding: 10px 4px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.15);
@@ -2811,7 +2841,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_UNDO2_V378</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_CAL_V379</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -3431,47 +3461,70 @@
     <div style="margin-top:14px; text-align:left;">
       <div style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif; margin-bottom:6px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> 予定</div>
       <div id="dayDetailEventsList"></div>
-      <div style="display:flex; gap:6px; margin-top:8px; align-items:center;">
-        <input type="time" id="dayDetailEventTime" onchange="autofillEventEndTime()" style="width:62px; flex-shrink:0; font-size:11px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-        <span style="align-self:center; color:var(--ink-dim); font-size:10px;">〜</span>
-        <input type="time" id="dayDetailEventEndTime" style="width:62px; flex-shrink:0; font-size:11px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-        <label style="display:flex; align-items:center; gap:4px; font-size:11px; color:var(--ink-dim); margin-left:4px;">
-          <input type="checkbox" id="dayDetailEventAllDay" onchange="document.getElementById('dayDetailEventTime').disabled = this.checked; document.getElementById('dayDetailEventEndTime').disabled = this.checked;"> 終日
-        </label>
+      <div class="evt-form">
+        <input type="text" id="dayDetailEventText" class="evt-title" data-i18n-placeholder="event_placeholder" placeholder="予定を入力" onkeydown="if(event.key==='Enter') confirmAddDayEvent()">
+        <div class="evt-row">
+          <span class="evt-label">日時</span>
+          <div class="evt-ctrl">
+            <input type="time" id="dayDetailEventTime" class="evt-in evt-time" onchange="autofillEventEndTime()">
+            <span class="evt-sep">〜</span>
+            <input type="time" id="dayDetailEventEndTime" class="evt-in evt-time">
+            <label class="evt-allday"><input type="checkbox" id="dayDetailEventAllDay" onchange="document.getElementById('dayDetailEventTime').disabled = this.checked; document.getElementById('dayDetailEventEndTime').disabled = this.checked;"> 終日</label>
+          </div>
+        </div>
+        <div class="evt-row">
+          <span class="evt-label">種類</span>
+          <div class="evt-ctrl">
+            <select id="dayDetailEventAttr" class="evt-in">
+              <option value="event">予定</option>
+              <option value="task">タスク</option>
+              <option value="routine">日課</option>
+              <option value="deadline">〆切</option>
+              <option value="other">その他</option>
+            </select>
+          </div>
+        </div>
+        <div class="evt-row">
+          <span class="evt-label">繰り返し</span>
+          <div class="evt-ctrl">
+            <select id="dayDetailEventRecur" class="evt-in">
+              <option value="">繰り返さない</option>
+              <option value="daily">毎日</option>
+              <option value="weekdays">平日のみ</option>
+              <option value="weekly">毎週</option>
+              <option value="monthly">毎月</option>
+            </select>
+          </div>
+        </div>
+        <div class="evt-row">
+          <span class="evt-label">リマインド</span>
+          <div class="evt-ctrl">
+            <select id="dayDetailEventReminder" class="evt-in" onchange="document.getElementById('dayDetailEventReminderCustom').style.display = (this.value === 'custom') ? 'block' : 'none';">
+              <option value="">なし</option>
+              <option value="10">10分前</option>
+              <option value="60">1時間前</option>
+              <option value="180">3時間前</option>
+              <option value="1440">1日前</option>
+              <option value="10080">1週間前</option>
+              <option value="custom">カスタム</option>
+            </select>
+            <input type="number" id="dayDetailEventReminderCustom" class="evt-in evt-rmd-custom" data-i18n-placeholder="reminder_custom_placeholder" placeholder="分前" min="1" style="display:none;">
+          </div>
+        </div>
+        <div class="evt-row">
+          <span class="evt-label">場所</span>
+          <div class="evt-ctrl">
+            <input type="text" id="dayDetailEventLocation" class="evt-in evt-grow" data-i18n-placeholder="location_placeholder" placeholder="任意">
+          </div>
+        </div>
+        <div class="evt-row top">
+          <span class="evt-label">メモ</span>
+          <div class="evt-ctrl">
+            <textarea id="dayDetailEventNote" class="evt-in evt-grow" data-i18n-placeholder="note_placeholder" placeholder="任意" style="min-height:44px;"></textarea>
+          </div>
+        </div>
+        <button class="evt-add" onclick="confirmAddDayEvent()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.14em;"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg> 予定を追加</button>
       </div>
-      <input type="text" id="dayDetailEventText" data-i18n-placeholder="event_placeholder" placeholder="予定を入力" style="width:100%; box-sizing:border-box; margin-top:6px; font-size:13px; padding:10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;" onkeydown="if(event.key==='Enter') confirmAddDayEvent()">
-      <div style="display:flex; gap:6px; margin-top:8px; align-items:center;">
-        <select id="dayDetailEventRecur" style="flex-shrink:0; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-          <option value="">繰り返さない</option>
-          <option value="daily">毎日</option>
-          <option value="weekdays">平日のみ</option>
-          <option value="weekly">毎週</option>
-          <option value="monthly">毎月</option>
-        </select>
-        <select id="dayDetailEventAttr" title="属性" style="flex:1; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-          <option value="event">予定</option>
-          <option value="task">タスク</option>
-          <option value="routine">日課</option>
-          <option value="deadline">〆切</option>
-          <option value="other">その他</option>
-        </select>
-      </div>
-      <div style="display:flex; align-items:center; gap:6px; margin-top:8px;">
-        <span style="font-size:10.5px; color:var(--ink-dim); flex-shrink:0;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>リマインド</span>
-        <select id="dayDetailEventReminder" onchange="document.getElementById('dayDetailEventReminderCustom').style.display = (this.value === 'custom') ? 'inline-block' : 'none';" style="flex:1; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-          <option value="">なし</option>
-          <option value="10">10分前</option>
-          <option value="60">1時間前</option>
-          <option value="180">3時間前</option>
-          <option value="1440">1日前</option>
-          <option value="10080">1週間前</option>
-          <option value="custom">カスタム</option>
-        </select>
-        <input type="number" id="dayDetailEventReminderCustom" data-i18n-placeholder="reminder_custom_placeholder" placeholder="分前" min="1" style="display:none; width:60px; font-size:11px; padding:7px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-      </div>
-      <input type="text" id="dayDetailEventLocation" data-i18n-placeholder="location_placeholder" placeholder="場所(任意)" style="width:100%; box-sizing:border-box; margin-top:8px; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
-      <textarea id="dayDetailEventNote" data-i18n-placeholder="note_placeholder" placeholder="メモ(任意)" style="width:100%; box-sizing:border-box; margin-top:6px; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; min-height:44px; font-family:inherit;"></textarea>
-      <button onclick="confirmAddDayEvent()" style="width:100%; box-sizing:border-box; margin-top:10px; padding:10px; border-radius:8px; border:1.5px solid var(--magenta); background:transparent; color:var(--magenta); font-size:16px; font-weight:900;">＋</button>
     </div>
     <div id="dayDetailMood" style="display:none; margin-top:14px; text-align:left; background:rgba(255,255,255,0.03); border-radius:10px; padding:12px;">
       <div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">気分日記</div>
@@ -10154,9 +10207,64 @@
     });
     bodyEl.innerHTML = timeColHtml + daysHtml;
 
+    // 週グリッドの各列を長押し → その日・その時刻で新規予定を作れるようにする
+    dayKeys.forEach((key) => {
+      const col = document.getElementById('weekGridCol_' + key);
+      if (col) attachLongPress(col, (pt) => {
+        const rect = col.getBoundingClientRect();
+        const hour = WEEK_GRID_START_HOUR + Math.floor((pt.clientY - rect.top) / WEEK_GRID_ROW_PX);
+        const hh = Math.max(0, Math.min(23, hour));
+        quickCreateEvent(key, `${String(hh).padStart(2, '0')}:00`);
+      });
+    });
+
     const label = (weekViewOffset === 0) ? (currentLang === 'en' ? 'This Week' : '今週')
       : `${sunday.getMonth() + 1}/${sunday.getDate()} 〜`;
     labelEl.textContent = label;
+  }
+
+  // ---- 長押しで新規予定(iPhoneカレンダー風) ----
+  function attachLongPress(el, handler, ms) {
+    ms = ms || 450;
+    let timer = null, sx = 0, sy = 0, longFired = false;
+    const clear = () => { if (timer) { clearTimeout(timer); timer = null; } };
+    el.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      longFired = false;
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+      timer = setTimeout(() => {
+        timer = null; longFired = true;
+        if (navigator.vibrate) { try { navigator.vibrate(12); } catch (_) {} }
+        handler({ clientX: sx, clientY: sy });
+      }, ms);
+    }, { passive: true });
+    el.addEventListener('touchmove', (e) => {
+      if (!timer) return;
+      if (Math.abs(e.touches[0].clientX - sx) > 10 || Math.abs(e.touches[0].clientY - sy) > 10) clear();
+    }, { passive: true });
+    el.addEventListener('touchend', clear, { passive: true });
+    el.addEventListener('touchcancel', clear, { passive: true });
+    // 長押し直後に発生する通常clickは抑制する(タップ扱いの日詳細を二重に開かない)
+    el.addEventListener('click', (e) => { if (longFired) { e.stopPropagation(); e.preventDefault(); longFired = false; } }, true);
+    // PC(マウス)対応
+    el.addEventListener('mousedown', (e) => {
+      longFired = false; sx = e.clientX; sy = e.clientY;
+      timer = setTimeout(() => { timer = null; longFired = true; handler({ clientX: sx, clientY: sy }); }, ms);
+    });
+    el.addEventListener('mouseup', clear);
+    el.addEventListener('mouseleave', clear);
+  }
+
+  function quickCreateEvent(key, prefillTime) {
+    const rec = (typeof dailyHistory !== 'undefined' && dailyHistory[key]) ? dailyHistory[key] : { count: 0, exp: 0, items: [] };
+    showDayDetail(key, rec);
+    setTimeout(() => {
+      const allDay = document.getElementById('dayDetailEventAllDay');
+      const t = document.getElementById('dayDetailEventTime');
+      const txt = document.getElementById('dayDetailEventText');
+      if (prefillTime && t && allDay && !allDay.checked) { t.value = prefillTime; autofillEventEndTime(); }
+      if (txt) { txt.scrollIntoView({ behavior: 'smooth', block: 'center' }); txt.focus(); }
+    }, 280);
   }
 
   let monthViewOffset = 0; // 0=今月、-1=先月、+1=来月
@@ -10193,6 +10301,7 @@
       cell.className = 'cal-day' + (isOtherMonth ? ' other-month' : '');
       const lines = buildCellLines(key);
       cell.innerHTML = `<span class="cal-day-num">${dateNum}</span>` + lines.map(l => `<span class="cal-day-line">${l.color ? `<span class="cal-line-dot" style="background:${l.color}"></span>` : ''}${escapeHtml(l.text)}</span>`).join('');
+      attachLongPress(cell, () => quickCreateEvent(key)); // 長押しでその日に新規予定
       return cell;
     }
 
@@ -10836,6 +10945,7 @@
   renderCalendar();
 
   let dayDetailCurrentKey = null;
+  let dayDetailOpenedAt = 0;
   function renderDayDetailEvents(key) {
     const list = document.getElementById('dayDetailEventsList');
     const events = eventsForDate(key);
@@ -10956,6 +11066,7 @@
 
     renderDayDetailEvents(key);
     document.getElementById('dayDetailModal').classList.add('show');
+    dayDetailOpenedAt = Date.now();
     playUIClick();
   }
   async function copyDayForAIAnalysis() {
@@ -10989,6 +11100,8 @@
     }
   }
   function closeDayDetail() {
+    // 長押しで開いた直後のゴースト・クリックで即閉じしないよう、開いてすぐは無視する
+    if (Date.now() - dayDetailOpenedAt < 450) return;
     document.getElementById('dayDetailModal').classList.remove('show');
   }
 
