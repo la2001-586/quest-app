@@ -14,6 +14,13 @@
 import argparse, json, shutil, subprocess, sys
 from pathlib import Path
 
+# Windows のコンソールは既定が cp932 のため、UTF-8 に切り替えて文字化けを防ぐ
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
+
 
 def die(msg):
     print(f"[autoclip] エラー: {msg}", file=sys.stderr)

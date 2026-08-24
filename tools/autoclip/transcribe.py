@@ -11,6 +11,13 @@
 import argparse, json, os, shutil, subprocess, sys, tempfile, wave
 from pathlib import Path
 
+# Windows のコンソールは既定が cp932 のため、UTF-8 に切り替えて文字化けを防ぐ
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
+
 
 def die(msg, code=1):
     print(f"[transcribe] エラー: {msg}", file=sys.stderr)

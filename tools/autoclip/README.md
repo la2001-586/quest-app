@@ -9,6 +9,23 @@
 
 ## 1. インストール
 
+### Windows（PowerShell）
+
+エクスプローラーで `tools\autoclip` を開き、アドレス欄に `powershell` と入力して Enter。
+開いた PowerShell で:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass   # このウィンドウだけ許可
+.\setup.ps1          # ffmpeg + faster-whisper（推奨・軽量高速）
+.\setup.ps1 -Flavor openai   # 本家 openai-whisper を使いたい場合（PyTorch が入るので重い）
+```
+
+`winget` があれば ffmpeg も Python も自動で入ります。ffmpeg を入れた直後は PATH が
+更新されていないことがあるので、その場合は PowerShell を開き直して `.\setup.ps1` を
+もう一度実行してください。
+
+### Mac / Linux
+
 ```bash
 cd tools/autoclip
 ./setup.sh          # ffmpeg + faster-whisper（推奨・軽量高速）
@@ -43,6 +60,20 @@ python3 autoclip.py 素材.mp4 --segments 素材.segments.json --all --merge-gap
 
 ## 3. 動作確認
 
+### Windows（PowerShell）
+
+読み上げ音声は Windows 標準の音声合成で作るので、追加インストールは要りません。
+
+```powershell
+.\make_test_video.ps1 test.mp4
+python transcribe.py test.mp4 --lang en --model tiny
+python autoclip.py test.mp4 --segments test.segments.json --keyword highlight
+```
+
+`clips\` の中に、「highlight」と言っている部分だけを切り出した動画ができていれば成功です。
+
+### Mac / Linux
+
 ```bash
 ./make_test_video.sh test.mp4                    # 音声つきテスト動画を作る
 python3 transcribe.py test.mp4 --lang en --model tiny
@@ -71,7 +102,16 @@ python3 transcribe.py 素材.mp4 --backend sherpa-onnx --lang ja
 - `https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2`
 - `https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx`
 
-## 5. 検証済みの内容（2026-08-24）
+## 5. ファイル一覧
+
+| ファイル | 役割 | 対象 |
+| --- | --- | --- |
+| `setup.ps1` / `setup.sh` | ffmpeg と Whisper のインストール | Windows / Mac・Linux |
+| `make_test_video.ps1` / `make_test_video.sh` | 動作確認用のテスト動画を作る | Windows / Mac・Linux |
+| `transcribe.py` | 文字起こし（JSON + SRT） | 共通 |
+| `autoclip.py` | ffmpeg で切り出し | 共通 |
+
+## 6. 検証済みの内容（2026-08-24）
 
 - ffmpeg 6.1.1 / ffprobe 導入・動作確認（テスト動画生成・音声抽出・切り出し・静止画抽出）
 - Whisper で 14.6 秒のテスト動画を文字起こしし、3 つの発話区間と時刻を取得
@@ -80,7 +120,11 @@ python3 transcribe.py 素材.mp4 --backend sherpa-onnx --lang ja
   さらに映像に焼き込んだ時刻表示（05.200 → 08.920）でカット位置を目視確認
 - `--all` `--copy` `--range` の各モードも動作確認済み
 
-補足: 検証に使った実行環境は外部ネットワークが制限されており、
+- Windows 用 PowerShell スクリプトは、PowerShell 7.4 で構文検証および実行検証を実施
+  （ffmpeg 呼び出し・動画生成・エラー処理の各経路。ただし Windows 標準の音声合成
+  `System.Speech` の部分だけは Linux 上では動かないため、Windows 実機での確認が必要）
+
+補足: 検証に使った実行環境は Linux のクラウドコンテナで、外部ネットワークが制限されており、
 `openai-whisper` / `faster-whisper` が使うモデル配布元（openaipublic.azureedge.net,
 huggingface.co）に接続できませんでした（403）。そのため検証は GitHub Releases から
 取得できる `sherpa-onnx` 版 Whisper（tiny）で行っています。
