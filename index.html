@@ -2841,7 +2841,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_CAL_V379</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_CONSULT_V380</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -9520,7 +9520,9 @@
     let sleepLine = '';
     if (bedtime && waketime) sleepLine = `\n睡眠: ${bedtime} 〜 ${waketime}`;
 
-    const prompt = `以下は${dateLabel}の自分の記録です。客観的に見て、率直な感想・気づき・次に活かせそうなことがあれば教えてください。優しく取り繕うより、正直な評価を希望します。\n\n【${dateLabel}の記録】(連続記録${streak}日目)${sleepLine}\n${text}`;
+    const prompt = (currentLang === 'en')
+      ? `Here is my journal from ${dateLabel}. First note one thing I did well, then point out anything worth improving — honestly, but kindly and constructively. End with one small step I could take next. Keep it brief.\n\n[${dateLabel}] (streak ${streak})${sleepLine}\n${text}`
+      : `以下は${dateLabel}の自分の記録です。まず良かった点にふれ、その上で気づいた課題を率直に、でも前向きに指摘してください。最後に、次に活かせそうな小さな一歩を一つ添えてください。簡潔にお願いします。\n\n【${dateLabel}の記録】(連続記録${streak}日目)${sleepLine}\n${text}`;
 
     try {
       await navigator.clipboard.writeText(prompt);
