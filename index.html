@@ -2156,29 +2156,9 @@
   .saving-dots i:nth-child(3) { animation-delay: 0.32s; }
   @keyframes savingBreathe { 0%,100% { transform: translateY(1px) scale(0.7); opacity: 0.3; } 50% { transform: translateY(-2px) scale(1.05); opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .saving-dots i { animation: none; opacity: 0.6; } }
-  /* 日記「元に戻す」スナックバー */
-  #diaryUndoBar {
-    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(24px); z-index: 4000;
-    display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 18px; border-radius: 14px;
-    background: #2a2a2d; color: #f4f4f5; box-shadow: 0 14px 36px -8px rgba(0,0,0,0.55);
-    font-size: 13.5px; font-family: inherit; opacity: 0; pointer-events: none;
-    transition: opacity 0.28s ease, transform 0.28s ease; max-width: calc(100vw - 28px);
-  }
-  #diaryUndoBar.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-  #diaryUndoBar .du-msg { display: flex; align-items: center; gap: 8px; }
-  #diaryUndoBar button {
-    border: none; background: rgba(120,196,255,0.16); color: #7ec8ff; font-weight: 800; font-size: 13.5px;
-    cursor: pointer; padding: 8px 14px; border-radius: 9px; white-space: nowrap; font-family: inherit;
-  }
-  #diaryUndoBar button:active { opacity: 0.6; }
-  /* 復元チップ(スナックバーが消えた後の保険) */
-  .diary-recover-chip {
-    display: none; align-items: center; gap: 8px; margin-top: 10px; padding: 9px 12px; border-radius: 11px;
-    background: rgba(120,196,255,0.1); border: 1px solid rgba(120,196,255,0.32); color: var(--ink);
-    font-size: 12px; cursor: pointer; width: 100%; box-sizing: border-box; justify-content: center;
-  }
-  .diary-recover-chip.show { display: inline-flex; }
-  .diary-recover-chip b { color: var(--cyan); font-weight: 700; }
+  /* 取り消し/やり直しボタン */
+  .mood-journal-btn:disabled { opacity: 0.32; cursor: default; }
+  .dhist-btn { min-width: 0; }
 
   .cal-grid-shell {
     padding: 0;
@@ -2830,7 +2810,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_DIARYSAFE_V376</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_UNDO_V377</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -3128,12 +3108,13 @@
       </div>
       <textarea id="moodJournalText" class="mood-journal-textarea" data-i18n-placeholder="ph_mood_journal" placeholder="今日の気分、体調、頭に浮かんだこと。何でも自由に。" oninput="handleMoodJournalInput()" onblur="handleMoodJournalBlur()"></textarea>
       <div class="mood-journal-actions">
+        <button class="mood-journal-btn dhist-btn" id="diaryUndoBtn" onclick="diaryUndo()" disabled aria-label="1つ戻す"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 14L4 9l5-5"></path><path d="M4 9h11a5 5 0 0 1 0 10h-1"></path></svg> もどる</button>
+        <button class="mood-journal-btn dhist-btn" id="diaryRedoBtn" onclick="diaryRedo()" disabled aria-label="1つ進む"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M15 14l5-5-5-5"></path><path d="M20 9H9a5 5 0 0 0 0 10h1"></path></svg> すすむ</button>
         <button class="mood-journal-btn" onclick="copyForAIConsult()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3v3h6V3"></path><path d="M8 11h8"></path><path d="M8 15h8"></path></svg> コピー</button>
         <button class="mood-journal-btn" id="moodResetBtn" onclick="resetMoodCompose()" style="display:none;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg> リセット(新しく書く)</button>
       </div>
       <input type="file" id="moodImageInput" accept="image/*" multiple style="display:none;">
       <div id="moodJournalSavedInfo" class="mood-journal-saved-info"></div>
-      <div id="diaryRecoverChip" class="diary-recover-chip" onclick="restoreDiaryRecover()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg> <span>消えた日記が残っています。<b>復元する</b></span></div>
     </div>
   </div>
 
@@ -3182,7 +3163,6 @@
 </div>
 
 <div class="toast" id="toast"></div>
-<div id="diaryUndoBar"><span class="du-msg"></span><button type="button" onclick="restoreDiaryUndo()">元に戻す</button></div>
 <div id="debugLog" style="position:fixed; bottom:76px; left:8px; right:8px; z-index:50; font-family:monospace; font-size:10px; color:#0f0; background:rgba(0,0,0,0.25); padding:4px 8px; border-radius:6px; display:none; max-height:60px; overflow-y:auto;"></div>
 
 <div class="screen-flash" id="screenFlash"></div>
@@ -7126,7 +7106,6 @@
     await loadFocusMode();
     renderFocusBanner();
     await loadMoodJournal();
-    await loadDiaryRecover();
     renderMoodJournalUI();
     await loadTextScale();
     // 保存されていた「今日すでに選んでいた項目」をDOMに反映
@@ -9211,8 +9190,7 @@
     document.getElementById('moodJournalSavedInfo').textContent = '';
     document.getElementById('moodResetBtn').style.display = 'none';
     moodPrevText = document.getElementById('moodJournalText').value;
-    if (moodPrevText.trim().length >= 12) moodLastNonEmpty = moodPrevText;
-    updateDiaryRecoverChip();
+    resetDiaryHistory(moodPrevText);
     renderMoodEntryList();
     renderDiaryHistoryInline();
   }
@@ -9321,7 +9299,7 @@
     moodLastSavedText = entry.text || '';
     moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
     moodPrevText = entry.text || '';
-    if (moodPrevText.trim().length >= 12) moodLastNonEmpty = moodPrevText;
+    resetDiaryHistory(moodPrevText);
     document.getElementById('moodResetBtn').style.display = 'block';
     playUIClick();
     document.getElementById('moodComposeShell').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -9330,9 +9308,6 @@
   function resetMoodCompose() {
     // 今書いている内容は既に保存済みの過去データとして残したまま、作成欄だけ新規状態に戻す
     playUIClick();
-    // リセットで消える本文も、念のため復元できるようにしておく
-    const composeText = document.getElementById('moodJournalText').value;
-    if (composeText.trim().length >= 12) { stashDiaryRecover(composeText); showDiaryUndo(); }
     editingMoodEntryId = null;
     document.getElementById('moodJournalText').value = '';
     currentMoodImages = [];
@@ -9345,80 +9320,69 @@
     document.getElementById('moodResetBtn').style.display = 'none';
     document.getElementById('moodJournalSavedInfo').textContent = '';
     moodPrevText = '';
+    resetDiaryHistory('');
     showToast('新しい記録として書けます');
   }
 
-  // ================= 日記セーフティネット(誤って消した本文を元に戻す) =================
-  let moodPrevText = '';        // 直前のtextarea内容(消失検知用)
-  let moodLastNonEmpty = '';    // 直近の「中身のある」内容
-  let diaryRecover = null;      // {text, images, mood, ts} 復元用の退避データ
-  let diaryUndoTimer = null;
+  // ================= 日記の取り消し / やり直し(undo / redo) =================
+  let moodPrevText = '';            // 直前のtextarea内容
+  let diaryHistory = [''];          // 状態スナップショット(古い→新しい)
+  let diaryHistoryIdx = 0;          // 今どのスナップショットにいるか
+  let diaryHistoryTimer = null;
+  let diaryHistoryApplying = false; // undo/redoでプログラム的に書き換え中は履歴を積まない
 
-  function stashDiaryRecover(text) {
-    if (!text || !text.trim()) return;
-    diaryRecover = { text: text, images: [...currentMoodImages], mood: currentMoodTag, ts: Date.now() };
-    try { window.storage.set('quest-diary-recover-v1', JSON.stringify(diaryRecover)); } catch (e) {}
-    updateDiaryRecoverChip();
+  // 入力が少し落ち着いたら、その時点の本文を1つのスナップショットとして積む
+  function scheduleDiaryHistory() {
+    clearTimeout(diaryHistoryTimer);
+    diaryHistoryTimer = setTimeout(() => {
+      pushDiaryHistory(document.getElementById('moodJournalText').value);
+    }, 550);
   }
-
-  async function loadDiaryRecover() {
-    try {
-      const saved = await window.storage.get('quest-diary-recover-v1');
-      diaryRecover = saved && saved.value ? JSON.parse(saved.value) : null;
-    } catch (e) { diaryRecover = null; }
-    updateDiaryRecoverChip();
+  function pushDiaryHistory(text) {
+    if (diaryHistory[diaryHistoryIdx] === text) return;      // 変化なしなら積まない
+    diaryHistory = diaryHistory.slice(0, diaryHistoryIdx + 1); // これより先(やり直し分)は捨てる
+    diaryHistory.push(text);
+    if (diaryHistory.length > 120) diaryHistory.shift();      // 上限
+    diaryHistoryIdx = diaryHistory.length - 1;
+    updateDiaryHistoryButtons();
   }
-
-  function applyDiaryRecover() {
-    if (!diaryRecover) return;
+  function commitDiaryHistory() { // 保留中の最新状態を確定させる
+    clearTimeout(diaryHistoryTimer);
+    pushDiaryHistory(document.getElementById('moodJournalText').value);
+  }
+  function resetDiaryHistory(text) {
+    diaryHistory = [text || ''];
+    diaryHistoryIdx = 0;
+    clearTimeout(diaryHistoryTimer);
+    updateDiaryHistoryButtons();
+  }
+  function applyDiaryHistoryState() {
     const el = document.getElementById('moodJournalText');
-    el.value = diaryRecover.text || '';
-    if (Array.isArray(diaryRecover.images)) { currentMoodImages = [...diaryRecover.images]; renderMoodImageThumbs(); }
-    if (typeof diaryRecover.mood !== 'undefined') {
-      currentMoodTag = diaryRecover.mood || null;
-      document.querySelectorAll('.mood-tag-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mood === currentMoodTag));
-      updateMoodTagToggleUI();
-    }
+    diaryHistoryApplying = true;
+    el.value = diaryHistory[diaryHistoryIdx];
     moodPrevText = el.value;
-    moodLastNonEmpty = el.value;
-    saveMoodJournal(true);        // 復元した内容をそのまま保存し直す
-    updateDiaryRecoverChip();
+    diaryHistoryApplying = false;
+    updateDiaryHistoryButtons();
+    playUIClick();
+    // 戻した/進めた内容をそのまま保存し直す(空なら保存はスキップされる)
+    clearTimeout(moodJournalAutosaveTimer);
+    if (el.value.trim() || currentMoodImages.length || currentMoodTag) saveMoodJournal(true);
   }
-
-  // スナックバーの「元に戻す」
-  function restoreDiaryUndo() {
-    applyDiaryRecover();
-    hideDiaryUndo();
-    showToast('元に戻しました');
+  function diaryUndo() {
+    commitDiaryHistory();               // 未確定の最新入力も1手として確定してから戻す
+    if (diaryHistoryIdx <= 0) return;
+    diaryHistoryIdx--;
+    applyDiaryHistoryState();
   }
-  // 保険チップの「復元する」
-  function restoreDiaryRecover() {
-    applyDiaryRecover();
-    showToast('元に戻しました');
+  function diaryRedo() {
+    if (diaryHistoryIdx >= diaryHistory.length - 1) return;
+    diaryHistoryIdx++;
+    applyDiaryHistoryState();
   }
-
-  function showDiaryUndo() {
-    const bar = document.getElementById('diaryUndoBar');
-    if (!bar) return;
-    bar.querySelector('.du-msg').innerHTML = '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.12em;"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 14h10l1-14"></path></svg> 日記の本文を消しました';
-    bar.classList.add('show');
-    clearTimeout(diaryUndoTimer);
-    diaryUndoTimer = setTimeout(hideDiaryUndo, 9000);
-  }
-  function hideDiaryUndo() {
-    const bar = document.getElementById('diaryUndoBar');
-    if (bar) bar.classList.remove('show');
-    clearTimeout(diaryUndoTimer);
-  }
-
-  function updateDiaryRecoverChip() {
-    const chip = document.getElementById('diaryRecoverChip');
-    if (!chip) return;
-    const el = document.getElementById('moodJournalText');
-    const cur = el ? el.value.trim() : '';
-    // 復元データがあり、今の作成欄がほぼ空の時だけ、そっと保険を出す
-    const show = diaryRecover && diaryRecover.text && diaryRecover.text.trim().length >= 12 && cur.length < 4;
-    chip.classList.toggle('show', !!show);
+  function updateDiaryHistoryButtons() {
+    const u = document.getElementById('diaryUndoBtn'), r = document.getElementById('diaryRedoBtn');
+    if (u) u.disabled = diaryHistoryIdx <= 0;
+    if (r) r.disabled = diaryHistoryIdx >= diaryHistory.length - 1;
   }
 
 
@@ -9577,18 +9541,9 @@
   function handleMoodJournalInput() {
     const el = document.getElementById('moodJournalText');
     const cur = el.value;
-    const curLen = cur.trim().length;
-    const prevLen = moodPrevText.trim().length;
 
-    // --- セーフティネット: まとまった量の消失を検知して「元に戻す」を出す ---
-    if (curLen >= 12) moodLastNonEmpty = cur;
-    const becameEmpty = prevLen > 0 && curLen === 0 && moodLastNonEmpty.trim().length >= 12;
-    const bigDrop = prevLen >= 24 && (prevLen - curLen) >= Math.max(30, Math.floor(prevLen * 0.5));
-    if (becameEmpty || bigDrop) {
-      stashDiaryRecover(becameEmpty ? moodLastNonEmpty : moodPrevText);
-      showDiaryUndo();
-    }
-    moodPrevText = cur;
+    // --- 取り消し/やり直し用の履歴を積む(プログラムからの復元中は積まない) ---
+    if (!diaryHistoryApplying) scheduleDiaryHistory();
 
     // --- 保存中インジケータ(息づく三点) ---
     if (cur.trim() || currentMoodImages.length || currentMoodTag) {
