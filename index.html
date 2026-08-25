@@ -2873,7 +2873,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_CBFIX_V386</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_SWIPEFIX_V387</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -7600,6 +7600,8 @@
   });
 
   // ---- 段位タブのスワイプ切り替え(v68で追加) ----
+  // 階級スワイプ(軽量/中量/重量)が成立した時刻。直後のページスワイプ二重発火を防ぐために使う
+  let lastLevelSwipeAt = 0;
   (function initTabSwipe() {
     const wrap = document.getElementById('tabsPanelsWrap');
     if (!wrap) return;
@@ -7624,6 +7626,7 @@
         if (dx < 0 && idx < TAB_ORDER.length - 1) idx++;
         else if (dx > 0 && idx > 0) idx--;
         else return;
+        lastLevelSwipeAt = Date.now(); // このスワイプは階級切替が消費した(ページ切替はスキップさせる)
         switchToTab(TAB_ORDER[idx]);
       }
     }, { passive: true });
@@ -9139,6 +9142,7 @@
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
       if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      if (Date.now() - lastLevelSwipeAt < 500) return; // 直前に階級スワイプが成立していたら、ページ切替はしない(二重防止)
       const dir = dx < 0 ? 'left' : 'right';
 
       if (multiPageModeOn) {
