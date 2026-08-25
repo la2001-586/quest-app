@@ -648,11 +648,31 @@
   }
   .wrap { max-width: 460px; margin: 0 auto; position: relative; z-index: 2; }
 
+  /* 最大の島は廃止し、中の各項目(時計・今日の予定・ポモドーロ)を背景に直接浮かせる */
   .hud-header {
-    background: linear-gradient(160deg, rgba(22,26,34,0.92), rgba(12,15,20,0.92));
-    border: 1.5px solid rgba(43,201,204,0.35); border-radius: 22px;
-    padding: 14px 16px 12px; margin-bottom: 14px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+    background: transparent;
+    border: none; border-radius: 0;
+    padding: 0; margin-bottom: 14px;
+    box-shadow: none;
+  }
+  /* 各項目に「上に光・下に柔らかい影」を与えて浮かせる(写真ボタンの質感に倣う) */
+  .hud-clock-hero, .pomodoro-widget, .hud-cal-link {
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.16), 0 6px 18px -8px rgba(0,0,0,0.55) !important;
+  }
+  .pomodoro-widget, .hud-agent-row { margin-left: 4px; margin-right: 4px; }
+  /* 温かいテーマ: 最大の島を透明化し、子カードに面(白/暗)を持たせて浮かせる */
+  body.theme-simple .hud-header { background: transparent !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; }
+  body.theme-simple .hud-clock-hero,
+  body.theme-simple .pomodoro-widget,
+  body.theme-simple .hud-cal-link {
+    background: #FFFFFF !important; border: none !important;
+    box-shadow: 0 2px 5px rgba(51,48,43,0.08), 0 14px 30px -14px rgba(51,48,43,0.22) !important;
+  }
+  body.theme-simple.theme-dark .hud-clock-hero,
+  body.theme-simple.theme-dark .pomodoro-widget,
+  body.theme-simple.theme-dark .hud-cal-link {
+    background: #1C1C1E !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4), 0 16px 32px -16px rgba(0,0,0,0.6) !important;
   }
   .top-bar {
     display: flex; justify-content: space-between; align-items: center;
@@ -2881,7 +2901,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_QUIETOPEN_V389</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_FLOATHOME_V390</div>
 </div>
 
 <div class="wrap page show" id="page-task">
