@@ -2881,7 +2881,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_FIXES_V388</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_QUIETOPEN_V389</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -7207,10 +7207,10 @@
       const el = document.querySelector(`.item[data-key="${CSS.escape(key)}"]`);
       if (el) el.classList.add('picked');
     });
-    isInitializing = false;
-    updateSummary();
+    updateSummary();          // 初期化中(isInitializing=true)のうちに集計 → 獲得演出は出さず、現在値だけ静かに反映する
     renderCalendar();
     renderTodayTasksList();
+    isInitializing = false;   // 初回の描画・集計が終わってから、以降の操作でだけ演出を出す
     startDateBoundaryWatcher();
     buildNightStars();
   }
@@ -7445,11 +7445,24 @@
     const prevLevel = level;
     level = lv;
     const levelBadgeEl = document.getElementById('levelBadge');
-    if (levelBadgeEl) animateNumberCountUp(levelBadgeEl, prevLevel, level, 500, v => `LV.${String(v).padStart(2,'0')}`);
+    if (levelBadgeEl) {
+      if (isInitializing) levelBadgeEl.textContent = `LV.${String(level).padStart(2,'0')}`; // 起動時はカウントアップさせず現在Lvをそのまま
+      else animateNumberCountUp(levelBadgeEl, prevLevel, level, 500, v => `LV.${String(v).padStart(2,'0')}`);
+    }
     renderCosmicTier(level);
 
     const progressFillEl = document.getElementById('progressFill');
-    if (progressFillEl) progressFillEl.style.width = Math.min(100, Math.round(expIntoLevel / expNeeded * 100)) + '%';
+    if (progressFillEl) {
+      const w = Math.min(100, Math.round(expIntoLevel / expNeeded * 100)) + '%';
+      if (isInitializing) { // 起動時はバーを伸ばすアニメを出さず、最初から最終値で置く
+        progressFillEl.style.transition = 'none';
+        progressFillEl.style.width = w;
+        void progressFillEl.offsetWidth;
+        progressFillEl.style.transition = '';
+      } else {
+        progressFillEl.style.width = w;
+      }
+    }
     const progressPctEl = document.getElementById('progressPct');
     if (progressPctEl) progressPctEl.textContent = expIntoLevel;
     const progressNextEl = document.getElementById('progressNext');
@@ -7458,8 +7471,8 @@
     if (progressSparkEl) progressSparkEl.style.opacity = count > 0 ? '1' : '0';
 
     if (isBalanced && !balanced) {
-      balanced = true;
-      showGrandModal({
+      balanced = true; // 状態は更新するが、起動時は祝福モーダルを出さない(後の操作で誤発火しないよう状態だけ合わせる)
+      if (!isInitializing) showGrandModal({
         icon: '🌈', label: 'BONUS', title: t('diversity_bonus_title'),
         exp: DIVERSITY_BONUS, sub: t('diversity_bonus_sub'),
         tone: 'tone-magenta',
@@ -7470,8 +7483,8 @@
 
     comboHits.forEach(hit => {
       if (hit.need > comboReached[hit.level]) {
-        comboReached[hit.level] = hit.need;
-        showGrandModal({
+        comboReached[hit.level] = hit.need; // 状態だけ更新。起動時は祝福モーダルを出さない
+        if (!isInitializing) showGrandModal({
           icon: '✨', label: 'COMBO',
           title: t('combo_title', { level: levelDisplayName(hit.level), name: comboDisplayName(hit.name) }),
           exp: hit.exp, sub: t('combo_cleared_sub', { need: hit.need }),
