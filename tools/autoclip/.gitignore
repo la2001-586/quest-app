@@ -1,0 +1,6 @@
+# 動作確認で生成されるファイル（リポジトリには入れない）
+clips/
+*.mp4
+*.wav
+*.srt
+*.segments.json
