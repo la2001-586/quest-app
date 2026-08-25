@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
@@ -369,7 +369,7 @@
     background-color: var(--bg);
     color: var(--ink);
     min-height: 100vh;
-    padding: 20px 14px 90px;
+    padding: calc(env(safe-area-inset-top, 0px) + 20px) 14px 90px;
     position: relative; overflow-x: hidden;
     overscroll-behavior-x: none;
   }
@@ -659,7 +659,7 @@
   .hud-clock-hero, .pomodoro-widget, .hud-cal-link {
     box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.16), 0 6px 18px -8px rgba(0,0,0,0.55) !important;
   }
-  .pomodoro-widget, .hud-agent-row { margin-left: 4px; margin-right: 4px; }
+  .pomodoro-widget, .hud-agent-row { margin-left: 8px; margin-right: 8px; }
   /* 温かいテーマ: 最大の島を透明化し、子カードに面(白/暗)を持たせて浮かせる */
   body.theme-simple .hud-header { background: transparent !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; }
   body.theme-simple .hud-clock-hero,
@@ -775,9 +775,9 @@
   }
 
   .hud-clock-hero {
-    text-align: center; margin: 0 10px 16px; cursor: pointer;
+    text-align: center; margin: 0 8px 24px; cursor: pointer;
     background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 22px;
-    padding: 24px 10px;
+    padding: 34px 18px;
     position: relative;
   }
   /* カードの縁から覗く、猫のマスコット */
@@ -855,7 +855,7 @@
   .pomodoro-widget {
     display: flex; align-items: center; gap: 10px;
     background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px;
-    padding: 20px 14px; margin-bottom: 16px;
+    padding: 24px 18px; margin-bottom: 22px;
   }
   .pomodoro-phase {
     flex: 1; font-family: "Orbitron", sans-serif; font-size: 11px; color: var(--ink-dim); letter-spacing: 0.04em;
@@ -896,7 +896,7 @@
   }
   .hud-agent-hub-label::after { content: ""; flex: 1; height: 1px; background: rgba(43,201,204,0.25); }
   .hud-agent-row {
-    display: flex; align-items: stretch; gap: 10px; margin-bottom: 14px;
+    display: flex; align-items: stretch; gap: 12px; margin-bottom: 22px;
   }
   .hud-agent-eye {
     flex: 0 0 64px; position: relative; display: flex; align-items: center; justify-content: center;
@@ -1281,7 +1281,9 @@
   body.multipage-mode .page-id-bar[data-g="group_diary"]    { background-image: linear-gradient(90deg, transparent, #A45CF0 20%, #A45CF0 80%, transparent); }
   /* ===== 上部固定バー(バージョン＋ページ色)。スクロールしても動かない ===== */
   body.multipage-mode .page-id-bar { display: none !important; } /* 固定バーに置き換えたため、インラインの色バーは隠す */
-  #stickyTopBar { position: fixed; top: 0; left: 0; right: 0; z-index: 52; pointer-events: none; }
+  #stickyTopBar { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 52; pointer-events: none; }
+  /* ステータスバー(ノッチ)の裏を、アプリの背景色でしっかり塗って白帯を消す */
+  #safeAreaFill { position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 51; pointer-events: none; }
   /* ページ識別: 一本帯だと地味・太いと邪魔 → 細い二本線で繊細に。色は --bar でページごとに差し替え */
   #stickyTopBar .stb-bar {
     --bar: var(--cyan); height: 6px; width: 100%;
@@ -2906,9 +2908,10 @@
 </svg></div>
 
 
+<div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_TWOLINE_V391</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_HOMEROOM_V392</div>
 </div>
 
 <div class="wrap page show" id="page-task">
