@@ -49,11 +49,22 @@ def pick_backend(name: str) -> str:
     die("Whisper が見つかりません。setup.sh を実行してください。")
 
 
-def run_faster_whisper(wav, model, lang):
+def run_faster_whisper(wav, model, lang, device="auto"):
     from faster_whisper import WhisperModel
-    m = WhisperModel(model, device="auto", compute_type="int8")
-    segments, _ = m.transcribe(str(wav), language=lang, vad_filter=True)
-    return [{"start": s.start, "end": s.end, "text": s.text.strip()} for s in segments]
+
+    def _run(dev):
+        m = WhisperModel(model, device=dev, compute_type="int8")
+        segments, _ = m.transcribe(str(wav), language=lang, vad_filter=True)
+        return [{"start": s.start, "end": s.end, "text": s.text.strip()} for s in segments]
+
+    try:
+        return _run(device)
+    except (RuntimeError, ValueError) as e:
+        if device == "cpu":
+            raise
+        # CUDA が見えていても cuBLAS/cuDNN が入っていないことがあるので CPU でやり直す
+        print(f"[transcribe] GPU で実行できませんでした（{e}）。CPU で再試行します。", file=sys.stderr)
+        return _run("cpu")
 
 
 def run_openai_whisper(wav, model, lang):

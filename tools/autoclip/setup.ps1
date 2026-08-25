@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     動画・自動切り抜き環境（ffmpeg + Whisper）を Windows にインストールする。
 .EXAMPLE
@@ -75,7 +75,7 @@ if (-not $python) {
 }
 
 # py ランチャーの場合は -3 を付けて Python 3 を明示する
-$pyArgs = if ($python -eq "py") { @("-3") } else { @() }
+[string[]]$pyArgs = if ($python -eq "py") { @("-3") } else { @() }
 
 & $python @pyArgs -m pip install --upgrade pip
 if ($Flavor -eq "openai") {
