@@ -158,7 +158,7 @@
   }
   body.theme-simple.theme-dark .cal-day.empty { background: transparent !important; }
   body.theme-simple .item.picked { border-left-color: var(--cyan) !important; box-shadow: 0 1px 4px rgba(6,199,85,0.2) !important; }
-  body.theme-simple .check-box { border-radius: 50% !important; border-color: #D8D8D8 !important; }
+  body.theme-simple .check-box { border-radius: 7px !important; border-width: 2px !important; border-color: rgba(51,48,43,0.3) !important; background: transparent !important; }
   body.theme-simple.theme-dark .home-bar,
   body.theme-simple.theme-dark .hud-header,
   body.theme-simple.theme-dark .item,
@@ -177,13 +177,14 @@
   body.theme-simple.theme-dark .item { border-left-color: #60D69F !important; }
   body.theme-simple.theme-dark .item.today-custom { border-left-color: rgba(255,138,92,0.5) !important; }
   body.theme-simple.theme-dark .item.today-custom.done { border-left-color: #F0906B !important; }
-  body.theme-simple.theme-dark .check-box { border-color: #4A4A4C !important; }
-  /* 温かいテーマ: チェックはバネで"ポップ"して現れる(平坦化しない) */
+  body.theme-simple.theme-dark .check-box { border-color: rgba(237,229,216,0.38) !important; }
+  /* 温かいテーマ: くっきりした角丸枠 → こなすと緑になってバネでポップ */
   body.theme-simple .item.picked .check-box {
     background: var(--cyan) !important; border-color: var(--cyan) !important; color: #fff !important;
-    transform: scale(1) !important;
-    box-shadow: 0 2px 8px -2px rgba(20,181,88,0.45) !important;
+    box-shadow: 0 2px 8px -2px rgba(20,181,88,0.5) !important;
+    animation: checkPop 0.34s cubic-bezier(.34,1.6,.4,1) !important;
   }
+  @keyframes checkPop { 0% { transform: scale(0.5); } 55% { transform: scale(1.18); } 100% { transform: scale(1); } }
   /* 押した瞬間、そっと沈む(手ざわり) — 全画面共通の小さな返事 */
   .cal-day:active { transform: scale(0.94); transition: transform var(--motion-fast) var(--ease-out); }
   body.theme-simple .item:active { transform: scale(0.985); }
@@ -2872,7 +2873,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_BASE_V385</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_CBFIX_V386</div>
 </div>
 
 <div class="wrap page show" id="page-task">
