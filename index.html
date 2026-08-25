@@ -158,7 +158,7 @@
   }
   body.theme-simple.theme-dark .cal-day.empty { background: transparent !important; }
   body.theme-simple .item.picked { border-left-color: var(--cyan) !important; box-shadow: 0 1px 4px rgba(6,199,85,0.2) !important; }
-  body.theme-simple .check-box { border-radius: 7px !important; border-width: 2px !important; border-color: rgba(51,48,43,0.3) !important; background: transparent !important; }
+  body.theme-simple .check-box { border-radius: 50% !important; border-color: #CACACA !important; }
   body.theme-simple.theme-dark .home-bar,
   body.theme-simple.theme-dark .hud-header,
   body.theme-simple.theme-dark .item,
@@ -177,14 +177,22 @@
   body.theme-simple.theme-dark .item { border-left-color: #60D69F !important; }
   body.theme-simple.theme-dark .item.today-custom { border-left-color: rgba(255,138,92,0.5) !important; }
   body.theme-simple.theme-dark .item.today-custom.done { border-left-color: #F0906B !important; }
-  body.theme-simple.theme-dark .check-box { border-color: rgba(237,229,216,0.38) !important; }
-  /* 温かいテーマ: くっきりした角丸枠 → こなすと緑になってバネでポップ */
+  body.theme-simple.theme-dark .check-box { border-color: #545454 !important; }
+  /* 温かいテーマ: 丸のまま。こなすと緑に塗られ、チェックが少しずつ描かれる(斜めにしない) */
   body.theme-simple .item.picked .check-box {
     background: var(--cyan) !important; border-color: var(--cyan) !important; color: #fff !important;
+    transform: none !important;
     box-shadow: 0 2px 8px -2px rgba(20,181,88,0.5) !important;
-    animation: checkPop 0.34s cubic-bezier(.34,1.6,.4,1) !important;
   }
-  @keyframes checkPop { 0% { transform: scale(0.5); } 55% { transform: scale(1.18); } 100% { transform: scale(1); } }
+  /* チェックマークを"線が描かれる"アニメで見せる(全テーマ共通) */
+  .check-box .cb-tick { width: 64%; height: 64%; opacity: 0; stroke-dasharray: 24; stroke-dashoffset: 24; }
+  .item.picked .check-box .cb-tick,
+  .item.today-routine .check-box .cb-tick,
+  .item.today-custom.done .check-box .cb-tick,
+  .item.focus-bonus.picked .check-box .cb-tick {
+    opacity: 1; stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.42s ease 0.06s, opacity 0.12s ease;
+  }
   /* 押した瞬間、そっと沈む(手ざわり) — 全画面共通の小さな返事 */
   .cal-day:active { transform: scale(0.94); transition: transform var(--motion-fast) var(--ease-out); }
   body.theme-simple .item:active { transform: scale(0.985); }
@@ -1541,7 +1549,7 @@
   }
   .item.picked .check-box {
     background: linear-gradient(160deg, #7FF5F5, var(--cyan)); border-color: var(--cyan); color: var(--bg);
-    transform: scale(1.15) rotate(-8deg); box-shadow: 0 0 12px rgba(43,201,204,0.8), inset 0 1px 1px rgba(255,255,255,0.6);
+    transform: scale(1.12); box-shadow: 0 0 12px rgba(43,201,204,0.8), inset 0 1px 1px rgba(255,255,255,0.6);
   }
   /* 全集中モード中、日課タスクは最初から「免除」の塗りつぶし(チェックマークは出さない=
      "既にやった"ではなく"今は気にしなくていい"という意味合いにするため) */
@@ -1731,7 +1739,7 @@
   /* レベルアップ専用:金の縁取り+一回り大きく+画面全体がフラッシュする */
   .grand-modal-card.tone-levelup {
     width: min(360px, 92vw);
-    padding: 48px 36px 40px;
+    padding: 32px 28px 28px;
     border: 3px solid var(--yellow);
     background: linear-gradient(160deg, #2A2410 0%, #14120A 60%, #0F1319 100%);
     box-shadow:
@@ -1739,13 +1747,13 @@
       0 30px 70px rgba(0,0,0,0.7),
       0 0 120px rgba(232,255,78,0.5);
   }
-  .grand-modal-card.tone-levelup .grand-icon { font-size: 64px; }
+  .grand-modal-card.tone-levelup .grand-icon { font-size: 42px; }
   .grand-modal-card.tone-levelup .grand-title {
-    font-size: 26px;
+    font-size: 19px;
     text-shadow: 0 2px 0 rgba(0,0,0,0.4), 0 0 26px rgba(232,255,78,0.8);
   }
   .grand-modal-card.tone-levelup .grand-exp {
-    font-size: 24px; padding: 9px 26px;
+    font-size: 15px; padding: 6px 18px;
     background: linear-gradient(180deg, #fff, var(--yellow));
   }
   .screen-flash {
@@ -2873,7 +2881,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_SWIPEFIX_V387</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_FIXES_V388</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -6336,7 +6344,7 @@
         ? `<div class="item-note">${escapeHtml(task.note)}</div>`
         : '';
       div.innerHTML = `
-        <div class="check-box">✓</div>
+        <div class="check-box"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
         <div class="item-main">
           <div class="item-main-row">
             <span class="item-emoji">${task.emoji || ''}</span>
@@ -7297,7 +7305,7 @@
   let confettiAnimId = null;
 
   function showGrandModal({ icon, label, title, exp, sub, tone, isLevelUp }) {
-    document.getElementById('grandIcon').textContent = icon;
+    document.getElementById('grandIcon').innerHTML = icon; // アイコンはSVG/絵文字どちらも来るので、生テキストにせず描画する
     document.getElementById('grandLabel').textContent = label;
     document.getElementById('grandTitle').textContent = title;
     document.getElementById('grandExp').textContent = exp;
@@ -7835,7 +7843,7 @@
         : '';
       const inner = `
       <div class="item today-custom${t.done ? ' done' : ''}" style="--item-accent:${attrMuted('task')}">
-        <div class="check-box" onclick="toggleTodayTask('${t.id}')">✓</div>
+        <div class="check-box" onclick="toggleTodayTask('${t.id}')"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
         <div class="item-main" onclick="toggleTodayTask('${t.id}')">
           <div class="item-main-row">
             <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
@@ -7852,7 +7860,7 @@
       const dot = ev.color ? `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${ev.color}; margin-right:3px;"></span>` : '';
       const inner = `
       <div class="item today-custom${isDone ? ' done' : ''}" style="--item-accent:${attrMuted(ev.attr || 'event')}">
-        <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();">✓</div>
+        <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
         <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();">
           <div class="item-main-row">
             <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg></span>
@@ -7868,7 +7876,7 @@
       const overdueLabel = currentLang === 'en' ? ` (overdue, was ${formatShortDate(ev.dateKey)})` : `(未完了${formatShortDate(ev.dateKey)}から持ち越し)`;
       const inner = `
       <div class="item today-custom${ev.done ? ' done' : ''}" style="--item-accent:${attrMuted(ev.attr || 'event')}">
-        <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();">✓</div>
+        <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
         <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();">
           <div class="item-main-row">
             <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg></span>
