@@ -29,6 +29,25 @@
     --mid: #CAD35D;
     --high: #CB4A7E;
     --gold: #D4AF6A;
+
+    /* ===== 設計トークン(根幹のルール) — 全画面で共有する寸法・動きの単位 ===== */
+    /* 余白・寸法は必ず4の倍数から選ぶ(バラバラ防止) */
+    --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+    --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+    /* 角丸は3段階に統一: 小=部品 / 中=行・入力 / 大=カード・島 / 丸=ピル */
+    --rad-sm: 10px; --rad-md: 14px; --rad-lg: 18px; --rad-pill: 999px;
+    /* 陰影は「硬い線」ではなく「浮き」で段差を出す(2段階) */
+    --elev-1: 0 1px 2px rgba(0,0,0,0.28), 0 4px 12px -6px rgba(0,0,0,0.4);
+    --elev-2: 0 2px 6px rgba(0,0,0,0.35), 0 16px 34px -16px rgba(0,0,0,0.55);
+    /* 動きの時間・曲線を統一(手ざわりの一貫性) */
+    --motion-fast: 0.14s; --motion-mid: 0.24s;
+    --ease-out: cubic-bezier(.22,.61,.36,1);
+    --ease-spring: cubic-bezier(.3,1.3,.5,1);
+  }
+  /* 温かいテーマでは陰影も紙のように柔らかく(色は変えず、影の質だけ差し替え) */
+  body.theme-simple:not(.theme-dark) {
+    --elev-1: 0 1px 2px rgba(51,48,43,0.06), 0 8px 22px -12px rgba(51,48,43,0.16);
+    --elev-2: 0 2px 5px rgba(51,48,43,0.08), 0 18px 36px -16px rgba(51,48,43,0.24);
   }
   .premium-gold-text {
     background: linear-gradient(120deg, #B8895A 0%, #E8CFA0 45%, #D4AF6A 100%);
@@ -2268,36 +2287,42 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
   .week-grid-event-block.done { opacity: 0.45; text-decoration: line-through; }
-  /* 予定フォーム: ラベル列を右揃えで揃え、何を設定する欄かを明示する(定石: label+control) */
+  /* 予定フォーム(型の見本): 関連設定を一つの「島」にまとめ、硬い枠線をやめて面で見せる */
   .evt-form { text-align: left; }
   .evt-title {
-    width: 100%; box-sizing: border-box; margin: 6px 0 4px; font-size: 14px; padding: 11px 12px;
-    border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04);
-    color: #fff; font-family: inherit;
+    width: 100%; box-sizing: border-box; margin: var(--sp-2) 0 0; font-size: 15px; padding: 13px 14px;
+    border-radius: var(--rad-md); border: none; background: rgba(255,255,255,0.06);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); color: #fff; font-family: inherit; font-weight: 700;
   }
-  .evt-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .evt-title::placeholder { color: var(--ink-dim); font-weight: 500; }
+  .evt-group {
+    margin-top: var(--sp-3); background: rgba(255,255,255,0.035); border-radius: var(--rad-md);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); overflow: hidden;
+  }
+  .evt-row { display: flex; align-items: center; gap: var(--sp-3); padding: 12px 14px; }
+  .evt-row + .evt-row { border-top: 1px solid rgba(255,255,255,0.07); }
   .evt-row.top { align-items: flex-start; }
-  .evt-label {
-    width: 68px; flex: 0 0 auto; text-align: right; font-size: 12px; color: var(--ink-dim); font-weight: 700;
-  }
-  .evt-row.top .evt-label { margin-top: 9px; }
-  .evt-ctrl { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
+  .evt-label { width: 72px; flex: 0 0 auto; font-size: 12.5px; color: var(--ink-dim); font-weight: 600; }
+  .evt-row.top .evt-label { margin-top: 8px; }
+  .evt-ctrl { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-2); }
   .evt-in {
-    font-size: 12.5px; padding: 9px 10px; border-radius: 9px; border: 1.5px solid rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.04); color: #fff; font-family: inherit; box-sizing: border-box;
+    font-size: 13px; padding: 8px 10px; border-radius: var(--rad-sm); border: none;
+    background: rgba(255,255,255,0.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+    color: #fff; font-family: inherit; box-sizing: border-box;
   }
   .evt-ctrl > select.evt-in, .evt-ctrl > input.evt-grow, .evt-ctrl > textarea.evt-in { flex: 1; min-width: 0; }
-  .evt-time { width: 76px; flex: 0 0 auto; text-align: center; }
+  .evt-time { width: 74px; flex: 0 0 auto; text-align: center; }
   .evt-sep { color: var(--ink-dim); font-size: 12px; flex: 0 0 auto; }
-  .evt-allday { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--ink-dim); flex: 0 0 auto; margin-left: 2px; white-space: nowrap; }
+  .evt-allday { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--ink-dim); flex: 0 0 auto; white-space: nowrap; }
   .evt-rmd-custom { width: 62px; flex: 0 0 auto; }
   .evt-add {
-    width: 100%; box-sizing: border-box; margin-top: 14px; padding: 12px; border-radius: 10px;
-    border: 1.5px solid var(--magenta); background: transparent; color: var(--magenta);
-    font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; box-sizing: border-box; margin-top: var(--sp-4); padding: 14px; border-radius: var(--rad-md);
+    border: none; background: var(--magenta); color: #fff;
+    font-size: 14.5px; font-weight: 800; font-family: inherit; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    box-shadow: var(--elev-1); transition: transform var(--motion-fast) var(--ease-out);
   }
-  .evt-add:active { background: rgba(242,120,120,0.1); }
+  .evt-add:active { transform: scale(0.98); }
   .cal-primary-toggle { display: flex; gap: 6px; margin: 14px 0 4px; }
   .cal-view-btn {
     flex: 1; min-width: 0; padding: 10px 4px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.15);
@@ -2841,7 +2866,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_CONSULT_V380</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_TOKENS_V381</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -3463,6 +3488,7 @@
       <div id="dayDetailEventsList"></div>
       <div class="evt-form">
         <input type="text" id="dayDetailEventText" class="evt-title" data-i18n-placeholder="event_placeholder" placeholder="予定を入力" onkeydown="if(event.key==='Enter') confirmAddDayEvent()">
+        <div class="evt-group">
         <div class="evt-row">
           <span class="evt-label">日時</span>
           <div class="evt-ctrl">
@@ -3522,6 +3548,7 @@
           <div class="evt-ctrl">
             <textarea id="dayDetailEventNote" class="evt-in evt-grow" data-i18n-placeholder="note_placeholder" placeholder="任意" style="min-height:44px;"></textarea>
           </div>
+        </div>
         </div>
         <button class="evt-add" onclick="confirmAddDayEvent()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.14em;"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg> 予定を追加</button>
       </div>
