@@ -236,6 +236,67 @@
     text-shadow: none !important;
   }
 
+  /* ================= 「白と余白」テーマ(mono): theme-simpleの土台に、モノクロ+編集的な引き算を上書き ================= */
+  body.theme-simple.theme-mono {
+    --bg: #FFFFFF; --panel: #FFFFFF;
+    --cyan: #1B1B1D; --magenta: #1B1B1D; --yellow: #7A7A7F; --red: #1B1B1D;
+    --ink: #1B1B1D; --ink-dim: #8A8A8F;
+    --low: #1B1B1D; --mid: #9A9AA0; --high: #1B1B1D; --gold: #8A8A8F;
+    --tile-hi: #FFFFFF; --tile-mid: #FFFFFF; --tile-lo: #F5F5F5;
+    --tile-sh: 0 0 0 1px rgba(0,0,0,0.10) inset;
+    --tile-press: 0 1px 3px rgba(0,0,0,0.12) inset;
+    background: #FFFFFF !important;
+  }
+  /* 丸ゴシックをやめ、清潔なサンセリフ+わずかな字間で"端正"に */
+  body.theme-simple.theme-mono * {
+    font-family: "Noto Sans JP", -apple-system, "Hiragino Kaku Gothic ProN", sans-serif !important;
+    letter-spacing: 0.012em;
+  }
+  /* カード: 影と枠を消し、極細ヘアライン1本だけ(編集的な引き算) */
+  body.theme-simple.theme-mono .home-bar,
+  body.theme-simple.theme-mono .hud-header,
+  body.theme-simple.theme-mono .item,
+  body.theme-simple.theme-mono .summary-card,
+  body.theme-simple.theme-mono .unified-task-card,
+  body.theme-simple.theme-mono #calSectionWrap,
+  body.theme-simple.theme-mono .settings-group,
+  body.theme-simple.theme-mono .hud-clock-hero,
+  body.theme-simple.theme-mono .pomodoro-widget,
+  body.theme-simple.theme-mono .hud-cal-link,
+  body.theme-simple.theme-mono .mood-journal-shell,
+  body.theme-simple.theme-mono .mood-entry-card,
+  body.theme-simple.theme-mono .week-view-shell {
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(0,0,0,0.10) !important;
+    border-radius: 14px !important;
+  }
+  /* 島(ホーム最大枠)は透明のまま、子カードだけヘアラインで浮かす(theme-simpleの浮き設定を上書き) */
+  body.theme-simple.theme-mono .hud-header { border: none !important; }
+  /* 項目の色つき左バーを廃止(色は中身から。UIは無彩) */
+  body.theme-simple.theme-mono .item { border-left: none !important; }
+  /* チェック: 無彩の丸→こなすと黒。描画アニメはそのまま */
+  body.theme-simple.theme-mono .check-box { border-color: rgba(0,0,0,0.32) !important; background: transparent !important; }
+  body.theme-simple.theme-mono .item.picked .check-box { background: #1B1B1D !important; border-color: #1B1B1D !important; box-shadow: none !important; }
+  /* 階級キーは薄いヘアラインのキー、選択で黒文字 */
+  body.theme-simple.theme-mono .tab { box-shadow: 0 0 0 1px rgba(0,0,0,0.10) inset !important; background: #FFFFFF !important; color: var(--ink-dim) !important; }
+  body.theme-simple.theme-mono .tab.active { color: #1B1B1D !important; background: #F5F5F5 !important; box-shadow: 0 0 0 1px rgba(0,0,0,0.16) inset !important; }
+  /* グロー/装飾を抑える(静けさ) */
+  body.theme-simple.theme-mono .hud-time { text-shadow: none !important; }
+  body.theme-simple.theme-mono .add-task-btn { background: #1B1B1D !important; color: #fff !important; box-shadow: none !important; }
+  body.multipage-mode.theme-mono #stickyTopBar[data-g] .stb-bar { --bar: #1B1B1D !important; --bar-hi: #9A9AA0 !important; } /* 上のバーも無彩で統一(ページ色より優先) */
+  /* 残っていた色を無彩化: 時計・下ナビ・左の色バー・日課タブ・目玉 */
+  body.theme-simple.theme-mono .hud-clock-hero .hud-time {
+    background: none !important; -webkit-background-clip: border-box !important; background-clip: border-box !important;
+    color: #1B1B1D !important; filter: none !important; text-shadow: none !important;
+  }
+  body.theme-simple.theme-mono .home-tab { color: #8A8A8F !important; }
+  body.theme-simple.theme-mono .home-tab.active { color: #1B1B1D !important; }
+  body.multipage-mode.theme-mono .app-group-wrap .item::before { display: none !important; }
+  body.theme-simple.theme-mono .folder-tab.active { color: #1B1B1D !important; }
+  body.theme-simple.theme-mono .agent-eye-core { background: #1B1B1D !important; box-shadow: none !important; }
+  body.theme-simple.theme-mono .agent-eye-ring-outer, body.theme-simple.theme-mono .agent-eye-ring-mid { border-color: rgba(0,0,0,0.16) !important; }
+
   /* ================= 隠しテーマ「ファンシー」(長押しで解放) ================= */
   body.theme-fancy {
     --bg: #6C5CE7;
@@ -2914,7 +2975,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_BARFLOW_V393</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_MONO_V394</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -3337,6 +3398,7 @@
       <div class="theme-switch">
         <button class="theme-btn active" data-theme="simple" data-i18n="theme_simple">シンプル</button>
         <button class="theme-btn" data-theme="dark" data-i18n="theme_dark">ダーク</button>
+        <button class="theme-btn" data-theme="mono">白</button>
       </div>
     </div>
     <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_bgview_btn" onclick="enterBgViewMode()">🌌 背景だけを見る</button>
@@ -7147,12 +7209,14 @@
   // ---- テーマの保存・復元(v23で追加。以前は選んでも保存されず毎回サイバーに戻っていた) ----
   const DEFAULT_THEME = 'simple';
   function applyThemeClass(themeName) {
-    document.body.classList.remove('theme-simple', 'theme-fancy', 'theme-dark');
+    document.body.classList.remove('theme-simple', 'theme-fancy', 'theme-dark', 'theme-mono');
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     if (themeName === 'simple') {
       document.body.classList.add('theme-simple');
     } else if (themeName === 'dark') {
       document.body.classList.add('theme-simple', 'theme-dark');
+    } else if (themeName === 'mono') {
+      document.body.classList.add('theme-simple', 'theme-mono'); // 「白と余白」= theme-simpleの土台にモノクロ+編集的な上書き
     } else if (themeName === 'fancy') {
       document.body.classList.add('theme-fancy');
     }
@@ -7160,7 +7224,7 @@
     const btn = document.querySelector(`.theme-btn[data-theme="${themeName}"]`);
     // サイバー・ファンシーは隠しテーマのため対応ボタンが無い。その場合はどのボタンもactiveにしない。
     if (btn && !isHiddenTheme) btn.classList.add('active');
-    switchBGMVariant(themeName === 'dark' ? 'simple' : themeName);
+    switchBGMVariant((themeName === 'dark' || themeName === 'mono') ? 'simple' : themeName);
   }
   async function loadTheme() {
     try {
@@ -11239,15 +11303,8 @@
     btn.onclick = () => {
       playUIClick();
       logDebug(`テーマボタン押下: ${btn.dataset.theme}`);
-      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.body.classList.remove('theme-fancy', 'theme-dark');
-      document.body.classList.add('theme-simple'); // シンプル・ダークどちらも土台はtheme-simple
-      if (btn.dataset.theme === 'dark') {
-        document.body.classList.add('theme-dark');
-      }
-      saveTheme(btn.dataset.theme === 'dark' ? 'dark' : 'simple');
-      switchBGMVariant('simple'); // ダークも音はシンプル系のまま
+      applyThemeClass(btn.dataset.theme); // simple / dark / mono を一括処理(activeボタン・body class・BGMもここで)
+      saveTheme(btn.dataset.theme);
     };
 
     // ---- 隠し要素: 5秒長押しでサイバーテーマを解放(開発リソースの都合で、通常選択肢から隠しに変更) ----
