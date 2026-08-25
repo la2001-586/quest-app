@@ -137,9 +137,9 @@
   body.theme-simple .unified-task-card,
   body.theme-simple .settings-group {
     background: #FFFFFF !important;
-    box-shadow: 0 8px 24px -6px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06) !important;
+    box-shadow: var(--elev-2) !important;
     border: none !important;
-    border-radius: 18px !important;
+    border-radius: var(--rad-lg) !important;
   }
   body.theme-simple .item { border-left: 6px solid #60D69F !important; border-radius: 14px !important; }
   body.theme-simple .item.today-custom { border-left-color: rgba(255,138,92,0.5) !important; }
@@ -172,13 +172,24 @@
   body.theme-simple.theme-dark .unified-task-card,
   body.theme-simple.theme-dark .settings-group {
     background: #1C1C1E !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    box-shadow: var(--elev-2) !important;
   }
   body.theme-simple.theme-dark .item { border-left-color: #60D69F !important; }
   body.theme-simple.theme-dark .item.today-custom { border-left-color: rgba(255,138,92,0.5) !important; }
   body.theme-simple.theme-dark .item.today-custom.done { border-left-color: #F0906B !important; }
   body.theme-simple.theme-dark .check-box { border-color: #4A4A4C !important; }
-  body.theme-simple .item.picked .check-box { background: var(--cyan) !important; border-color: var(--cyan) !important; box-shadow: none !important; }
+  /* 温かいテーマ: チェックはバネで"ポップ"して現れる(平坦化しない) */
+  body.theme-simple .item.picked .check-box {
+    background: var(--cyan) !important; border-color: var(--cyan) !important; color: #fff !important;
+    transform: scale(1) !important;
+    box-shadow: 0 2px 8px -2px rgba(20,181,88,0.45) !important;
+  }
+  /* 押した瞬間、そっと沈む(手ざわり) — 全画面共通の小さな返事 */
+  .cal-day:active { transform: scale(0.94); transition: transform var(--motion-fast) var(--ease-out); }
+  body.theme-simple .item:active { transform: scale(0.985); }
+  body.theme-simple .tab:active,
+  body.theme-simple .cal-view-btn:active,
+  body.theme-simple .report-period-btn:active { transform: scale(0.96); }
   body.theme-simple .toggle-track { background: #D8D8DC !important; border-color: rgba(0,0,0,0.08) !important; }
   body.theme-simple .toggle-switch input:checked + .toggle-track { background: var(--cyan) !important; }
   body.theme-simple .tab.active { background: var(--cyan) !important; color: #fff !important; box-shadow: none !important; }
@@ -2287,26 +2298,21 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
   .week-grid-event-block.done { opacity: 0.45; text-decoration: line-through; }
-  /* 予定フォーム(型の見本): 関連設定を一つの「島」にまとめ、硬い枠線をやめて面で見せる */
+  /* 予定フォーム: 項目ごとに分けて視認性を保ちつつ、入力欄は硬い枠線をやめ面で見せる */
   .evt-form { text-align: left; }
   .evt-title {
-    width: 100%; box-sizing: border-box; margin: var(--sp-2) 0 0; font-size: 15px; padding: 13px 14px;
-    border-radius: var(--rad-md); border: none; background: rgba(255,255,255,0.06);
+    width: 100%; box-sizing: border-box; margin: var(--sp-2) 0 var(--sp-1); font-size: 14.5px; padding: 12px 13px;
+    border-radius: var(--rad-sm); border: none; background: rgba(255,255,255,0.06);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); color: #fff; font-family: inherit; font-weight: 700;
   }
   .evt-title::placeholder { color: var(--ink-dim); font-weight: 500; }
-  .evt-group {
-    margin-top: var(--sp-3); background: rgba(255,255,255,0.035); border-radius: var(--rad-md);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); overflow: hidden;
-  }
-  .evt-row { display: flex; align-items: center; gap: var(--sp-3); padding: 12px 14px; }
-  .evt-row + .evt-row { border-top: 1px solid rgba(255,255,255,0.07); }
+  .evt-row { display: flex; align-items: center; gap: var(--sp-3); margin-top: var(--sp-2); }
   .evt-row.top { align-items: flex-start; }
-  .evt-label { width: 72px; flex: 0 0 auto; font-size: 12.5px; color: var(--ink-dim); font-weight: 600; }
-  .evt-row.top .evt-label { margin-top: 8px; }
-  .evt-ctrl { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-2); }
+  .evt-label { width: 68px; flex: 0 0 auto; text-align: right; font-size: 12px; color: var(--ink-dim); font-weight: 700; }
+  .evt-row.top .evt-label { margin-top: 9px; }
+  .evt-ctrl { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--sp-2); }
   .evt-in {
-    font-size: 13px; padding: 8px 10px; border-radius: var(--rad-sm); border: none;
+    font-size: 12.5px; padding: 9px 10px; border-radius: var(--rad-sm); border: none;
     background: rgba(255,255,255,0.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
     color: #fff; font-family: inherit; box-sizing: border-box;
   }
@@ -2866,7 +2872,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_TOKENS_V381</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_FEEL_V382</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -3488,7 +3494,6 @@
       <div id="dayDetailEventsList"></div>
       <div class="evt-form">
         <input type="text" id="dayDetailEventText" class="evt-title" data-i18n-placeholder="event_placeholder" placeholder="予定を入力" onkeydown="if(event.key==='Enter') confirmAddDayEvent()">
-        <div class="evt-group">
         <div class="evt-row">
           <span class="evt-label">日時</span>
           <div class="evt-ctrl">
@@ -3548,7 +3553,6 @@
           <div class="evt-ctrl">
             <textarea id="dayDetailEventNote" class="evt-in evt-grow" data-i18n-placeholder="note_placeholder" placeholder="任意" style="min-height:44px;"></textarea>
           </div>
-        </div>
         </div>
         <button class="evt-add" onclick="confirmAddDayEvent()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.14em;"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg> 予定を追加</button>
       </div>
