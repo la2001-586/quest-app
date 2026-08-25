@@ -1284,20 +1284,23 @@
   #stickyTopBar { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 52; pointer-events: none; }
   /* ステータスバー(ノッチ)の裏を、アプリの背景色でしっかり塗って白帯を消す */
   #safeAreaFill { position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 51; pointer-events: none; }
-  /* ページ識別: 一本帯だと地味・太いと邪魔 → 細い二本線で繊細に。色は --bar でページごとに差し替え */
+  /* ページ識別: 細い二本線。色はページ色→明色のグラデが、ゆっくり横に流れる(生きてる感じ) */
   #stickyTopBar .stb-bar {
-    --bar: var(--cyan); height: 6px; width: 100%;
-    background: linear-gradient(to bottom,
-      var(--bar) 0, var(--bar) 1.4px,
-      transparent 1.4px, transparent 4.6px,
-      var(--bar) 4.6px, var(--bar) 6px);
+    --bar: var(--cyan); --bar-hi: #7ff5f5; height: 6px; width: 100%;
+    background: linear-gradient(90deg, var(--bar) 0%, var(--bar-hi) 25%, var(--bar) 50%, var(--bar-hi) 75%, var(--bar) 100%);
+    background-size: 200% 100%;
+    animation: stbFlow 7s linear infinite;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 1.4px, transparent 1.4px, transparent 4.6px, #000 4.6px, #000 6px);
+    mask-image: linear-gradient(to bottom, #000 0, #000 1.4px, transparent 1.4px, transparent 4.6px, #000 4.6px, #000 6px);
   }
+  @keyframes stbFlow { from { background-position: 0% 50%; } to { background-position: 200% 50%; } }
+  @media (prefers-reduced-motion: reduce) { #stickyTopBar .stb-bar { animation: none; } }
   #stickyTopBar .stb-version { pointer-events: auto; text-align: center; font-family: 'Orbitron', sans-serif; font-size: 9px; letter-spacing: 0.05em; color: rgba(255,255,255,0.5); padding: 3px 0 4px; background: rgba(10,14,20,0.5); -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px); }
-  body.multipage-mode #stickyTopBar[data-g="group_other"] .stb-bar { --bar: #16b6b0; }
-  body.multipage-mode #stickyTopBar[data-g="group_calendar"] .stb-bar { --bar: #4088f0; }
-  body.multipage-mode #stickyTopBar[data-g="group_task"] .stb-bar { --bar: #E8971F; }
-  body.multipage-mode #stickyTopBar[data-g="group_diary"] .stb-bar { --bar: #A45CF0; }
-  body.multipage-mode #stickyTopBar[data-g="settings"] .stb-bar { --bar: #9298A0; } /* オプションは歯車のグレー */
+  body.multipage-mode #stickyTopBar[data-g="group_other"] .stb-bar { --bar: #16b6b0; --bar-hi: #63e6df; }
+  body.multipage-mode #stickyTopBar[data-g="group_calendar"] .stb-bar { --bar: #4088f0; --bar-hi: #8fbcff; }
+  body.multipage-mode #stickyTopBar[data-g="group_task"] .stb-bar { --bar: #E8971F; --bar-hi: #ffc978; }
+  body.multipage-mode #stickyTopBar[data-g="group_diary"] .stb-bar { --bar: #A45CF0; --bar-hi: #d0a8ff; }
+  body.multipage-mode #stickyTopBar[data-g="settings"] .stb-bar { --bar: #9298A0; --bar-hi: #c6ccd3; } /* オプションは歯車のグレー */
   body.theme-simple:not(.theme-dark) #stickyTopBar .stb-version { background: rgba(255,255,255,0.62); }
   body.theme-fancy #stickyTopBar .stb-version { background: rgba(255,240,248,0.6); }
   .page { padding-top: 22px; } /* 固定バーの下に本文が隠れないように */
@@ -2911,7 +2914,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_HOMEROOM_V392</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_BARFLOW_V393</div>
 </div>
 
 <div class="wrap page show" id="page-task">
