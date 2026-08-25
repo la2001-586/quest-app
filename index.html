@@ -178,86 +178,21 @@
   body.theme-simple.theme-dark .item.today-custom { border-left-color: rgba(255,138,92,0.5) !important; }
   body.theme-simple.theme-dark .item.today-custom.done { border-left-color: #F0906B !important; }
   body.theme-simple.theme-dark .check-box { border-color: #4A4A4C !important; }
-  /* ===== キーの手ざわり(温かいテーマ) — 押せる物体の質感 ===== */
-  body.theme-simple {
-    --tile-hi: #FFFFFF; --tile-mid: #F8F4EC; --tile-lo: #EDE7DD;
-    --tile-sh: 0 1px 0 rgba(255,255,255,0.9) inset, 0 2px 3px rgba(51,48,43,0.08), 0 8px 18px -9px rgba(51,48,43,0.2);
-    --tile-press: 0 2px 5px rgba(51,48,43,0.14) inset, 0 1px 2px rgba(51,48,43,0.1) inset;
-  }
-  body.theme-simple.theme-dark {
-    --tile-hi: #2E2A21; --tile-mid: #23201A; --tile-lo: #17140F;
-    --tile-sh: 0 1px 0 rgba(255,255,255,0.07) inset, 0 2px 4px rgba(0,0,0,0.4), 0 9px 20px -9px rgba(0,0,0,0.55);
-    --tile-press: 0 2px 6px rgba(0,0,0,0.55) inset;
-  }
-  /* 階級キー(軽量級/中量級/重量級): キーボードのキーのように盛り上がり、選択中は押し込まれる */
-  body.theme-simple .tab {
-    background: linear-gradient(180deg, var(--tile-hi), var(--tile-mid) 45%, var(--tile-lo)) !important;
-    box-shadow: var(--tile-sh) !important;
-    border: none !important; border-radius: var(--rad-sm) !important; color: var(--ink-dim) !important;
-    transition: transform 0.11s var(--ease-out), box-shadow 0.14s ease, color 0.14s ease !important;
-  }
-  body.theme-simple .tab.active {
-    background: linear-gradient(180deg, var(--tile-lo), var(--tile-mid)) !important;
-    box-shadow: var(--tile-press) !important; color: var(--cyan) !important;
-  }
-  body.theme-simple .tab:active { transform: translateY(1px) scale(0.985); box-shadow: var(--tile-press) !important; }
-  /* チェックボックス: 角丸の"凹んだ枠" → こなすと色つきのキーに変わってポップ */
-  body.theme-simple .check-box {
-    border-radius: 7px !important; border: none !important;
-    background: linear-gradient(180deg, var(--tile-lo), var(--tile-hi)) !important;
-    box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset, 0 -1px 2px rgba(0,0,0,0.06) inset, 0 1px 2px rgba(51,48,43,0.1) !important;
-  }
-  body.theme-simple.theme-dark .check-box {
-    background: linear-gradient(180deg, #14110D, #26221B) !important;
-    box-shadow: 0 -1px 2px rgba(0,0,0,0.5) inset, 0 1px 0 rgba(255,255,255,0.05) inset !important;
-  }
+  /* 温かいテーマ: チェックはバネで"ポップ"して現れる(平坦化しない) */
   body.theme-simple .item.picked .check-box {
-    background: linear-gradient(180deg, #7FE6B8, var(--cyan)) !important; color: #fff !important;
-    box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 2px 7px -1px rgba(20,181,88,0.5) !important;
-    transform: scale(1.03) !important;
+    background: var(--cyan) !important; border-color: var(--cyan) !important; color: #fff !important;
+    transform: scale(1) !important;
+    box-shadow: 0 2px 8px -2px rgba(20,181,88,0.45) !important;
   }
-  /* 補助ボタンは静かなキー / 表示切替(月週日)もキー化 */
-  body.theme-simple .mood-journal-btn,
-  body.theme-simple .cal-view-btn,
-  body.theme-simple .report-period-btn {
-    background: linear-gradient(180deg, var(--tile-hi), var(--tile-mid) 50%, var(--tile-lo)) !important;
-    box-shadow: var(--tile-sh) !important; border: none !important; color: var(--ink-dim) !important;
-    border-radius: var(--rad-sm) !important;
-  }
-  body.theme-simple .cal-view-btn.active,
-  body.theme-simple .report-period-btn.active {
-    box-shadow: var(--tile-press) !important; color: var(--cyan) !important;
-    background: linear-gradient(180deg, var(--tile-lo), var(--tile-mid)) !important;
-  }
-  body.theme-simple .mood-journal-btn:active,
-  body.theme-simple .cal-view-btn:active,
-  body.theme-simple .report-period-btn:active { transform: translateY(1px) scale(0.985); box-shadow: var(--tile-press) !important; }
-  /* 主役の追加ボタンは色＋艶(キーボードのスペース/確定キーの発想) */
-  body.theme-simple .add-task-btn {
-    background: linear-gradient(180deg, #FF9F86, var(--magenta)) !important; border: none !important; color: #fff !important;
-    box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 -2px 5px rgba(0,0,0,0.12) inset, 0 6px 16px -6px rgba(242,120,120,0.55) !important;
-  }
-  body.theme-simple .add-task-btn:active { transform: translateY(1px) scale(0.97); box-shadow: 0 2px 6px rgba(0,0,0,0.2) inset !important; }
-  /* 追加ボタン(予定)の艶 — テーマ問わず */
-  .evt-add { background: linear-gradient(180deg, #E88AAE, var(--magenta)) !important; box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset, 0 6px 16px -6px rgba(203,74,126,0.5) !important; }
-
-  /* ===== A: 浮いたカード — 端まで表示の容器を"浮かせる"(中の行は線区切りのまま) ===== */
-  body.multipage-mode.theme-simple .app-group-wrap .unified-task-card,
-  body.multipage-mode.theme-simple .app-group-wrap .mood-journal-shell,
-  body.multipage-mode.theme-simple .app-group-wrap #calSectionWrap {
-    margin-left: 10px !important; margin-right: 10px !important;
-    border-radius: var(--rad-lg) !important;
-    box-shadow: var(--elev-2) !important;
-    overflow: hidden;
-  }
-  body.multipage-mode.theme-simple .app-group-wrap .unified-task-card { min-height: auto !important; }
-
   /* 押した瞬間、そっと沈む(手ざわり) — 全画面共通の小さな返事 */
   .cal-day:active { transform: scale(0.94); transition: transform var(--motion-fast) var(--ease-out); }
   body.theme-simple .item:active { transform: scale(0.985); }
+  body.theme-simple .tab:active,
+  body.theme-simple .cal-view-btn:active,
+  body.theme-simple .report-period-btn:active { transform: scale(0.96); }
   body.theme-simple .toggle-track { background: #D8D8DC !important; border-color: rgba(0,0,0,0.08) !important; }
   body.theme-simple .toggle-switch input:checked + .toggle-track { background: var(--cyan) !important; }
-  /* (階級キーの選択状態は上のキー手ざわりブロックで「押し込まれ＋アクセント文字」に統一) */
+  body.theme-simple .tab.active { background: var(--cyan) !important; color: #fff !important; box-shadow: none !important; }
   body.theme-simple .proof-btn { color: var(--cyan) !important; border-radius: 12px !important; }
   body.theme-simple .home-tab[data-group="group_other"] { color: #16b6b0 !important; }
   .home-tab[data-group="group_calendar"] { color: #4088f0 !important; }
@@ -2937,7 +2872,7 @@
 
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_FLOAT_V384</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_BASE_V385</div>
 </div>
 
 <div class="wrap page show" id="page-task">
