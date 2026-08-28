@@ -3017,7 +3017,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_RINGFIX_V397</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_PARALLAX_V398</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -9304,6 +9304,24 @@
     playUIClick();
     const el = document.getElementById('calSectionWrap');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  // 奥行きの視差(案8): スクロールすると、覗く猫だけが前景よりゆっくり動く=奥行きが生まれる
+  let _parallaxTicking = false;
+  const _reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function applyHomeParallax() {
+    const cat = document.getElementById('peekCatContainer');
+    if (!cat || cat.classList.contains('cat-poked')) return; // ポーク反応中は触らない
+    const y = window.scrollY || window.pageYOffset || 0;
+    const drift = Math.min(y * 0.32, 48); // 前景より遅れて沈む
+    cat.style.transform = 'translateY(' + drift.toFixed(1) + 'px)';
+    cat.style.opacity = Math.max(0.4, 1 - y / 340).toFixed(3);
+  }
+  if (!_reduceMotion) {
+    window.addEventListener('scroll', () => {
+      if (_parallaxTicking) return;
+      _parallaxTicking = true;
+      requestAnimationFrame(() => { applyHomeParallax(); _parallaxTicking = false; });
+    }, { passive: true });
   }
   // 2枚の画面を、同時に逆方向へスライドさせる、連続性のある切り替え(汎用)
   function animateSlideTransition(fromEl, toEl, direction, onDone) {
