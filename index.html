@@ -1634,6 +1634,19 @@
   @keyframes itemHit {
     0% { transform: scale(1); } 40% { transform: scale(0.96); } 70% { transform: scale(1.02); } 100% { transform: scale(1); }
   }
+  /* 起き上がるリスト(案5): タブ/フォルダを開いた時だけ、行が下から順にふわっと立ち上がる。
+     .folder-panel / .panel を前置して .item.picked の itemHit より詳細度を上げる(済みの行も立たせる)。
+     再生後はJSでクラスを外すので、選択時の弾み(itemHit)は殺さない。日課・タスク両方に効かせる。 */
+  .folder-panel .item.rise-in,
+  .panel .item.rise-in { animation: itemRiseUp 0.5s cubic-bezier(.2,.85,.3,1.02) both; }
+  @keyframes itemRiseUp {
+    0%   { opacity: 0; transform: translateY(24px) scale(0.96); }
+    60%  { opacity: 1; }
+    100% { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .folder-panel .item.rise-in, .panel .item.rise-in { animation: none; }
+  }
   .check-box {
     width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
     border: 1.5px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center;
@@ -2975,7 +2988,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_MONO_V394</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_SWIPE_RISE_V400</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5500,8 +5513,9 @@
       // 横方向にはっきり動いた時だけスワイプとみなす(縦スクロールとの誤反応を避ける)
       if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
 
-      const activeBtn = wrap.querySelector('.cal-view-btn.active');
-      const currentView = activeBtn ? activeBtn.dataset.view : 'month';
+      // 月/週/日はビュー切替ボタンが無い(スワイプ専用)ので、DOMのactiveではなく
+      // 覚えておいた currentCalView を使う。これが無いと週→右スワイプで月に戻れなかった
+      const currentView = currentCalView;
       const idx = VIEW_ORDER.indexOf(currentView);
       if (idx === -1) return; // 予定一覧・検索・レポートなど、対象外の画面ではスワイプ切り替えしない
 
@@ -7704,6 +7718,22 @@
     updateSummary();
   }
 
+  // 起き上がるリスト(案5): 既にDOMにある行を、下から順に立ち上げ直す。
+  // タブ/フォルダを開いた瞬間だけ呼ぶ(毎回の再描画では呼ばない=うるさくならない)。
+  function staggerRise(container) {
+    if (!container) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const items = container.querySelectorAll('.item');
+    items.forEach((it, i) => {
+      it.classList.remove('rise-in');
+      if (it._riseTimer) clearTimeout(it._riseTimer);
+      void it.offsetWidth; // アニメ再トリガー用のリフロー
+      const delay = Math.min(i, 9) * 55; // 行が多くても最大くらいで頭打ち
+      it.style.animationDelay = delay + 'ms';
+      it.classList.add('rise-in');
+      it._riseTimer = setTimeout(() => { it.classList.remove('rise-in'); it.style.animationDelay = ''; }, delay + 540);
+    });
+  }
   function switchToTab(lv) {
     const tab = document.querySelector(`.tab[data-lv="${lv}"]`);
     if (!tab) return;
@@ -7711,7 +7741,9 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
-    document.getElementById('panel-' + lv).classList.add('show');
+    const panel = document.getElementById('panel-' + lv);
+    panel.classList.add('show');
+    staggerRise(panel);
   }
   document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = () => switchToTab(tab.dataset.lv);
@@ -8228,6 +8260,13 @@
     document.querySelectorAll('.home-tab[data-group]').forEach(t => t.classList.toggle('active', t.dataset.group === groupKey));
     const stbEl = document.getElementById('stickyTopBar'); if (stbEl) stbEl.setAttribute('data-g', groupKey);
     window.scrollTo(0, 0);
+    // タスク管理を開いた時、今表示中のフォルダ(タスク or 日課)を起き上がりアニメで見せる(案5)
+    if (groupKey === 'group_task') {
+      requestAnimationFrame(() => {
+        const routineOpen = document.getElementById('folderPanelRoutine').classList.contains('show');
+        staggerRise(routineOpen ? document.querySelector('#folderPanelRoutine .panel.show') : document.getElementById('folderPanelTask'));
+      });
+    }
   }
   async function toggleMultiPageMode(on) {
     multiPageModeOn = on;
@@ -8281,6 +8320,12 @@
     const card = document.getElementById('tabsPanelsWrap');
     card.classList.toggle('corner-left', which === 'task');
     card.classList.toggle('corner-right', which === 'routine');
+    // 開いた側のリストを、起き上がるアニメで見せる(案5)。日課・タスクどちらも同じ手触りに。
+    if (which === 'routine') {
+      staggerRise(document.querySelector('#folderPanelRoutine .panel.show'));
+    } else {
+      staggerRise(document.getElementById('folderPanelTask'));
+    }
   }
   function openRoutineStock() {
     playUIClick();
@@ -9906,9 +9951,11 @@
   }
 
   let calTransitionInProgress = false;
+  let currentCalView = 'month'; // 現在のカレンダー表示。月/週/日はボタンが無くDOMから判定できないため、ここで覚えておく
   function switchCalView(view, direction) {
     if (calTransitionInProgress) return;
     playUIClick();
+    currentCalView = view;
     if (direction && tutorialWaitingForSwipe) {
       // 本物のカレンダーで、実際にスワイプ操作が行われたことを検知 → チュートリアルを再開する
       tutorialWaitingForSwipe = false;
