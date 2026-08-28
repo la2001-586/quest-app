@@ -193,48 +193,6 @@
     opacity: 1; stroke-dashoffset: 0;
     transition: stroke-dashoffset 0.42s ease 0.06s, opacity 0.12s ease;
   }
-  /* 達成の波紋(案10): 完了した瞬間、押した所から光が行内へ広がる
-     ※ .item > .item-ripple の2クラス指定で、後段の「.item > *{position:relative}」に必ず勝つ
-       (勝てないと波紋がフレックス子要素として行内に居座り、レイアウトが崩れる) */
-  .item > .item-ripple {
-    position: absolute !important; border-radius: 50%;
-    background: radial-gradient(circle, var(--cyan), transparent 68%);
-    opacity: 0.42; transform: scale(0); pointer-events: none; z-index: 0;
-    mix-blend-mode: screen;
-  }
-  @media (prefers-reduced-motion: reduce) { .item > .item-ripple { display: none; } }
-  /* 起き上がるリスト(案5): タブ/フォルダを開いた時だけ、行が下から順に立ち上がる
-     ※ .panel / .folder-panel を前置して .item.picked の itemHit より高詳細度にし、
-       済みの行もちゃんと立ち上がるようにする。再生後はJS側でクラスを外す(選択時の弾みを殺さない) */
-  .panel .item.stagger-in,
-  .folder-panel .item.stagger-in { animation: itemRise 0.52s cubic-bezier(.22,.9,.3,1) both; }
-  @keyframes itemRise {
-    from { opacity: 0; transform: translateY(26px) scale(0.97); }
-    to   { opacity: 1; transform: none; }
-  }
-  @media (prefers-reduced-motion: reduce) { .panel .item.stagger-in, .folder-panel .item.stagger-in { animation: none; } }
-  /* 満ちるリング(案2): その級の日課の達成が、バネで満ちていく */
-  .lvl-progress { display: flex; align-items: center; gap: 12px; margin: 2px 2px 12px; }
-  .lvl-ring-wrap { position: relative; width: 44px; height: 44px; flex: 0 0 auto; }
-  .lvl-ring { width: 44px; height: 44px; transform: rotate(-90deg); display: block; }
-  .lvl-ring .lr-track { fill: none; stroke: rgba(255,255,255,0.12); stroke-width: 4; }
-  .lvl-ring .lr-fill {
-    fill: none; stroke: var(--cyan); stroke-width: 4; stroke-linecap: round;
-    stroke-dasharray: 113.1; stroke-dashoffset: 113.1;
-    transition: stroke-dashoffset 0.7s cubic-bezier(.34,1.3,.4,1);
-    filter: drop-shadow(0 0 5px rgba(43,201,204,0.5));
-  }
-  .lvl-ring-num {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-  }
-  .lvl-progress .combo-hint { margin: 0; flex: 1; }
-  body.theme-simple .lvl-ring .lr-track { stroke: rgba(0,0,0,0.10); }
-  body.theme-simple.theme-dark .lvl-ring .lr-track { stroke: rgba(255,255,255,0.12); }
-  body.theme-simple.theme-mono .lvl-ring .lr-fill { stroke: #1B1B1D; filter: none; }
-  body.theme-simple.theme-mono .lvl-ring-num { color: #1B1B1D; }
-  @media (prefers-reduced-motion: reduce) { .lvl-ring .lr-fill { transition: none; } }
   /* 押した瞬間、そっと沈む(手ざわり) — 全画面共通の小さな返事 */
   .cal-day:active { transform: scale(0.94); transition: transform var(--motion-fast) var(--ease-out); }
   body.theme-simple .item:active { transform: scale(0.985); }
@@ -2370,46 +2328,6 @@
     box-shadow: 0 0 5px rgba(232,255,78,0.9);
   }
   .cal-day.today.has-record::after { background: var(--cyan); box-shadow: 0 0 5px rgba(43,201,204,0.9); }
-  /* 遡る日々(案3): 月表示を、横スクロールでなぞる時間軸に。中央の日が大きく浮かぶ */
-  #calMonthSection.tl-mode .cal-weekdays,
-  #calMonthSection.tl-mode #calGrid { display: none; }
-  /* グリッドが縦を埋めていた分の余白を、時間軸モードでは詰める(中央に大きな空白を残さない) */
-  body.multipage-mode #calMonthSection.tl-mode,
-  body.multipage-mode #calMonthSection.tl-mode .cal-grid-shell { flex: 0 0 auto !important; }
-  .cal-timeline {
-    display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory;
-    padding: 20px 42% 12px; margin: 2px -4px 0;
-    -webkit-overflow-scrolling: touch; scrollbar-width: none;
-  }
-  .cal-timeline::-webkit-scrollbar { display: none; }
-  .cal-tl-day {
-    scroll-snap-align: center; flex: 0 0 60px; min-height: 96px; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 5px;
-    padding: 12px 4px 10px; border-radius: 18px;
-    background: linear-gradient(160deg, rgba(26,30,38,0.9), rgba(11,14,19,0.9));
-    border: 1.5px solid rgba(255,255,255,0.10);
-    transition: transform 0.12s linear, opacity 0.12s linear, box-shadow 0.2s ease, border-color 0.2s ease;
-    transform-origin: center center; will-change: transform, opacity;
-  }
-  .cal-tl-dow { font-size: 10px; font-weight: 700; color: var(--ink-dim); letter-spacing: 0.03em; }
-  .cal-tl-num { font-size: 24px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
-  .cal-tl-day.dow-sun .cal-tl-num { color: #FF8A96; }
-  .cal-tl-day.dow-sat .cal-tl-num { color: #7CC4FF; }
-  .cal-tl-dots { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; max-width: 46px; min-height: 6px; }
-  .cal-tl-dot { width: 5px; height: 5px; border-radius: 50%; }
-  .cal-tl-rec { width: 6px; height: 6px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 5px rgba(232,255,78,0.7); }
-  .cal-tl-day.today { border-color: var(--cyan); box-shadow: 0 0 0 1.5px var(--cyan) inset, 0 6px 18px -8px rgba(43,201,204,0.6); }
-  .cal-tl-day.today .cal-tl-num { color: var(--cyan); }
-  .cal-tl-day.today .cal-tl-rec { background: var(--cyan); box-shadow: 0 0 6px rgba(43,201,204,0.9); }
-  .cal-tl-hint { text-align: center; font-size: 10px; color: var(--ink-dim); margin-top: 2px; opacity: 0.75; }
-  /* テーマ別 */
-  body.theme-simple .cal-tl-day { background: #FFFFFF; border-color: rgba(0,0,0,0.10); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-  body.theme-simple.theme-dark .cal-tl-day { background: linear-gradient(160deg, rgba(30,34,42,0.95), rgba(16,19,26,0.95)); border-color: rgba(255,255,255,0.12); box-shadow: none; }
-  body.theme-simple.theme-mono .cal-tl-day.today { border-color: #1B1B1D; box-shadow: 0 0 0 1.5px #1B1B1D inset; }
-  body.theme-simple.theme-mono .cal-tl-day.today .cal-tl-num,
-  body.theme-simple.theme-mono .cal-tl-day.dow-sun .cal-tl-num,
-  body.theme-simple.theme-mono .cal-tl-day.dow-sat .cal-tl-num { color: #1B1B1D; }
-  @media (prefers-reduced-motion: reduce) { .cal-tl-day { transition: box-shadow 0.2s ease, border-color 0.2s ease; } }
   .cal-note { font-size: 10.5px; color: var(--ink-dim); margin-top: 16px; text-align: center; line-height: 1.6; }
   .week-view-shell {
     background: linear-gradient(160deg, rgba(24,28,36,0.97), rgba(12,15,20,0.97));
@@ -3057,14 +2975,14 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_TIMELINE_V399</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_MONO_V394</div>
 </div>
 
 <div class="wrap page show" id="page-task">
   <div class="app-group-label" data-i18n="group_calendar"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> カレンダー</div>
   <div class="cal-section" id="calSectionWrap">
     <div class="card-accent-dot tab-cal"></div>
-    <div id="calMonthSection" class="tl-mode">
+    <div id="calMonthSection">
       <div class="cal-grid-shell">
         <div class="week-view-nav">
           <button onclick="shiftMonthView(-1)">‹</button>
@@ -3075,8 +2993,6 @@
           <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
         </div>
         <div class="cal-grid" id="calGrid"></div>
-        <div class="cal-timeline" id="calTimeline"></div>
-        <div class="cal-tl-hint">← 横になぞって日をたどる・タップでその日を開く →</div>
       </div>
       <div class="cal-attr-legend">
         <span><span class="cal-line-dot" style="background:#E8971F"></span>タスク</span>
@@ -3302,37 +3218,19 @@
   </div>
 
   <div class="panel show" id="panel-low" data-lv="low">
-    <div class="lvl-progress">
-      <div class="lvl-ring-wrap">
-        <svg class="lvl-ring" viewBox="0 0 44 44"><circle class="lr-track" cx="22" cy="22" r="18"/><circle class="lr-fill" id="ring-low" cx="22" cy="22" r="18"/></svg>
-        <div class="lvl-ring-num" id="ringNum-low">0/0</div>
-      </div>
-      <div class="combo-hint" id="comboHint-low"></div>
-    </div>
+    <div class="combo-hint" id="comboHint-low"></div>
     <div id="list-low"></div>
     <button class="add-task-btn" onclick="openAddTask('low')">＋</button>
   </div>
 
   <div class="panel" id="panel-mid" data-lv="mid">
-    <div class="lvl-progress">
-      <div class="lvl-ring-wrap">
-        <svg class="lvl-ring" viewBox="0 0 44 44"><circle class="lr-track" cx="22" cy="22" r="18"/><circle class="lr-fill" id="ring-mid" cx="22" cy="22" r="18"/></svg>
-        <div class="lvl-ring-num" id="ringNum-mid">0/0</div>
-      </div>
-      <div class="combo-hint" id="comboHint-mid"></div>
-    </div>
+    <div class="combo-hint" id="comboHint-mid"></div>
     <div id="list-mid"></div>
     <button class="add-task-btn" onclick="openAddTask('mid')">＋</button>
   </div>
 
   <div class="panel" id="panel-high" data-lv="high">
-    <div class="lvl-progress">
-      <div class="lvl-ring-wrap">
-        <svg class="lvl-ring" viewBox="0 0 44 44"><circle class="lr-track" cx="22" cy="22" r="18"/><circle class="lr-fill" id="ring-high" cx="22" cy="22" r="18"/></svg>
-        <div class="lvl-ring-num" id="ringNum-high">0/0</div>
-      </div>
-      <div class="combo-hint" id="comboHint-high"></div>
-    </div>
+    <div class="combo-hint" id="comboHint-high"></div>
     <div id="list-high"></div>
     <button class="add-task-btn" onclick="openAddTask('high')">＋</button>
   </div>
@@ -7454,26 +7352,6 @@
     }, 60000); // 1分ごとにチェック
   }
 
-  // 達成の波紋(案10): 完了行の左(チェック付近)から、光の波紋が広がって消える
-  function spawnItemRipple(el) {
-    try {
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const rect = el.getBoundingClientRect();
-      const r = document.createElement('span');
-      r.className = 'item-ripple';
-      const size = Math.max(rect.width, rect.height) * 0.55;
-      r.style.width = r.style.height = size + 'px';
-      r.style.left = (rect.width * 0.10 - size / 2) + 'px';
-      r.style.top = (rect.height / 2 - size / 2) + 'px';
-      el.insertBefore(r, el.firstChild);
-      requestAnimationFrame(() => {
-        r.style.transition = 'transform 0.6s cubic-bezier(.22,.61,.36,1), opacity 0.6s ease';
-        r.style.transform = 'scale(3.2)';
-        r.style.opacity = '0';
-      });
-      setTimeout(() => r.remove(), 640);
-    } catch (e) {}
-  }
   function toggleItem(div, key) {
     if (picked.has(key)) {
       picked.delete(key);
@@ -7487,7 +7365,6 @@
       if (isFocusModeActive()) div.classList.add('focus-bonus');
       if (navigator.vibrate) navigator.vibrate(10);
       playSelectSound();
-      spawnItemRipple(div); // 達成の波紋(案10)
       // 不意の提案を「受ける」を選んでいた場合、そのタスクを完了させた瞬間にボーナスEXPを加算する
       if (surpriseQuest && surpriseQuest.status === 'accepted' && surpriseQuest.key === key) {
         surpriseQuest.status = 'completed';
@@ -7732,9 +7609,6 @@
       }
     });
 
-    // 満ちるリング(案2): その級の達成数/総数で、リングをバネで満たす
-    updateLevelRings(countByLevel);
-
     if (level > prevLevel && !isInitializing) {
       showGrandModal({
         icon: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg>', label: 'LEVEL UP', title: t('levelup_title', { n: String(level).padStart(2, '0') }),
@@ -7830,51 +7704,6 @@
     updateSummary();
   }
 
-  // 満ちるリング(案2): その級の日課の「達成数/総数」でリングを満たす
-  const RING_CIRC = 113.097; // 2 * π * r(=18)
-  function updateLevelRings(countByLevel) {
-    ['low', 'mid', 'high'].forEach(lv => {
-      const total = taskList.filter(tk => tk.active !== false && tk.level === lv).length;
-      const done = countByLevel[lv] || 0;
-      const ring = document.getElementById('ring-' + lv);
-      const numEl = document.getElementById('ringNum-' + lv);
-      const wrap = ring ? ring.closest('.lvl-ring-wrap') : null;
-      if (!ring || !numEl) return;
-      if (total === 0) { if (wrap) wrap.style.display = 'none'; return; }
-      if (wrap) wrap.style.display = '';
-      const frac = Math.min(1, done / total);
-      const offset = RING_CIRC * (1 - frac);
-      if (isInitializing) { // 起動時はバネを出さず、最初から満ちた状態で置く
-        ring.style.transition = 'none';
-        ring.style.strokeDashoffset = offset;
-        void ring.getBoundingClientRect();
-        ring.style.transition = '';
-      } else {
-        ring.style.strokeDashoffset = offset;
-      }
-      numEl.textContent = done + '/' + total;
-    });
-  }
-
-  // 起き上がるリスト(案5): 既にDOMにある行を、下から順に立ち上げ直す(再描画不要なので、開いた時だけ発火)
-  function staggerList(container) {
-    if (!container) return;
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const items = container.querySelectorAll('.item');
-    items.forEach((it, i) => {
-      it.classList.remove('stagger-in');
-      if (it._staggerTimer) clearTimeout(it._staggerTimer);
-      void it.offsetWidth; // アニメ再トリガー用のリフロー
-      const delay = i * 70;
-      it.style.animationDelay = delay + 'ms';
-      it.classList.add('stagger-in');
-      // 立ち上がり終了後にクラスを外す(残すと選択時の itemHit を打ち消してしまうため)
-      it._staggerTimer = setTimeout(() => {
-        it.classList.remove('stagger-in');
-        it.style.animationDelay = '';
-      }, delay + 560);
-    });
-  }
   function switchToTab(lv) {
     const tab = document.querySelector(`.tab[data-lv="${lv}"]`);
     if (!tab) return;
@@ -7882,9 +7711,7 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
-    const panel = document.getElementById('panel-' + lv);
-    panel.classList.add('show');
-    staggerList(panel);
+    document.getElementById('panel-' + lv).classList.add('show');
   }
   document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = () => switchToTab(tab.dataset.lv);
@@ -8401,8 +8228,6 @@
     document.querySelectorAll('.home-tab[data-group]').forEach(t => t.classList.toggle('active', t.dataset.group === groupKey));
     const stbEl = document.getElementById('stickyTopBar'); if (stbEl) stbEl.setAttribute('data-g', groupKey);
     window.scrollTo(0, 0);
-    // カレンダーが表示された時、時間軸レールを今の実寸で中央合わせし直す(非表示時はclientWidth=0で中央化できないため)
-    if (groupKey === 'group_calendar') requestAnimationFrame(() => renderCalTimeline());
   }
   async function toggleMultiPageMode(on) {
     multiPageModeOn = on;
@@ -8456,9 +8281,6 @@
     const card = document.getElementById('tabsPanelsWrap');
     card.classList.toggle('corner-left', which === 'task');
     card.classList.toggle('corner-right', which === 'routine');
-    // 開いた側のリストを、起き上がるアニメで見せる(案5)
-    if (which === 'routine') { const p = document.querySelector('#folderPanelRoutine .panel.show'); staggerList(p); }
-    else { staggerList(document.getElementById('folderPanelTask')); }
   }
   function openRoutineStock() {
     playUIClick();
@@ -9349,24 +9171,6 @@
     const el = document.getElementById('calSectionWrap');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  // 奥行きの視差(案8): スクロールすると、覗く猫だけが前景よりゆっくり動く=奥行きが生まれる
-  let _parallaxTicking = false;
-  const _reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function applyHomeParallax() {
-    const cat = document.getElementById('peekCatContainer');
-    if (!cat || cat.classList.contains('cat-poked')) return; // ポーク反応中は触らない
-    const y = window.scrollY || window.pageYOffset || 0;
-    const drift = Math.min(y * 0.32, 48); // 前景より遅れて沈む
-    cat.style.transform = 'translateY(' + drift.toFixed(1) + 'px)';
-    cat.style.opacity = Math.max(0.4, 1 - y / 340).toFixed(3);
-  }
-  if (!_reduceMotion) {
-    window.addEventListener('scroll', () => {
-      if (_parallaxTicking) return;
-      _parallaxTicking = true;
-      requestAnimationFrame(() => { applyHomeParallax(); _parallaxTicking = false; });
-    }, { passive: true });
-  }
   // 2枚の画面を、同時に逆方向へスライドさせる、連続性のある切り替え(汎用)
   function animateSlideTransition(fromEl, toEl, direction, onDone) {
     const dir = (direction === 'left') ? 1 : -1; // 左スワイプ: 新画面は右から、旧画面は左へ
@@ -10122,7 +9926,6 @@
       if (view === 'agenda') { renderAgendaList(); renderUndatedTasks(); renderWeeklySummary(); }
       if (view === 'report') renderReport(currentReportPeriod);
       if (view === 'day') renderDayView();
-      if (view === 'month') requestAnimationFrame(() => renderCalTimeline());
     }
 
     if (direction && currentEl && currentEl !== targetEl) {
@@ -10719,78 +10522,6 @@
     renderExpChart();
     renderWeekCompare();
     renderWeekView();
-    renderCalTimeline();
-  }
-
-  // 遡る日々(案3): 月表示を、横スクロールでなぞる時間軸として描く
-  const _DOW_JP = ['日', '月', '火', '水', '木', '金', '土'];
-  let _tlScrollBound = false;
-  function renderCalTimeline() {
-    const rail = document.getElementById('calTimeline');
-    if (!rail) return;
-    const base = new Date();
-    base.setMonth(base.getMonth() + monthViewOffset);
-    const year = base.getFullYear();
-    const month = base.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const realToday = new Date();
-    rail.innerHTML = '';
-    let todayCell = null;
-    for (let d = 1; d <= daysInMonth; d++) {
-      const key = `${year}-${month + 1}-${d}`;
-      const dow = new Date(year, month, d).getDay();
-      const isToday = (year === realToday.getFullYear() && month === realToday.getMonth() && d === realToday.getDate());
-      const evs = eventsForDate(key);
-      const record = isToday
-        ? { count: picked.size, exp: currentTodayExp, items: [...picked].map(k => k.split('|')[1]) }
-        : dailyHistory[key];
-      const hasRecord = isToday ? picked.size > 0 : !!record;
-      // ドット: 予定の属性色(最大4) + 記録があれば黄/シアンの丸
-      const dots = evs.slice(0, 4).map(e => {
-        const c = attrColor(e.attr) || e.color || '#8E8E93';
-        return `<span class="cal-tl-dot" style="background:${c}"></span>`;
-      }).join('');
-      const recDot = hasRecord ? '<span class="cal-tl-rec"></span>' : '';
-      const cell = document.createElement('div');
-      cell.className = 'cal-tl-day' + (isToday ? ' today' : '') + (dow === 0 ? ' dow-sun' : dow === 6 ? ' dow-sat' : '');
-      cell.innerHTML =
-        `<span class="cal-tl-dow">${_DOW_JP[dow]}</span>` +
-        `<span class="cal-tl-num">${d}</span>` +
-        `<span class="cal-tl-dots">${recDot}${dots}</span>`;
-      cell.onclick = () => showDayDetail(key, record || { count: 0, exp: 0, items: [] });
-      attachLongPress(cell, () => quickCreateEvent(key));
-      rail.appendChild(cell);
-      if (isToday) todayCell = cell;
-    }
-    // 初期位置: 今日を中央に(今月でなければ月初を中央に)。バネなしで置く
-    requestAnimationFrame(() => {
-      const focusCell = todayCell || rail.firstElementChild;
-      if (focusCell) rail.scrollLeft = focusCell.offsetLeft + focusCell.offsetWidth / 2 - rail.clientWidth / 2;
-      applyTimelineScale();
-    });
-    if (!_tlScrollBound) {
-      _tlScrollBound = true;
-      let ticking = false;
-      rail.addEventListener('scroll', () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => { applyTimelineScale(); ticking = false; });
-      }, { passive: true });
-    }
-  }
-  function applyTimelineScale() {
-    const rail = document.getElementById('calTimeline');
-    if (!rail || !rail.firstElementChild) return;
-    if (_reduceMotion) return; // 動きを減らす設定では、拡縮しない
-    const center = rail.scrollLeft + rail.clientWidth / 2;
-    const reach = Math.max(1, rail.clientWidth * 0.42);
-    rail.querySelectorAll('.cal-tl-day').forEach(c => {
-      const cc = c.offsetLeft + c.offsetWidth / 2;
-      const t = Math.min(Math.abs(cc - center) / reach, 1);
-      const scale = 1.16 - t * 0.40; // 中央 ~1.16 → 端 ~0.76
-      c.style.transform = 'scale(' + scale.toFixed(3) + ')';
-      c.style.opacity = (1 - t * 0.5).toFixed(3);
-    });
   }
 
   let quickMemoText = '';
