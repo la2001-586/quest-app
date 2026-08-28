@@ -2994,7 +2994,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_STARDEPTH_V401</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_SOUND_V402</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5029,22 +5029,64 @@
     }
   }
 
+  // ---- 完了音「和音＋芯 重厚」用の音響バス(リバーブ＝空気感 ＋ リミッター＝安全装置)。一度だけ生成 ----
+  let soundBus = null;
+  function ensureSoundBus() {
+    const ctx = ensureAudioCtx();
+    if (soundBus && soundBus.ctx === ctx) return soundBus;
+    const dry = ctx.createGain(); dry.gain.value = 1;
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -16; comp.knee.value = 6; comp.ratio.value = 18; comp.attack.value = 0.002; comp.release.value = 0.2;
+    dry.connect(comp); comp.connect(ctx.destination);
+    let reverbSend = null;
+    try {
+      const conv = ctx.createConvolver();
+      const sr = ctx.sampleRate, len = Math.floor(sr * 1.0), buf = ctx.createBuffer(2, len, sr);
+      for (let c = 0; c < 2; c++) { const d = buf.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.0); }
+      conv.buffer = buf; conv.connect(dry);
+      reverbSend = ctx.createGain(); reverbSend.gain.value = 0.22; reverbSend.connect(conv);
+    } catch (e) {}
+    soundBus = { ctx, dry, reverbSend };
+    return soundBus;
+  }
+  function _soundOut() { const g = audioCtx.createGain(); g.connect(soundBus.dry); if (soundBus.reverbSend) g.connect(soundBus.reverbSend); return g; }
+  function _note(semi) { return 523.25 * Math.pow(2, semi / 12); } // C5基準
+  function _fmBell(freq, t, amp, dec, ratio, index, pan) {
+    const ctx = audioCtx;
+    const car = ctx.createOscillator(); car.type = 'sine'; car.frequency.value = freq;
+    const mod = ctx.createOscillator(); mod.type = 'sine'; mod.frequency.value = freq * ratio;
+    const md = ctx.createGain(); md.gain.setValueAtTime(freq * index, t); md.gain.exponentialRampToValueAtTime(freq * index * 0.06 + 0.0001, t + dec);
+    mod.connect(md); md.connect(car.frequency);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.min(amp, 0.5) * masterVolume, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dec);
+    car.connect(g);
+    if (!pan) { g.connect(_soundOut()); } else { const p = ctx.createStereoPanner(); p.pan.value = pan; g.connect(p).connect(_soundOut()); }
+    car.start(t); car.stop(t + dec + 0.05); mod.start(t); mod.stop(t + dec + 0.05);
+  }
+  function _sub(freq, t, amp, dec) {
+    const ctx = audioCtx; const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = freq;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.min(amp, 0.5) * masterVolume, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dec);
+    o.connect(g); g.connect(soundBus.dry); o.start(t); o.stop(t + dec + 0.05);
+  }
+  function _pluck(freq, t, amp, dec) {
+    const ctx = audioCtx; const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = freq;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 1; lp.frequency.setValueAtTime(freq * 7, t); lp.frequency.exponentialRampToValueAtTime(freq * 2.2, t + dec);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.min(amp, 0.5) * masterVolume, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + dec);
+    o.connect(lp).connect(g); g.connect(_soundOut()); o.start(t); o.stop(t + dec + 0.02);
+  }
+  // 完了音: 「和音＋芯 重厚」(毎回鳴るので余韻は少し締めた版)
   function playSelectSound() {
     if (!soundOn) return;
-    const ctx = ensureAudioCtx();
-    const now = ctx.currentTime;
-    [660, 990].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, now + i * 0.05);
-      gain.gain.setValueAtTime(0.0001, now + i * 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.22 * masterVolume, now + i * 0.05 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.05 + 0.18);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(now + i * 0.05);
-      osc.stop(now + i * 0.05 + 0.2);
-    });
+    try {
+      const ctx = ensureAudioCtx();
+      if (ctx.state === 'suspended') ctx.resume();
+      ensureSoundBus();
+      const t = ctx.currentTime + 0.005;
+      _pluck(_note(-12), t, 0.24, 0.85);                                   // 低い芯
+      [[-12, 0], [0, -0.26], [4, -0.08], [7, 0.12], [16, 0.28]].forEach(function (p, i) {
+        _fmBell(_note(p[0]), t + i * 0.024, 0.14, 1.25, 2, 0.28, p[1]);    // 広い声部の和音
+      });
+      _sub(_note(-24), t, 0.30, 1.15);                                     // サブベースの重厚感
+    } catch (e) { console.error('playSelectSound failed', e); }
   }
 
   function playDeselectSound() {
