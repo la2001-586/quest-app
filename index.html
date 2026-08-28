@@ -666,8 +666,14 @@
   .night-star { position: absolute; border-radius: 50%; background: #fff; will-change: opacity; }
   @keyframes nightStarTwinkle { from { opacity: 0.18; } to { opacity: 1; } }
   @keyframes nightStarsDrift { from { transform: translate(0,0); } to { transform: translate(-8%, 6%); } }
+  /* 奥行きの視差(案8): 星を遠/中/近の3層に分け、スクロールで層ごとに違う距離を動かす。
+     遠い層は薄く=奥、近い層は明るく大きく=手前。背景だけなので他の画面には一切触れない。 */
+  .star-layer { position: absolute; inset: 0; will-change: transform; }
+  body.theme-simple.theme-dark .star-layer[data-depth="far"] { opacity: 0.55; }
+  body.theme-simple.theme-dark .star-layer[data-depth="mid"] { opacity: 0.80; }
   @media (prefers-reduced-motion: reduce) {
     body.theme-simple.theme-dark #nightStars { animation: none; }
+    .star-layer { transform: none !important; }
     .night-star { animation: none !important; opacity: 0.7 !important; }
   }
   .shooting-star {
@@ -2988,7 +2994,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_SWIPE_RISE_V400</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_STARDEPTH_V401</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -4807,19 +4813,49 @@
     if (document.getElementById('nightStars')) return;
     const box = document.createElement('div');
     box.id = 'nightStars';
-    const N = 140;
-    let html = '';
-    for (let i = 0; i < N; i++) {
-      const top = (Math.random() * 100).toFixed(2);
-      const left = (Math.random() * 100).toFixed(2);
-      const sz = (0.8 + Math.random() * 1.8).toFixed(2);
-      const dur = (2.6 + Math.random() * 4.0).toFixed(2);
-      const delay = (-Math.random() * 7).toFixed(2);
-      const glow = (+sz > 2.0) ? ('box-shadow:0 0 ' + (+sz * 1.6).toFixed(1) + 'px rgba(255,255,255,0.75);') : '';
-      html += '<div class="night-star" style="top:' + top + '%;left:' + left + '%;width:' + sz + 'px;height:' + sz + 'px;' + glow + 'animation:nightStarTwinkle ' + dur + 's ease-in-out ' + delay + 's infinite alternate;"></div>';
+    function layerHtml(count, szMin, szMax, glowThresh) {
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        const top = (Math.random() * 100).toFixed(2);
+        const left = (Math.random() * 100).toFixed(2);
+        const sz = (szMin + Math.random() * (szMax - szMin)).toFixed(2);
+        const dur = (2.6 + Math.random() * 4.0).toFixed(2);
+        const delay = (-Math.random() * 7).toFixed(2);
+        const glow = (glowThresh && +sz > glowThresh) ? ('box-shadow:0 0 ' + (+sz * 1.7).toFixed(1) + 'px rgba(255,255,255,0.8);') : '';
+        html += '<div class="night-star" style="top:' + top + '%;left:' + left + '%;width:' + sz + 'px;height:' + sz + 'px;' + glow + 'animation:nightStarTwinkle ' + dur + 's ease-in-out ' + delay + 's infinite alternate;"></div>';
+      }
+      return html;
     }
-    box.innerHTML = html;
+    // 遠(小さく多い) → 中 → 近(大きく光る・少ない)。順番=奥から手前。
+    const specs = [['far', 70, 0.6, 1.2, 0], ['mid', 46, 1.1, 1.9, 0], ['near', 24, 1.8, 2.8, 2.1]];
+    specs.forEach(s => {
+      const layer = document.createElement('div');
+      layer.className = 'star-layer';
+      layer.dataset.depth = s[0];
+      layer.innerHTML = layerHtml(s[1], s[2], s[3], s[4]);
+      box.appendChild(layer);
+    });
     document.body.appendChild(box);
+  }
+  // 星のスクロール視差(案8): 近い層ほど大きく動く。ダークの時だけ・背景のみ。
+  const STAR_F = [0.03, 0.10, 0.22], STAR_CAP = [22, 54, 96]; // far / mid / near(端の余白-14%内に収まるよう上限)
+  let _starParallaxTick = false;
+  function applyStarParallax() {
+    const box = document.getElementById('nightStars');
+    if (!box || !document.body.classList.contains('theme-dark')) return;
+    const y = window.scrollY || window.pageYOffset || 0;
+    const layers = box.children;
+    for (let i = 0; i < layers.length && i < STAR_F.length; i++) {
+      const d = Math.min(y * STAR_F[i], STAR_CAP[i]);
+      layers[i].style.transform = 'translateY(' + (-d).toFixed(1) + 'px)';
+    }
+  }
+  if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+    window.addEventListener('scroll', () => {
+      if (_starParallaxTick) return;
+      _starParallaxTick = true;
+      requestAnimationFrame(() => { applyStarParallax(); _starParallaxTick = false; });
+    }, { passive: true });
   }
 
   const TEXT_SCALE_MAP = { small: 1.0, medium: 1.08, large: 1.16 };
