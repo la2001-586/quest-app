@@ -200,6 +200,10 @@
     transform: scale(0); pointer-events: none; z-index: 0;
   }
   @media (prefers-reduced-motion: reduce) { .item-ripple { display: none; } }
+  /* 起き上がるリスト(案5): タブ/フォルダを開いた時だけ、行が下から順に立ち上がる */
+  .item.stagger-in { animation: itemRise 0.5s cubic-bezier(.22,.61,.36,1) both; }
+  @keyframes itemRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .item.stagger-in { animation: none; } }
   /* 押した瞬間、そっと沈む(手ざわり) — 全画面共通の小さな返事 */
   .cal-day:active { transform: scale(0.94); transition: transform var(--motion-fast) var(--ease-out); }
   body.theme-simple .item:active { transform: scale(0.985); }
@@ -2982,7 +2986,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_RIPPLE_V395</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_STAGGER_V396</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -7732,6 +7736,18 @@
     updateSummary();
   }
 
+  // 起き上がるリスト(案5): 既にDOMにある行を、下から順に立ち上げ直す(再描画不要なので、開いた時だけ発火)
+  function staggerList(container) {
+    if (!container) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const items = container.querySelectorAll('.item');
+    items.forEach((it, i) => {
+      it.classList.remove('stagger-in');
+      void it.offsetWidth; // アニメ再トリガー用のリフロー
+      it.style.animationDelay = (i * 65) + 'ms';
+      it.classList.add('stagger-in');
+    });
+  }
   function switchToTab(lv) {
     const tab = document.querySelector(`.tab[data-lv="${lv}"]`);
     if (!tab) return;
@@ -7739,7 +7755,9 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
-    document.getElementById('panel-' + lv).classList.add('show');
+    const panel = document.getElementById('panel-' + lv);
+    panel.classList.add('show');
+    staggerList(panel);
   }
   document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = () => switchToTab(tab.dataset.lv);
@@ -8309,6 +8327,9 @@
     const card = document.getElementById('tabsPanelsWrap');
     card.classList.toggle('corner-left', which === 'task');
     card.classList.toggle('corner-right', which === 'routine');
+    // 開いた側のリストを、起き上がるアニメで見せる(案5)
+    if (which === 'routine') { const p = document.querySelector('#folderPanelRoutine .panel.show'); staggerList(p); }
+    else { staggerList(document.getElementById('folderPanelTask')); }
   }
   function openRoutineStock() {
     playUIClick();
