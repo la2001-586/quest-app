@@ -193,6 +193,13 @@
     opacity: 1; stroke-dashoffset: 0;
     transition: stroke-dashoffset 0.42s ease 0.06s, opacity 0.12s ease;
   }
+  /* 達成の波紋(案10): 完了した瞬間、押した所から光が行内へ広がる */
+  .item { overflow: hidden; }
+  .item-ripple {
+    position: absolute; border-radius: 50%; background: var(--cyan); opacity: 0.20;
+    transform: scale(0); pointer-events: none; z-index: 0;
+  }
+  @media (prefers-reduced-motion: reduce) { .item-ripple { display: none; } }
   /* 押した瞬間、そっと沈む(手ざわり) — 全画面共通の小さな返事 */
   .cal-day:active { transform: scale(0.94); transition: transform var(--motion-fast) var(--ease-out); }
   body.theme-simple .item:active { transform: scale(0.985); }
@@ -2975,7 +2982,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_MONO_V394</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_RIPPLE_V395</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -7352,6 +7359,26 @@
     }, 60000); // 1分ごとにチェック
   }
 
+  // 達成の波紋(案10): 完了行の左(チェック付近)から、光の波紋が広がって消える
+  function spawnItemRipple(el) {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const rect = el.getBoundingClientRect();
+      const r = document.createElement('span');
+      r.className = 'item-ripple';
+      const size = Math.max(rect.width, rect.height) * 0.55;
+      r.style.width = r.style.height = size + 'px';
+      r.style.left = (rect.width * 0.10 - size / 2) + 'px';
+      r.style.top = (rect.height / 2 - size / 2) + 'px';
+      el.insertBefore(r, el.firstChild);
+      requestAnimationFrame(() => {
+        r.style.transition = 'transform 0.6s cubic-bezier(.22,.61,.36,1), opacity 0.6s ease';
+        r.style.transform = 'scale(3.2)';
+        r.style.opacity = '0';
+      });
+      setTimeout(() => r.remove(), 640);
+    } catch (e) {}
+  }
   function toggleItem(div, key) {
     if (picked.has(key)) {
       picked.delete(key);
@@ -7365,6 +7392,7 @@
       if (isFocusModeActive()) div.classList.add('focus-bonus');
       if (navigator.vibrate) navigator.vibrate(10);
       playSelectSound();
+      spawnItemRipple(div); // 達成の波紋(案10)
       // 不意の提案を「受ける」を選んでいた場合、そのタスクを完了させた瞬間にボーナスEXPを加算する
       if (surpriseQuest && surpriseQuest.status === 'accepted' && surpriseQuest.key === key) {
         surpriseQuest.status = 'completed';
