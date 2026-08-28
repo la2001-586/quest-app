@@ -1272,6 +1272,74 @@
   .cal-line-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-right: 3px; vertical-align: middle; }
   .cal-attr-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 8px 2px 2px; font-size: 9.5px; color: var(--ink-dim); }
   .cal-attr-legend span { display: inline-flex; align-items: center; }
+
+  /* ===== 月ビュー連動: 日スライダー(ディテント)＋その日の詳細 ===== */
+  /* グリッドは縦を埋めず自然な高さに(下にスライダー/詳細を積むため) */
+  body.multipage-mode #calMonthSection,
+  body.multipage-mode #calMonthSection .cal-grid-shell { flex: 0 0 auto !important; }
+  /* 月ラベルの年月を大きく・はっきり */
+  .cal-month-label { font-family: inherit !important; font-size: 15px !important; color: inherit !important; letter-spacing: 0 !important; display: inline-flex; align-items: baseline; gap: 7px; }
+  .cal-month-label .y { font-size: 13px; color: var(--ink-dim); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .cal-month-label .m { font-size: 19px; color: var(--ink); font-weight: 800; }
+  .cal-linked { margin-top: 14px; }
+  .cal-slider-head { display: flex; align-items: baseline; justify-content: center; gap: 9px; margin: 0 4px 8px; }
+  .cal-ym { display: flex; align-items: baseline; gap: 6px; }
+  .cal-ym .y { font-size: 13px; color: var(--ink-dim); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .cal-ym .m { font-size: 18px; color: var(--cyan); font-weight: 800; }
+  .cal-slider-tip { font-size: 10px; color: var(--ink-dim); letter-spacing: .04em; }
+  .cal-rail { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 16px 42% 10px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .cal-rail::-webkit-scrollbar { display: none; }
+  .cal-chip { position: relative; scroll-snap-align: center; scroll-snap-stop: always; flex: 0 0 52px; height: 66px; border-radius: 14px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    transition: transform .12s linear, opacity .12s linear, box-shadow .2s, border-color .2s; will-change: transform; user-select: none; cursor: pointer; }
+  .cal-chip.m-alt { background: rgba(255,255,255,0.09); }
+  .cal-chip .cmo { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 9.5px; font-weight: 800; color: #fff; background: var(--cyan); border-radius: 20px; padding: 1px 7px; white-space: nowrap; line-height: 1.5; z-index: 2; }
+  .cal-chip .cw { font-size: 9px; color: var(--ink-dim); }
+  .cal-chip .cd { font-size: 19px; font-weight: 800; line-height: 1; }
+  .cal-chip.sun .cd { color: #FF8A96; } .cal-chip.sat .cd { color: #7CC4FF; }
+  .cal-chip .cdots { display: flex; gap: 2px; height: 4px; }
+  .cal-chip .cdots i { width: 3.5px; height: 3.5px; border-radius: 50%; }
+  .cal-chip.on { border-color: var(--cyan); box-shadow: 0 0 0 1.5px var(--cyan) inset, 0 6px 16px -8px var(--cyan); }
+  .cal-chip.today .cd { color: var(--cyan); }
+  .cal-daycard { margin-top: 8px; background: linear-gradient(160deg, rgba(24,28,36,0.6), rgba(12,15,20,0.6)); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; overflow: hidden; }
+  .cal-daycard .dc-top { display: flex; align-items: flex-end; gap: 14px; padding: 16px 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .cal-daycard .dc-num { font-size: 46px; font-weight: 800; line-height: .9; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .cal-daycard .dc-meta { padding-bottom: 3px; }
+  .cal-daycard .dc-wk { font-size: 14px; font-weight: 700; }
+  .cal-daycard .dc-wk.sun { color: #FF8A96; } .cal-daycard .dc-wk.sat { color: #7CC4FF; }
+  .cal-daycard .dc-ym { font-size: 12px; color: var(--ink-dim); display: flex; gap: 5px; align-items: baseline; margin-top: 2px; }
+  .cal-daycard .dc-ym .m { font-size: 15px; color: var(--ink); font-weight: 700; }
+  .cal-daycard .dc-count { margin-left: auto; text-align: right; padding-bottom: 3px; }
+  .cal-daycard .dc-count b { font-size: 20px; font-weight: 800; color: var(--cyan); }
+  .cal-daycard .dc-count span { display: block; font-size: 9.5px; color: var(--ink-dim); }
+  .cal-daycard .dc-list { padding: 8px 12px 0; }
+  .cal-dayrow { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .cal-dayrow:last-child { border-bottom: none; }
+  .cal-dayrow .t { font-size: 12px; color: var(--ink-dim); width: 42px; flex: 0 0 auto; font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; }
+  .cal-dayrow .bar { width: 3px; align-self: stretch; border-radius: 3px; flex: 0 0 auto; min-height: 16px; }
+  .cal-dayrow .tx { font-size: 13px; }
+  .cal-dayrow.done .tx { color: var(--ink-dim); text-decoration: line-through; }
+  .cal-day-empty { padding: 20px 10px; text-align: center; color: var(--ink-dim); font-size: 12px; }
+  .cal-dc-more { display: block; width: 100%; text-align: center; padding: 11px; font-size: 11px; color: var(--cyan); background: none; border: none; border-top: 1px solid rgba(255,255,255,0.08); cursor: pointer; }
+  @media (prefers-reduced-motion: reduce){ .cal-chip { transition: box-shadow .2s, border-color .2s; } }
+  /* 明るいテーマ */
+  body.theme-simple:not(.theme-dark) .cal-chip { background: #fff; border-color: rgba(0,0,0,0.10); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  body.theme-simple:not(.theme-dark) .cal-chip.m-alt { background: #EFEEE9; }
+  body.theme-simple:not(.theme-dark) .cal-chip.sun .cd, body.theme-simple:not(.theme-dark) .cal-daycard .dc-wk.sun { color: #E0384A; }
+  body.theme-simple:not(.theme-dark) .cal-chip.sat .cd, body.theme-simple:not(.theme-dark) .cal-daycard .dc-wk.sat { color: #1E7FD6; }
+  body.theme-simple:not(.theme-dark) .cal-daycard { background: #fff; border-color: rgba(0,0,0,0.10); }
+  body.theme-simple:not(.theme-dark) .cal-daycard .dc-top { border-bottom-color: rgba(0,0,0,0.08); }
+  body.theme-simple:not(.theme-dark) .cal-dayrow { border-bottom-color: rgba(0,0,0,0.07); }
+  body.theme-simple:not(.theme-dark) .cal-dc-more { border-top-color: rgba(0,0,0,0.07); }
+  body.theme-simple.theme-mono .cal-ym .m, body.theme-simple.theme-mono .cal-chip.today .cd, body.theme-simple.theme-mono .cal-daycard .dc-count b { color: #1B1B1D; }
+  body.theme-simple.theme-mono .cal-chip.on { border-color: #1B1B1D; box-shadow: 0 0 0 1.5px #1B1B1D inset; }
+  body.theme-simple.theme-mono .cal-chip .cmo { background: #1B1B1D; }
+  body.theme-simple.theme-mono .cal-chip.sun .cd, body.theme-simple.theme-mono .cal-chip.sat .cd,
+  body.theme-simple.theme-mono .cal-daycard .dc-wk.sun, body.theme-simple.theme-mono .cal-daycard .dc-wk.sat { color: #1B1B1D; }
+  /* グリッドの選択日ハイライト */
+  .cal-day.cal-day-sel { box-shadow: inset 0 0 0 2px var(--cyan); border-radius: 8px; }
+  body.theme-simple.theme-mono .cal-day.cal-day-sel { box-shadow: inset 0 0 0 2px #1B1B1D; }
   /* 各行の3点リーダー(編集を開く) */
   .row-kebab { color: var(--ink-dim); cursor: pointer; padding: 4px 6px; flex: 0 0 auto; opacity: 0.5; font-size: 18px; display: inline-flex; align-items: center; }
   .row-kebab:active { opacity: 0.9; }
@@ -2997,7 +3065,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_TASKFIX_V403</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_CALLINK_V404</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -3015,6 +3083,15 @@
           <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
         </div>
         <div class="cal-grid" id="calGrid"></div>
+      </div>
+      <!-- 月ビューに連動する 日スライダー＋その日の詳細 -->
+      <div class="cal-linked" id="calLinked">
+        <div class="cal-slider-head">
+          <div class="cal-ym" id="calRailYm"><span class="y">----</span><span class="m">--月</span></div>
+          <span class="cal-slider-tip">← スライドして日を選ぶ →</span>
+        </div>
+        <div class="cal-rail" id="calRail"></div>
+        <div class="cal-daycard" id="calDayInline"></div>
       </div>
       <div class="cal-attr-legend">
         <span><span class="cal-line-dot" style="background:#E8971F"></span>タスク</span>
@@ -8351,6 +8428,8 @@
         staggerRise(routineOpen ? document.querySelector('#folderPanelRoutine .panel.show') : document.getElementById('folderPanelTask'));
       });
     }
+    // カレンダーを開いた時、日スライダーを今の実寸で中央合わせし直す(非表示時はclientWidth=0で中央化できないため)
+    if (groupKey === 'group_calendar' && typeof renderCalRail === 'function') requestAnimationFrame(() => renderCalRail());
   }
   async function toggleMultiPageMode(on) {
     multiPageModeOn = on;
@@ -10057,6 +10136,7 @@
       if (view === 'agenda') { renderAgendaList(); renderUndatedTasks(); renderWeeklySummary(); }
       if (view === 'report') renderReport(currentReportPeriod);
       if (view === 'day') renderDayView();
+      if (view === 'month' && typeof renderCalRail === 'function') requestAnimationFrame(() => renderCalRail());
     }
 
     if (direction && currentEl && currentEl !== targetEl) {
@@ -10555,10 +10635,17 @@
   }
 
   let monthViewOffset = 0; // 0=今月、-1=先月、+1=来月
+  let selCalDate = new Date(); // 月ビューで選択中の日(スライダー＋詳細と連動)
+  const _CALWK = ['日', '月', '火', '水', '木', '金', '土'];
   function shiftMonthView(delta) {
     monthViewOffset += delta;
     playUIClick();
+    // 表示月に合わせて選択日も移動(同じ日付を保持、月末はクランプ)し、スライダーを組み直す
+    const b = new Date(); b.setDate(1); b.setMonth(b.getMonth() + monthViewOffset);
+    const dim = new Date(b.getFullYear(), b.getMonth() + 1, 0).getDate();
+    selCalDate = new Date(b.getFullYear(), b.getMonth(), Math.min(selCalDate.getDate(), dim));
     renderCalendar();
+    if (typeof renderCalRail === 'function') renderCalRail();
   }
   function renderCalendar() {
     const base = new Date();
@@ -10571,7 +10658,7 @@
     const grid = document.getElementById('calGrid');
     const label = document.getElementById('calMonthLabel');
     if (!grid) return;
-    if (label) label.textContent = `${year} / ${String(month + 1).padStart(2, '0')}`;
+    if (label) label.innerHTML = '<span class="y">' + year + '</span><span class="m">' + (month + 1) + '月</span>';
     grid.innerHTML = '';
 
     function buildCellLines(key) {
@@ -10586,6 +10673,7 @@
     function makeCell(dateNum, key, isOtherMonth) {
       const cell = document.createElement('div');
       cell.className = 'cal-day' + (isOtherMonth ? ' other-month' : '');
+      cell.dataset.k = key;
       const lines = buildCellLines(key);
       cell.innerHTML = `<span class="cal-day-num">${dateNum}</span>` + lines.map(l => `<span class="cal-day-line">${l.color ? `<span class="cal-line-dot" style="background:${l.color}"></span>` : ''}${escapeHtml(l.text)}</span>`).join('');
       attachLongPress(cell, () => quickCreateEvent(key)); // 長押しでその日に新規予定
@@ -10598,7 +10686,10 @@
       const pm = month === 0 ? 11 : month - 1;
       const py = month === 0 ? year - 1 : year;
       const key = `${py}-${pm + 1}-${d}`;
-      grid.appendChild(makeCell(d, key, true));
+      const lc = makeCell(d, key, true);
+      const ld = new Date(py, pm, d);
+      lc.onclick = () => selectCalDay(ld, true);
+      grid.appendChild(lc);
     }
 
     let totalDays = 0, totalExpThisMonth = 0, totalItemsThisMonth = 0;
@@ -10619,18 +10710,17 @@
           totalExpThisMonth += currentTodayExp;
           totalItemsThisMonth += picked.size;
         }
-        const todayRecord = { count: picked.size, exp: currentTodayExp, items: [...picked].map(k => k.split('|')[1]) };
-        cell.onclick = () => showDayDetail(key, todayRecord);
       } else if (record) {
         cell.classList.add('has-record');
-        cell.onclick = () => showDayDetail(key, record);
         totalDays++;
         totalExpThisMonth += record.exp;
         totalItemsThisMonth += record.count;
-      } else {
-        cell.onclick = () => showDayDetail(key, { count: 0, exp: 0, items: [] });
       }
       if (eventsForDate(key).length > 0) cell.classList.add('has-events');
+      // グリッドのタップ＝その日を選択(下のスライダー＋詳細に連動)
+      const cellDate = new Date(year, month, d);
+      cell.onclick = () => selectCalDay(cellDate, true);
+      if (_calSame(cellDate, selCalDate)) cell.classList.add('cal-day-sel');
       grid.appendChild(cell);
     }
 
@@ -10641,7 +10731,10 @@
       const nm = month === 11 ? 0 : month + 1;
       const ny = month === 11 ? year + 1 : year;
       const key = `${ny}-${nm + 1}-${d}`;
-      grid.appendChild(makeCell(d, key, true));
+      const tc = makeCell(d, key, true);
+      const td = new Date(ny, nm, d);
+      tc.onclick = () => selectCalDay(td, true);
+      grid.appendChild(tc);
     }
 
     const totalDaysEl = document.getElementById('calTotalDays');
@@ -10653,6 +10746,121 @@
     renderExpChart();
     renderWeekCompare();
     renderWeekView();
+    // 連動: その日の詳細を更新＋スライダーの選択マーク(スライダー自体はスクロール保持のため再構築しない)
+    renderCalDayInline();
+    _calMarkRail();
+    const _rl = document.getElementById('calRail');
+    if (_rl && !_rl.children.length) renderCalRail();
+  }
+
+  // ===== 月ビュー連動: 日スライダー(ディテント)＋その日の詳細 =====
+  function _calKey(d) { return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function _calSame(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+  function calRecordFor(key) {
+    const todayKey = logicalDateKey(trustedNow);
+    if (key === todayKey) return { count: picked.size, exp: currentTodayExp || 0, items: [...picked].map(k => k.split('|')[1]) };
+    return dailyHistory[key] || { count: 0, exp: 0, items: [] };
+  }
+  function _calYmHTML(d) { return '<span class="y">' + d.getFullYear() + '</span><span class="m">' + (d.getMonth() + 1) + '月</span>'; }
+  function _calSetRailYm(d) { const el = document.getElementById('calRailYm'); if (el) el.innerHTML = _calYmHTML(d); }
+  function _calDots(key) {
+    const evs = eventsForDate(key);
+    const rec = dailyHistory[key];
+    const hasRec = (key === logicalDateKey(trustedNow)) ? picked.size > 0 : !!rec;
+    let dots = evs.slice(0, 3).map(e => '<i style="background:' + (attrColor(e.attr) || e.color || '#8E8E93') + '"></i>').join('');
+    if (hasRec) dots = '<i style="background:' + attrColor('routine') + '"></i>' + dots;
+    return dots;
+  }
+  function renderCalRail() {
+    const rail = document.getElementById('calRail'); if (!rail) return;
+    rail.innerHTML = '';
+    const start = new Date(selCalDate); start.setDate(selCalDate.getDate() - 14);
+    const realToday = new Date();
+    for (let i = 0; i < 29; i++) {
+      const date = new Date(start); date.setDate(start.getDate() + i);
+      const wd = date.getDay();
+      const chip = document.createElement('div');
+      const alt = (date.getMonth() % 2 === 1) ? ' m-alt' : '';
+      chip.className = 'cal-chip' + (wd === 0 ? ' sun' : wd === 6 ? ' sat' : '') + alt + (_calSame(date, selCalDate) ? ' on' : '') + (_calSame(date, realToday) ? ' today' : '');
+      const badge = date.getDate() === 1 ? '<span class="cmo">' + (date.getMonth() + 1) + '月</span>' : '';
+      chip.innerHTML = badge + '<span class="cw">' + _CALWK[wd] + '</span><span class="cd">' + date.getDate() + '</span><span class="cdots">' + _calDots(_calKey(date)) + '</span>';
+      chip.dataset.k = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+      (function (dd) { chip.onclick = () => selectCalDay(dd, true); })(new Date(date));
+      rail.appendChild(chip);
+    }
+    _calSetRailYm(selCalDate);
+    requestAnimationFrame(() => {
+      const on = rail.querySelector('.cal-chip.on');
+      if (on && rail.clientWidth > 0) { _calSuppress = true; rail.scrollLeft = on.offsetLeft + on.offsetWidth / 2 - rail.clientWidth / 2; setTimeout(() => { _calSuppress = false; }, 180); }
+      _calScale();
+    });
+    _calBindRail();
+  }
+  let _calSuppress = false;
+  function _calScale() {
+    const rail = document.getElementById('calRail'); if (!rail || !rail.firstElementChild) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const c = rail.scrollLeft + rail.clientWidth / 2, reach = Math.max(1, rail.clientWidth * 0.40);
+    [].forEach.call(rail.children, function (ch) { const cc = ch.offsetLeft + ch.offsetWidth / 2, t = Math.min(Math.abs(cc - c) / reach, 1); ch.style.transform = 'scale(' + (1.2 - t * 0.44).toFixed(3) + ')'; ch.style.opacity = (1 - t * 0.5).toFixed(3); });
+  }
+  function _calCentered() { const rail = document.getElementById('calRail'); if (!rail) return null; const c = rail.scrollLeft + rail.clientWidth / 2; let best = null, bd = 1e9; [].forEach.call(rail.children, function (ch) { const cc = ch.offsetLeft + ch.offsetWidth / 2, dd = Math.abs(cc - c); if (dd < bd) { bd = dd; best = ch; } }); return best; }
+  let _calLastIso = null;
+  function _calFireDetent(ch) { if (!ch || ch.dataset.k === _calLastIso) return; _calLastIso = ch.dataset.k; playUIClick(); try { if (navigator.vibrate) navigator.vibrate(9); } catch (e) {} }
+  let _calSnapping = false;
+  function _calSnap() { if (_calSnapping) return; const rail = document.getElementById('calRail'); const ch = _calCentered(); if (!rail || !ch) return; const target = ch.offsetLeft + ch.offsetWidth / 2 - rail.clientWidth / 2; const from = rail.scrollLeft, dist = target - from; if (Math.abs(dist) < 0.5) return; _calSnapping = true; let t0 = null; (function step(ts) { if (!t0) t0 = ts; const p = Math.min(1, (ts - t0) / 200); const e = 1 - Math.pow(1 - p, 3); rail.scrollLeft = from + dist * e; if (p < 1) requestAnimationFrame(step); else _calSnapping = false; })(); }
+  let _calRailBound = false, _calScrollTO = null;
+  function _calBindRail() {
+    const rail = document.getElementById('calRail'); if (!rail || _calRailBound) return; _calRailBound = true;
+    rail.addEventListener('scroll', function () {
+      requestAnimationFrame(function () { _calScale(); const ch = _calCentered(); if (ch) { const p = ch.dataset.k.split('-'); _calSetRailYm(new Date(+p[0], +p[1], +p[2])); _calFireDetent(ch); } });
+      if (_calScrollTO) clearTimeout(_calScrollTO);
+      _calScrollTO = setTimeout(function () {
+        if (_calSuppress || rail.clientWidth === 0) return; // プログラム的な中央寄せ・非表示中は無視
+        const best = _calCentered();
+        if (best) {
+          const p = best.dataset.k.split('-'); const d = new Date(+p[0], +p[1], +p[2]);
+          if (!_calSame(d, selCalDate)) selectCalDay(d, false);
+          const idx = [].indexOf.call(rail.children, best);
+          if (idx < 3 || idx > rail.children.length - 4) renderCalRail(); // 端に近づいたら窓を広げる
+        }
+        _calSnap();
+      }, 70);
+    }, { passive: true });
+    let drag = false, sx = 0, sl = 0;
+    rail.addEventListener('mousedown', function (e) { drag = true; sx = e.clientX; sl = rail.scrollLeft; });
+    window.addEventListener('mousemove', function (e) { if (drag) rail.scrollLeft = sl - (e.clientX - sx); });
+    window.addEventListener('mouseup', function () { drag = false; });
+  }
+  function _calMarkRail() { const rail = document.getElementById('calRail'); if (!rail) return; [].forEach.call(rail.children, function (ch) { const p = ch.dataset.k.split('-'); const d = new Date(+p[0], +p[1], +p[2]); ch.classList.toggle('on', _calSame(d, selCalDate)); }); }
+  function _calMarkGridSel() {
+    const grid = document.getElementById('calGrid'); if (!grid) return;
+    [].forEach.call(grid.querySelectorAll('.cal-day-sel'), el => el.classList.remove('cal-day-sel'));
+    const cell = grid.querySelector('[data-k="' + _calKey(selCalDate) + '"]'); if (cell) cell.classList.add('cal-day-sel');
+  }
+  function renderCalDayInline() {
+    const box = document.getElementById('calDayInline'); if (!box) return;
+    const key = _calKey(selCalDate), wd = selCalDate.getDay();
+    const rec = calRecordFor(key);
+    const evs = eventsForDate(key);
+    let rows = '';
+    evs.forEach(function (ev) { const done = ev.recurrence ? (ev.doneOccurrences || []).includes(key) : ev.done; rows += '<div class="cal-dayrow' + (done ? ' done' : '') + '"><span class="t">' + (ev.time || '—') + '</span><span class="bar" style="background:' + (attrColor(ev.attr) || ev.color || '#8E8E93') + '"></span><span class="tx">' + escapeHtml(ev.text) + '</span></div>'; });
+    const items = [...(rec.items || []), ...(rec.todayTasksCompleted || [])];
+    items.forEach(function (it) { rows += '<div class="cal-dayrow done"><span class="t"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="' + attrColor('routine') + '" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></span><span class="bar" style="background:' + attrColor('routine') + '"></span><span class="tx">' + escapeHtml(it) + '</span></div>'; });
+    const listHtml = rows || '<div class="cal-day-empty">この日の記録・予定はありません</div>';
+    box.innerHTML =
+      '<div class="dc-top"><div class="dc-num">' + selCalDate.getDate() + '</div>' +
+      '<div class="dc-meta"><div class="dc-wk' + (wd === 0 ? ' sun' : wd === 6 ? ' sat' : '') + '">' + _CALWK[wd] + '曜日</div><div class="dc-ym">' + _calYmHTML(selCalDate) + '</div></div>' +
+      '<div class="dc-count"><b>' + (rec.count || 0) + '</b><span>達成</span></div></div>' +
+      '<div class="dc-list">' + listHtml + '</div>' +
+      '<button class="cal-dc-more" onclick="showDayDetail(\'' + key + '\', calRecordFor(\'' + key + '\'))">この日を詳しく見る</button>';
+  }
+  function selectCalDay(d, recenter) {
+    selCalDate = new Date(d);
+    const realBase = new Date();
+    const targetOffset = (selCalDate.getFullYear() - realBase.getFullYear()) * 12 + (selCalDate.getMonth() - realBase.getMonth());
+    if (targetOffset !== monthViewOffset) { monthViewOffset = targetOffset; renderCalendar(); } // renderCalendar 内で詳細・選択も更新
+    else { _calMarkGridSel(); renderCalDayInline(); }
+    if (recenter) renderCalRail(); else _calMarkRail();
   }
 
   let quickMemoText = '';
