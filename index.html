@@ -278,6 +278,7 @@
   /* チェック: 無彩の丸→こなすと黒。描画アニメはそのまま */
   body.theme-simple.theme-mono .check-box { border-color: rgba(0,0,0,0.32) !important; background: transparent !important; }
   body.theme-simple.theme-mono .item.picked .check-box { background: #1B1B1D !important; border-color: #1B1B1D !important; box-shadow: none !important; }
+  body.theme-simple.theme-mono .item.today-custom.done .check-box { background: #1B1B1D !important; border-color: #1B1B1D !important; color: #fff !important; box-shadow: none !important; }
   /* 階級キーは薄いヘアラインのキー、選択で黒文字 */
   body.theme-simple.theme-mono .tab { box-shadow: 0 0 0 1px rgba(0,0,0,0.10) inset !important; background: #FFFFFF !important; color: var(--ink-dim) !important; }
   body.theme-simple.theme-mono .tab.active { color: #1B1B1D !important; background: #F5F5F5 !important; box-shadow: 0 0 0 1px rgba(0,0,0,0.16) inset !important; }
@@ -1425,7 +1426,9 @@
       0 0 14px rgba(255,138,92,0.3), 0 5px 12px rgba(0,0,0,0.4),
       inset 0 0.47px 0 0 rgba(255,255,255,0.45), inset 0 3px 4px -3px rgba(0,0,0,0.35);
   }
-  .item.today-custom.done .check-box { background: #F0906B; border-color: #F0906B; color: var(--bg); }
+  /* 完了チェック: どのテーマでも見えるよう、濃いめのオレンジ塗り＋白チェックで高コントラストに
+     (以前は color:var(--bg) で、白系テーマだとコーラル地に白抜けして見えなかった) */
+  .item.today-custom.done .check-box { background: #D9631E; border-color: #D9631E; color: #fff; }
   .item.today-custom.done .item-label { text-decoration: line-through; opacity: 0.6; }
   .today-group-divider {
     border-top: 1px solid rgba(255,255,255,0.14); margin: 4px 0 10px;
@@ -2994,7 +2997,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_SOUND_V402</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_TASKFIX_V403</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -6356,7 +6359,10 @@
       updateSummary();
     }
     saveScheduledEvents();
-    playUIClick();
+    // 完了時は日課と同じ完了音、解除時は解除音、それ以外は軽いクリック
+    if (justCompleted) { playSelectSound(); if (navigator.vibrate) navigator.vibrate(10); }
+    else if (justUncompleted) { playDeselectSound(); }
+    else { playUIClick(); }
   }
   function deleteScheduledEvent(id) {
     if (!confirm(currentLang === 'en' ? 'Delete this?' : 'これを削除しますか？')) return;
