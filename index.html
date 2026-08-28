@@ -193,17 +193,48 @@
     opacity: 1; stroke-dashoffset: 0;
     transition: stroke-dashoffset 0.42s ease 0.06s, opacity 0.12s ease;
   }
-  /* 達成の波紋(案10): 完了した瞬間、押した所から光が行内へ広がる */
-  .item { overflow: hidden; }
-  .item-ripple {
-    position: absolute; border-radius: 50%; background: var(--cyan); opacity: 0.20;
-    transform: scale(0); pointer-events: none; z-index: 0;
+  /* 達成の波紋(案10): 完了した瞬間、押した所から光が行内へ広がる
+     ※ .item > .item-ripple の2クラス指定で、後段の「.item > *{position:relative}」に必ず勝つ
+       (勝てないと波紋がフレックス子要素として行内に居座り、レイアウトが崩れる) */
+  .item > .item-ripple {
+    position: absolute !important; border-radius: 50%;
+    background: radial-gradient(circle, var(--cyan), transparent 68%);
+    opacity: 0.42; transform: scale(0); pointer-events: none; z-index: 0;
+    mix-blend-mode: screen;
   }
-  @media (prefers-reduced-motion: reduce) { .item-ripple { display: none; } }
-  /* 起き上がるリスト(案5): タブ/フォルダを開いた時だけ、行が下から順に立ち上がる */
-  .item.stagger-in { animation: itemRise 0.5s cubic-bezier(.22,.61,.36,1) both; }
-  @keyframes itemRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .item.stagger-in { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .item > .item-ripple { display: none; } }
+  /* 起き上がるリスト(案5): タブ/フォルダを開いた時だけ、行が下から順に立ち上がる
+     ※ .panel / .folder-panel を前置して .item.picked の itemHit より高詳細度にし、
+       済みの行もちゃんと立ち上がるようにする。再生後はJS側でクラスを外す(選択時の弾みを殺さない) */
+  .panel .item.stagger-in,
+  .folder-panel .item.stagger-in { animation: itemRise 0.52s cubic-bezier(.22,.9,.3,1) both; }
+  @keyframes itemRise {
+    from { opacity: 0; transform: translateY(26px) scale(0.97); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .panel .item.stagger-in, .folder-panel .item.stagger-in { animation: none; } }
+  /* 満ちるリング(案2): その級の日課の達成が、バネで満ちていく */
+  .lvl-progress { display: flex; align-items: center; gap: 12px; margin: 2px 2px 12px; }
+  .lvl-ring-wrap { position: relative; width: 44px; height: 44px; flex: 0 0 auto; }
+  .lvl-ring { width: 44px; height: 44px; transform: rotate(-90deg); display: block; }
+  .lvl-ring .lr-track { fill: none; stroke: rgba(255,255,255,0.12); stroke-width: 4; }
+  .lvl-ring .lr-fill {
+    fill: none; stroke: var(--cyan); stroke-width: 4; stroke-linecap: round;
+    stroke-dasharray: 113.1; stroke-dashoffset: 113.1;
+    transition: stroke-dashoffset 0.7s cubic-bezier(.34,1.3,.4,1);
+    filter: drop-shadow(0 0 5px rgba(43,201,204,0.5));
+  }
+  .lvl-ring-num {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .lvl-progress .combo-hint { margin: 0; flex: 1; }
+  body.theme-simple .lvl-ring .lr-track { stroke: rgba(0,0,0,0.10); }
+  body.theme-simple.theme-dark .lvl-ring .lr-track { stroke: rgba(255,255,255,0.12); }
+  body.theme-simple.theme-mono .lvl-ring .lr-fill { stroke: #1B1B1D; filter: none; }
+  body.theme-simple.theme-mono .lvl-ring-num { color: #1B1B1D; }
+  @media (prefers-reduced-motion: reduce) { .lvl-ring .lr-fill { transition: none; } }
   /* 押した瞬間、そっと沈む(手ざわり) — 全画面共通の小さな返事 */
   .cal-day:active { transform: scale(0.94); transition: transform var(--motion-fast) var(--ease-out); }
   body.theme-simple .item:active { transform: scale(0.985); }
@@ -2986,7 +3017,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_STAGGER_V396</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0824_RINGFIX_V397</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -3229,19 +3260,37 @@
   </div>
 
   <div class="panel show" id="panel-low" data-lv="low">
-    <div class="combo-hint" id="comboHint-low"></div>
+    <div class="lvl-progress">
+      <div class="lvl-ring-wrap">
+        <svg class="lvl-ring" viewBox="0 0 44 44"><circle class="lr-track" cx="22" cy="22" r="18"/><circle class="lr-fill" id="ring-low" cx="22" cy="22" r="18"/></svg>
+        <div class="lvl-ring-num" id="ringNum-low">0/0</div>
+      </div>
+      <div class="combo-hint" id="comboHint-low"></div>
+    </div>
     <div id="list-low"></div>
     <button class="add-task-btn" onclick="openAddTask('low')">＋</button>
   </div>
 
   <div class="panel" id="panel-mid" data-lv="mid">
-    <div class="combo-hint" id="comboHint-mid"></div>
+    <div class="lvl-progress">
+      <div class="lvl-ring-wrap">
+        <svg class="lvl-ring" viewBox="0 0 44 44"><circle class="lr-track" cx="22" cy="22" r="18"/><circle class="lr-fill" id="ring-mid" cx="22" cy="22" r="18"/></svg>
+        <div class="lvl-ring-num" id="ringNum-mid">0/0</div>
+      </div>
+      <div class="combo-hint" id="comboHint-mid"></div>
+    </div>
     <div id="list-mid"></div>
     <button class="add-task-btn" onclick="openAddTask('mid')">＋</button>
   </div>
 
   <div class="panel" id="panel-high" data-lv="high">
-    <div class="combo-hint" id="comboHint-high"></div>
+    <div class="lvl-progress">
+      <div class="lvl-ring-wrap">
+        <svg class="lvl-ring" viewBox="0 0 44 44"><circle class="lr-track" cx="22" cy="22" r="18"/><circle class="lr-fill" id="ring-high" cx="22" cy="22" r="18"/></svg>
+        <div class="lvl-ring-num" id="ringNum-high">0/0</div>
+      </div>
+      <div class="combo-hint" id="comboHint-high"></div>
+    </div>
     <div id="list-high"></div>
     <button class="add-task-btn" onclick="openAddTask('high')">＋</button>
   </div>
@@ -7641,6 +7690,9 @@
       }
     });
 
+    // 満ちるリング(案2): その級の達成数/総数で、リングをバネで満たす
+    updateLevelRings(countByLevel);
+
     if (level > prevLevel && !isInitializing) {
       showGrandModal({
         icon: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="9" r="6"></circle><path d="M9 14.5L7 22l5-3 5 3-2-7.5"></path></svg>', label: 'LEVEL UP', title: t('levelup_title', { n: String(level).padStart(2, '0') }),
@@ -7736,6 +7788,32 @@
     updateSummary();
   }
 
+  // 満ちるリング(案2): その級の日課の「達成数/総数」でリングを満たす
+  const RING_CIRC = 113.097; // 2 * π * r(=18)
+  function updateLevelRings(countByLevel) {
+    ['low', 'mid', 'high'].forEach(lv => {
+      const total = taskList.filter(tk => tk.active !== false && tk.level === lv).length;
+      const done = countByLevel[lv] || 0;
+      const ring = document.getElementById('ring-' + lv);
+      const numEl = document.getElementById('ringNum-' + lv);
+      const wrap = ring ? ring.closest('.lvl-ring-wrap') : null;
+      if (!ring || !numEl) return;
+      if (total === 0) { if (wrap) wrap.style.display = 'none'; return; }
+      if (wrap) wrap.style.display = '';
+      const frac = Math.min(1, done / total);
+      const offset = RING_CIRC * (1 - frac);
+      if (isInitializing) { // 起動時はバネを出さず、最初から満ちた状態で置く
+        ring.style.transition = 'none';
+        ring.style.strokeDashoffset = offset;
+        void ring.getBoundingClientRect();
+        ring.style.transition = '';
+      } else {
+        ring.style.strokeDashoffset = offset;
+      }
+      numEl.textContent = done + '/' + total;
+    });
+  }
+
   // 起き上がるリスト(案5): 既にDOMにある行を、下から順に立ち上げ直す(再描画不要なので、開いた時だけ発火)
   function staggerList(container) {
     if (!container) return;
@@ -7743,9 +7821,16 @@
     const items = container.querySelectorAll('.item');
     items.forEach((it, i) => {
       it.classList.remove('stagger-in');
+      if (it._staggerTimer) clearTimeout(it._staggerTimer);
       void it.offsetWidth; // アニメ再トリガー用のリフロー
-      it.style.animationDelay = (i * 65) + 'ms';
+      const delay = i * 70;
+      it.style.animationDelay = delay + 'ms';
       it.classList.add('stagger-in');
+      // 立ち上がり終了後にクラスを外す(残すと選択時の itemHit を打ち消してしまうため)
+      it._staggerTimer = setTimeout(() => {
+        it.classList.remove('stagger-in');
+        it.style.animationDelay = '';
+      }, delay + 560);
     });
   }
   function switchToTab(lv) {
