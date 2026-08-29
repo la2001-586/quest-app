@@ -72,8 +72,8 @@ ffmpeg を入れた直後は PATH が反映されず「開き直してくださ�
 
 ```powershell
 .\make_test_video.ps1 test.mp4
-python transcribe.py test.mp4 --lang en --model tiny
-python autoclip.py test.mp4 --segments test.segments.json --keyword highlight
+py -3 transcribe.py test.mp4 --lang en --model tiny
+py -3 autoclip.py test.mp4 --segments test.segments.json --keyword highlight
 ```
 
 > `make_test_video.ps1` は Windows 標準の音声合成でテスト音声を作る。
@@ -85,8 +85,8 @@ python autoclip.py test.mp4 --segments test.segments.json --keyword highlight
 日本語の動画でも通ることを確認する。手持ちの動画があればそれを使う。
 
 ```powershell
-python transcribe.py 素材.mp4 --lang ja --model small
-python autoclip.py 素材.mp4 --segments 素材.segments.json --keyword ここ
+py -3 transcribe.py 素材.mp4 --lang ja --model small
+py -3 autoclip.py 素材.mp4 --segments 素材.segments.json --keyword ここ
 ```
 
 ## 完了条件（これが全部そろうまで「できました」と言わない）
