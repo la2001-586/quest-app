@@ -115,7 +115,33 @@ python3 transcribe.py 素材.mp4 --backend sherpa-onnx --lang ja
 | `transcribe.py` | 文字起こし（JSON + SRT） | 共通 |
 | `autoclip.py` | ffmpeg で切り出し | 共通 |
 
-## 6. 検証済みの内容（2026-08-24）
+## 6. 検証済みの内容
+
+### Windows 実機（2026-08-25）
+
+Windows 11 / Windows PowerShell 5.1 / 日本語ユーザー名の環境で、
+インストールから切り出しまでを実際に通しました。
+
+- ffmpeg 9.0 と faster-whisper を `setup.ps1` で導入（UAC は一度も出ず、ユーザースコープに導入）
+- `test.mp4` を文字起こしし、3 区間と時刻を取得（`4.78 - 8.78  Now here comes the highlight moment.`）
+- キーワード `highlight` で 4.28s〜9.28s を切り出し、
+  映像に焼き込んだ時刻（04.280 → 09.080）と、クリップ単体の再文字起こしの両方で位置を確認
+- 日本語（`--lang ja --model small`）でも文字起こしと切り出しを確認。SRT は UTF-8 で出力される
+
+この過程で見つかった Windows 固有の詰まり 5 件は修正済みです（コミット `8a945e9`）。
+
+| 症状 | 原因 |
+| --- | --- |
+| `$python` が null になり異常終了 | BOM 無し UTF-8 を PS5.1 が cp932 として読み、日本語文字列の末尾が壊れて構文が崩れる → **UTF-8 BOM を付与** |
+| pip が走らず Python REPL が起動 | `if (...) { @("-3") }` の 1 要素配列が String にアンロールされ、スプラットが壊れる → **`[string[]]` で受ける** |
+| `Impossible to open .../sil.wav` | concat 用 `list.txt` を ascii で書き、日本語ユーザー名のパスが `??` に潰れる → **UTF-8（BOM 無し）で書く** |
+| `Fontconfig error` で動画が作れない | Windows に fontconfig の既定設定が無い → **drawtext に `fontfile` を明示** |
+| `cublas64_12.dll is not found` | `device="auto"` が CUDA を選ぶが cuBLAS 未導入 → **失敗時に CPU へフォールバック** |
+
+補足として、既定の読み上げ音声が Haruka (ja-JP) だと英語テキストを日本語読みしてしまい
+Whisper が聞き取れないため、`-VoiceCulture` で読み上げ言語に合う音声を選ぶようにしています。
+
+### Linux（クラウドコンテナ・2026-08-24）
 
 - ffmpeg 6.1.1 / ffprobe 導入・動作確認（テスト動画生成・音声抽出・切り出し・静止画抽出）
 - Whisper で 14.6 秒のテスト動画を文字起こしし、3 つの発話区間と時刻を取得
@@ -132,4 +158,5 @@ python3 transcribe.py 素材.mp4 --backend sherpa-onnx --lang ja
 `openai-whisper` / `faster-whisper` が使うモデル配布元（openaipublic.azureedge.net,
 huggingface.co）に接続できませんでした（403）。そのため検証は GitHub Releases から
 取得できる `sherpa-onnx` 版 Whisper（tiny）で行っています。
-通常のパソコンでは `./setup.sh` → `faster-whisper` がそのまま使えます。
+通常のパソコンでは `./setup.sh` → `faster-whisper` がそのまま使えます
+（上記のとおり Windows 実機で確認済みです）。
