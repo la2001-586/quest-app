@@ -66,11 +66,15 @@ python3 autoclip.py 素材.mp4 --segments 素材.segments.json --all --merge-gap
 
 ```powershell
 .\make_test_video.ps1 test.mp4
-python transcribe.py test.mp4 --lang en --model tiny
-python autoclip.py test.mp4 --segments test.segments.json --keyword highlight
+py -3 transcribe.py test.mp4 --lang en --model tiny
+py -3 autoclip.py test.mp4 --segments test.segments.json --keyword highlight
 ```
 
 `clips\` の中に、「highlight」と言っている部分だけを切り出した動画ができていれば成功です。
+
+> **`python` ではなく `py -3` を使う理由**: Windows では `python` / `python3` が
+> Microsoft Store のスタブ（中身のない案内用の実行ファイル）に先に一致することがあり、
+> その場合スクリプトが動かない。`py -3` は Python 本体のランチャーなので確実。
 
 ### Mac / Linux
 
