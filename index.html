@@ -3065,7 +3065,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_CALLINK_V404</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_CALSWIPE_V405</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5658,6 +5658,8 @@
 
     wrap.addEventListener('touchstart', (e) => {
       if (e.touches.length !== 1) return;
+      // 日スライダー上で始まったスワイプは、日送り専用。月/週/日のビュー切替とは被らせない
+      if (e.target.closest && e.target.closest('#calRail')) { swiping = false; return; }
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
       swiping = true;
