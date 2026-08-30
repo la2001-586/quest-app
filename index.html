@@ -3076,7 +3076,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0830_STARTPAGE_V406</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0830_TASKDATE_V407</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -3519,7 +3519,6 @@
         <span class="toggle-track"></span>
       </label>
     </div>
-    <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_multipage_desc">カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。</div>
     <div class="settings-row" style="margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12); display:block;">
       <span data-i18n="opt_startpage_row_label"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg> 最初に開くページ</span>
       <div class="startpage-switch">
@@ -3529,7 +3528,6 @@
         <button class="startpage-btn" data-group="group_diary" onclick="setStartPage('group_diary')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v17H6a2 2 0 0 0-2 2z"></path><path d="M19 17H6a2 2 0 0 0-2 2"></path><path d="M8 7h7"></path></svg><span data-i18n="group_diary_short">日記</span></button>
       </div>
     </div>
-    <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:6px;" data-i18n="opt_startpage_desc">アプリを起動したとき、最初にこのページを開きます（複数ページモードのとき）。</div>
   </div>
   <div class="settings-group">
     <div class="settings-label">表示サイズ</div>
@@ -3541,7 +3539,6 @@
         <button class="textscale-btn" data-scale="large" onclick="applyTextScale('large')">大</button>
       </div>
     </div>
-    <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;">アプリ全体の表示を拡大・縮小します（小＝標準サイズ）。読みやすい大きさに調整できます。</div>
   </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="opt_lang_sound_label">言語 / サウンド</div>
@@ -3573,7 +3570,6 @@
     </div>
     <input type="range" class="volume-slider" id="boundaryHourSlider" min="0" max="8" value="4" style="width:100%; margin-bottom:6px;">
     <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_manual_daychange_btn" onclick="manualAdvanceDay()">日付を切り替える</button>
-    <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_manual_daychange_desc">生活リズムが不規則な時、区切りの時刻を待たずに、手動で1日を締められます</div>
   </div>
   <div class="settings-group">
     <div class="settings-label" data-i18n="notify_label"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg> 通知(試験導入)</div>
@@ -3718,6 +3714,12 @@
       <div id="dayDetailEventsList"></div>
       <div class="evt-form">
         <input type="text" id="dayDetailEventText" class="evt-title" data-i18n-placeholder="event_placeholder" placeholder="予定を入力" onkeydown="if(event.key==='Enter') confirmAddDayEvent()">
+        <div class="evt-row">
+          <span class="evt-label" data-i18n="evt_date_label">日付</span>
+          <div class="evt-ctrl">
+            <input type="date" id="dayDetailEventDate" class="evt-in evt-grow">
+          </div>
+        </div>
         <div class="evt-row">
           <span class="evt-label">日時</span>
           <div class="evt-ctrl">
@@ -4733,7 +4735,7 @@
       stat_selected_count: '選択件数', stat_gained_exp: '獲得EXP', stat_active_days: '記録日数',
       stat_mood_count: '気分日記の件数', stat_task_total: 'タスク総数',
       recent_mood_title: '直近の気分日記', no_mood_yet: 'まだ記録がありません',
-      event_placeholder: '予定を入力', undated_task_placeholder: '日付を決めず追加',
+      event_placeholder: '予定を入力', undated_task_placeholder: '日付を決めず追加', evt_date_label: '日付',
       location_placeholder: '場所', note_placeholder: 'メモ', reminder_custom_placeholder: '分前',
       no_undated_tasks: '日付未定のタスクはありません', no_upcoming_events: '今後60日以内の予定はありません',
       no_events_today: '予定はありません', more_options_label: '▾ 詳細オプション(場所・メモ・終日など)',
@@ -4881,7 +4883,7 @@
       stat_selected_count: 'Selected', stat_gained_exp: 'EXP Gained', stat_active_days: 'Active Days',
       stat_mood_count: 'Mood Entries', stat_task_total: 'Total Tasks',
       recent_mood_title: 'Recent Mood Entries', no_mood_yet: 'No entries yet',
-      event_placeholder: 'Enter an event', undated_task_placeholder: 'Add without a date',
+      event_placeholder: 'Enter an event', undated_task_placeholder: 'Add without a date', evt_date_label: 'Date',
       location_placeholder: 'Location', note_placeholder: 'Note', reminder_custom_placeholder: 'min before',
       no_undated_tasks: 'No undated tasks', no_upcoming_events: 'No events in the next 60 days',
       no_events_today: 'No events', more_options_label: '▾ More options (location, note, all-day, etc.)',
@@ -11021,11 +11023,30 @@
 
   // ---- 備忘録カード: メモと違い、保存すると新しいカードとして積み上がっていく長期記録 ----
   let mementoCards = [];
+  // 初回起動時のサンプル(お気に入り状態の買い物メモ)。1度でも保存済みなら出さない(削除しても復活させない)。
+  function defaultMementoCards() {
+    return [{
+      id: 'mem_sample_shopping',
+      title: '買い物メモ',
+      text: '<div>じゃがいも</div><div>にんじん</div><div>たまねぎ</div><div>カレールー</div>',
+      createdAt: Date.now(),
+      favorite: true,
+    }];
+  }
   async function loadMementoCards() {
+    let firstEver = false;
     try {
       const saved = await window.storage.get('quest-memento-cards-v1');
-      mementoCards = (saved && saved.value) ? JSON.parse(saved.value) : [];
+      if (saved && saved.value !== undefined && saved.value !== null) {
+        mementoCards = JSON.parse(saved.value);
+      } else {
+        firstEver = true; // まだ1度も保存されていない = 初回起動
+      }
     } catch (e) { mementoCards = []; }
+    if (firstEver) {
+      mementoCards = defaultMementoCards();
+      await saveMementoCards(); // 以後は通常のカードとして扱う(2回目以降は復活させない)
+    }
     renderMementoCards();
   }
   async function saveMementoCards() {
@@ -11254,6 +11275,10 @@
     '1日の区切りの時刻より前は「前日」として記録されます。夜更かしが多い人は4〜5時、規則正しい人は0時がおすすめです。',
     '🔔 通知は、アプリを閉じていても、時間が来たらお知らせします。試験的な機能です。',
     '⬇️ データ管理から、経験値・履歴・タスク一覧をまとめてファイルに保存できます。機種変更やデータ消失に備えて、ときどきバックアップしておくのがおすすめです。',
+    '🗓 タスクや予定を追加するとき、フォーム上の「日付」を変えると、別の日にも入れられます。昨日やったことを後から記録したり、明日以降の予定を先に入れておけます。',
+    '📱 オプションの「複数ページモード」をオンにすると、カレンダー・タスク管理・日記・ホームを、それぞれ独立したページとして切り替えて使えます。',
+    '🏠 オプションの「最初に開くページ」で、アプリを開いたとき最初に表示するページを選べます。よく開くページにしておくと便利です。',
+    '🔎 オプションの「表示サイズ」で、文字やUIの大きさを 小・中・大 から変えられます。読みやすい大きさに調整できます。',
   ];
   const TUTORIAL_STEPS_EN = [
     '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> In the calendar, swipe left or right to switch between month, week, and day views. Try swiping the card below.',
@@ -11265,6 +11290,10 @@
     'Activity before the daily boundary time is logged as the previous day. 4-5 AM suits night owls; midnight suits early sleepers.',
     '🔔 Notifications reach you even with the app closed, once the set time arrives. This is an experimental feature.',
     "⬇️ From Data Management, you can save your XP, history, and task list to a file. It's a good idea to back up occasionally in case you switch devices or lose data.",
+    "🗓 When adding a task or event, change the \"Date\" field in the form to file it on another day — log something you did yesterday, or plan ahead for a future day.",
+    '📱 Turn on "Multi-page mode" in Options to use Calendar, Tasks, Diary, and Home as separate pages you switch between.',
+    '🏠 In Options, "Start page" lets you choose which page opens first when you launch the app. Handy to set your most-used page.',
+    '🔎 In Options, "Display size" lets you switch text and UI size between Small, Medium, and Large for comfortable reading.',
   ];
   let tutorialStepIndex = 0;
   function openMiscGrid() {
@@ -11290,7 +11319,7 @@
   let tutorialWaitingForSwipe = false;
   function renderTutorialStep() {
     const steps = (currentLang === 'en') ? TUTORIAL_STEPS_EN : TUTORIAL_STEPS_JA;
-    document.getElementById('tutorialStepText').textContent = steps[tutorialStepIndex];
+    document.getElementById('tutorialStepText').innerHTML = steps[tutorialStepIndex];
     document.getElementById('tutorialStepNum').textContent = tutorialStepIndex + 1;
     document.getElementById('tutorialStepTotal').textContent = steps.length;
     const isSwipeStep = (tutorialStepIndex === 0); // カレンダースワイプの説明は、常に最初のステップ
@@ -11537,18 +11566,26 @@
     const reminderEl = document.getElementById('dayDetailEventReminder');
     const reminderCustomEl = document.getElementById('dayDetailEventReminderCustom');
     const attrEl = document.getElementById('dayDetailEventAttr');
+    const dateEl = document.getElementById('dayDetailEventDate');
     const attrVal = attrEl ? attrEl.value : 'event';
     if (!textEl.value.trim() || !dayDetailCurrentKey) return;
+    // 追加先の日付: 日付欄が変更されていれば、その日に予定を入れる(昨日の記録・明日以降の予定)。既定は開いている日。
+    const targetKey = (dateEl && dateEl.value) ? isoToKey(dateEl.value) : dayDetailCurrentKey;
     let reminderMinutes = null;
     if (reminderEl.value === 'custom') {
       reminderMinutes = reminderCustomEl.value ? parseInt(reminderCustomEl.value, 10) : null;
     } else if (reminderEl.value) {
       reminderMinutes = parseInt(reminderEl.value, 10);
     }
-    addScheduledEvent(dayDetailCurrentKey, timeEl.value, textEl.value, recurEl.value || null, attrColor(attrVal), {
+    addScheduledEvent(targetKey, timeEl.value, textEl.value, recurEl.value || null, attrColor(attrVal), {
       allDay: allDayEl.checked, endTime: endTimeEl.value, location: locationEl.value, note: noteEl.value,
       reminderMinutes: reminderMinutes, attr: attrVal,
     });
+    // 表示中の日と違う日に入れた時は、その場では一覧に出ないので、トーストで知らせる
+    if (targetKey !== dayDetailCurrentKey) {
+      const p = targetKey.split('-');
+      showToast(`🗓 ${p[1]}月${p[2]}日に追加しました`);
+    }
     textEl.value = '';
     timeEl.value = '';
     recurEl.value = '';
@@ -11562,15 +11599,27 @@
     reminderCustomEl.value = '';
     reminderCustomEl.style.display = 'none';
     if (attrEl) attrEl.value = 'event';
+    if (dateEl) dateEl.value = keyToISO(dayDetailCurrentKey); // 追加先の日付は、開いている日に戻す
     renderDayDetailEvents(dayDetailCurrentKey);
     renderCalendar();
     renderTodayTasksList();
     playUIClick();
   }
 
+  // 内部の日付キー(YYYY-M-D, 0埋め無し) と <input type=date> のISO(YYYY-MM-DD) を相互変換する
+  function keyToISO(key) {
+    const p = key.split('-');
+    return `${p[0]}-${String(+p[1]).padStart(2, '0')}-${String(+p[2]).padStart(2, '0')}`;
+  }
+  function isoToKey(iso) {
+    const p = iso.split('-');
+    return `${parseInt(p[0], 10)}-${parseInt(p[1], 10)}-${parseInt(p[2], 10)}`;
+  }
   function showDayDetail(key, record) {
     dayDetailCurrentKey = key;
     const [y, m, d] = key.split('-');
+    const dateInput = document.getElementById('dayDetailEventDate');
+    if (dateInput) dateInput.value = keyToISO(key); // 追加先の日付は、開いている日を既定にする(変更すれば別の日に予定を入れられる)
     const allItems = [...(record.items || []), ...(record.todayTasksCompleted || [])];
     const itemsText = allItems.length ? allItems.join('、') : '記録なし';
     document.getElementById('dayDetailDate').textContent = `${y}年${m}月${d}日の記録`;
