@@ -2629,6 +2629,17 @@
   }
   .theme-btn:active, .lang-btn:active, .textscale-btn:active { transform: scale(0.92); }
   .theme-btn.active, .lang-btn.active, .textscale-btn.active { background: var(--cyan); color: var(--bg); border-color: var(--cyan); }
+  .startpage-switch { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .startpage-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.05); border: 1.2px solid rgba(255,255,255,0.15);
+    color: var(--ink-dim); font-size: 11px; font-weight: 700; padding: 7px 12px;
+    border-radius: 9px; cursor: pointer; font-family: inherit;
+    transition: all 0.15s cubic-bezier(.2,.9,.3,1);
+  }
+  .startpage-btn svg { width: 14px; height: 14px; }
+  .startpage-btn:active { transform: scale(0.94); }
+  .startpage-btn.active { background: var(--cyan); color: var(--bg); border-color: var(--cyan); }
 
   .volume-slider {
     width: 100%; accent-color: var(--cyan);
@@ -3065,7 +3076,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0828_CALSWIPE_V405</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0830_STARTPAGE_V406</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -3509,6 +3520,16 @@
       </label>
     </div>
     <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:4px;" data-i18n="opt_multipage_desc">カレンダー・タスク管理・日記・その他を、それぞれ独立した画面として、切り替えながら使えます。</div>
+    <div class="settings-row" style="margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.12); display:block;">
+      <span data-i18n="opt_startpage_row_label"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg> 最初に開くページ</span>
+      <div class="startpage-switch">
+        <button class="startpage-btn" data-group="group_other" onclick="setStartPage('group_other')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M10 20v-6h4v6"></path></svg><span data-i18n="group_home_short">ホーム</span></button>
+        <button class="startpage-btn" data-group="group_calendar" onclick="setStartPage('group_calendar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg><span data-i18n="group_calendar_short">カレンダー</span></button>
+        <button class="startpage-btn" data-group="group_task" onclick="setStartPage('group_task')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="6" height="6" rx="1"></rect><path d="M5.5 7l1 1 2-2"></path><path d="M12 5h9"></path><path d="M12 12h9"></path><path d="M12 19h9"></path><rect x="3" y="16" width="6" height="6" rx="1"></rect></svg><span data-i18n="group_task_short">タスク管理</span></button>
+        <button class="startpage-btn" data-group="group_diary" onclick="setStartPage('group_diary')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v17H6a2 2 0 0 0-2 2z"></path><path d="M19 17H6a2 2 0 0 0-2 2"></path><path d="M8 7h7"></path></svg><span data-i18n="group_diary_short">日記</span></button>
+      </div>
+    </div>
+    <div style="font-size:9.5px; color:var(--ink-dim); line-height:1.5; margin-top:6px;" data-i18n="opt_startpage_desc">アプリを起動したとき、最初にこのページを開きます（複数ページモードのとき）。</div>
   </div>
   <div class="settings-group">
     <div class="settings-label">表示サイズ</div>
@@ -8386,6 +8407,23 @@
   //  全集中モードが意図せず有効化されるような不具合を起こしていた)
   let multiPageModeOn = false;
   const APP_GROUP_KEYS = ['group_calendar', 'group_task', 'group_diary', 'group_other'];
+  // 最初に開くページ(複数ページモード時)。既定は「ホーム」= group_other。オプションで変更可。
+  let startPagePref = 'group_other';
+  const START_PAGE_KEYS = ['group_other', 'group_calendar', 'group_task', 'group_diary'];
+  async function setStartPage(groupKey) {
+    if (START_PAGE_KEYS.indexOf(groupKey) === -1) return;
+    startPagePref = groupKey;
+    document.querySelectorAll('.startpage-btn').forEach(b => b.classList.toggle('active', b.dataset.group === groupKey));
+    playUIClick();
+    try { await window.storage.set('quest-start-page-v1', groupKey); } catch (e) {}
+  }
+  async function loadStartPagePref() {
+    try {
+      const saved = await window.storage.get('quest-start-page-v1');
+      if (saved && saved.value && START_PAGE_KEYS.indexOf(saved.value) !== -1) startPagePref = saved.value;
+    } catch (e) {}
+    document.querySelectorAll('.startpage-btn').forEach(b => b.classList.toggle('active', b.dataset.group === startPagePref));
+  }
   function ensureAppGroupWrappers() {
     if (document.getElementById('appGroupWrap_group_other')) return; // 初回のみ実行
     const pageEl = document.getElementById('page-task');
@@ -8448,7 +8486,7 @@
         if (bar) bar.after(hudHeader);
         else otherWrap.insertBefore(hudHeader, otherWrap.firstChild);
       }
-      switchAppGroup('group_other');
+      switchAppGroup(startPagePref || 'group_other');
     } else {
       // 元の位置に戻す
       if (hudHeader && placeholder && placeholder.parentNode) {
@@ -8473,6 +8511,7 @@
     }
     const toggleEl = document.getElementById('multiPageModeToggle');
     if (toggleEl) toggleEl.checked = on;
+    await loadStartPagePref();
     if (on) toggleMultiPageMode(true);
   }
   function switchTaskRoutineFolder(which) {
