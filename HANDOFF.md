@@ -9,7 +9,7 @@
 - **Repo**: https://github.com/la2001-586/quest-app
 - **デプロイ**: `main` に push → **Netlify が自動ビルド** → オーナーが **iPhone(Safari/PWA)** で実機確認。オーナーは main への直 push を許可済み。
 - ミラー用ブランチ `claude/memory-check-y2byvf` にも同内容を push していた（任意）。
-- **ビルドタグ**: 画面隅の `#buildTag`（`BUILD 0828_XXX_Vnnn`）。**変更ごとに必ず bump**（実機に反映が来たか確認するため）。現状 `BUILD 0828_CALSWIPE_V405`。
+- **ビルドタグ**: 画面隅の `#buildTag`（`BUILD MMDD_XXX_Vnnn`）。**変更ごとに必ず bump**（実機に反映が来たか確認するため）。現状 `BUILD 0901_AI_DIARY_V411`。
 - **実機で直接テストできない**ので、push 前に必ずヘッドレスで描画検証する（§5）。
 
 ## 2. アーキテクチャ
