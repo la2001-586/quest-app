@@ -3441,7 +3441,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0901_AI_DIARY_V414</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0901_AI_DIARY_V415</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -13186,7 +13186,8 @@ ${diaryValue(entry && entry.text)}
   // 通知機能の土台(v1): Service Workerを登録しておく。実際の通知はサーバー側の準備ができ次第
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js').then(async () => {
+      navigator.serviceWorker.register('service-worker.js?v=415', { updateViaCache: 'none' }).then(async (registration) => {
+        registration.update().catch(() => {});
         pingNotifyServer();
         syncRemindersToServer();
         // 既に購読済みなら、トグルを最初からオンにしておく
