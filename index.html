@@ -2705,6 +2705,172 @@
   }
   .settings-btn:last-child { margin-bottom: 0; }
   .settings-btn:active { background: rgba(43,201,204,0.1); transform: scale(0.98); }
+
+  /* ================= V410 UI SYSTEM: typography / spacing / controls ================= */
+  :root {
+    --ui-text-xs: 12px;
+    --ui-text-sm: 14px;
+    --ui-text-md: 16px;
+    --ui-text-lg: 20px;
+    --ui-text-xl: 24px;
+    --ui-leading-tight: 1.35;
+    --ui-leading-body: 1.55;
+    --ui-leading-copy: 1.7;
+    --ui-space-1: 4px;
+    --ui-space-2: 8px;
+    --ui-space-3: 12px;
+    --ui-space-4: 16px;
+    --ui-space-6: 24px;
+    --ui-space-8: 32px;
+    --ui-radius-control: 14px;
+    --ui-radius-card: 18px;
+    --ui-control-min: 44px;
+  }
+
+  body {
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-body);
+  }
+
+  .wrap h1 {
+    font-size: var(--ui-text-xl);
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+  }
+
+  .app-group-label,
+  .group-label,
+  .settings-label {
+    font-size: var(--ui-text-xs);
+    line-height: var(--ui-leading-tight);
+  }
+
+  .sub,
+  .level-head .desc,
+  .cal-note,
+  .combo-hint,
+  .empty-state {
+    font-size: var(--ui-text-xs);
+    line-height: var(--ui-leading-copy);
+  }
+
+  .item-label,
+  .settings-row,
+  .summary-card,
+  .unified-task-card {
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-body);
+  }
+
+  .settings-group,
+  .summary-card,
+  .unified-task-card,
+  .mood-entry-card {
+    border-radius: var(--ui-radius-card);
+  }
+
+  .settings-btn,
+  .badge-close-btn,
+  .proof-btn {
+    min-height: var(--ui-control-min);
+    padding: 10px var(--ui-space-4);
+    border-radius: var(--ui-radius-control);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-tight);
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: var(--ui-text-md);
+    line-height: var(--ui-leading-body);
+  }
+
+  /* Options is the reference screen for the shared UI rhythm. */
+  #page-settings {
+    --settings-row-gap: var(--ui-space-3);
+  }
+
+  #page-settings .hud-header {
+    margin-bottom: var(--ui-space-6);
+  }
+
+  #page-settings .settings-group {
+    padding: var(--ui-space-4);
+    margin-bottom: var(--ui-space-6);
+  }
+
+  #page-settings .settings-label {
+    margin-bottom: var(--ui-space-3);
+    letter-spacing: 0.12em;
+  }
+
+  #page-settings .settings-row {
+    min-height: var(--ui-control-min);
+    padding: var(--ui-space-3) 0;
+    gap: var(--ui-space-3);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-body);
+  }
+
+  #page-settings .settings-row > span:first-child {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  #page-settings .settings-row + .settings-row {
+    border-top: 1px solid rgba(127,127,127,0.14);
+  }
+
+  #page-settings .settings-btn {
+    margin-bottom: var(--ui-space-2);
+  }
+
+  #page-settings .theme-switch,
+  #page-settings .lang-switch,
+  #page-settings .textscale-switch {
+    gap: var(--ui-space-2);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  #page-settings .theme-btn,
+  #page-settings .lang-btn,
+  #page-settings .textscale-btn {
+    min-height: 36px;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border-radius: 10px;
+    font-size: var(--ui-text-xs);
+    line-height: var(--ui-leading-tight);
+  }
+
+  #page-settings input[type="text"],
+  #page-settings input[type="time"],
+  #page-settings input[type="number"],
+  #page-settings select,
+  #page-settings textarea {
+    min-height: var(--ui-control-min);
+    padding: 10px var(--ui-space-3);
+    border-radius: var(--ui-radius-control);
+    font-size: var(--ui-text-md);
+  }
+
+  #page-settings .toggle-switch,
+  #page-settings .pin-toggle-btn {
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 380px) {
+    #page-settings .settings-row {
+      align-items: flex-start;
+    }
+    #page-settings .theme-switch,
+    #page-settings .lang-switch,
+    #page-settings .textscale-switch {
+      max-width: 58%;
+    }
+  }
+
 </style>
 </head>
 <body class="theme-simple">
@@ -3076,7 +3242,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0901_OPTIONS_CLEAN_V409</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0901_UI_SYSTEM_V410</div>
 </div>
 
 <div class="wrap page show" id="page-task">
