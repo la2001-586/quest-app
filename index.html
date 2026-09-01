@@ -757,6 +757,37 @@
   .cat-speech-bubble.show {
     animation: catSpeechPop 1.3s ease forwards;
   }
+  /* Home concierge prototype: one suggestion at a time, swipe left/right. */
+  .home-concierge {
+    margin: 2px 10px 18px; padding: 18px; position: relative; overflow: hidden;
+    border: 1px solid rgba(255,255,255,.14); border-radius: 26px;
+    background: linear-gradient(145deg, rgba(34,42,58,.7), rgba(12,17,27,.82));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 20px 50px rgba(0,0,0,.22);
+    -webkit-backdrop-filter: blur(22px) saturate(140%); backdrop-filter: blur(22px) saturate(140%);
+  }
+  .home-concierge::before { content:""; position:absolute; width:180px; height:180px; right:-70px; top:-100px; border-radius:50%; background:var(--cyan); opacity:.12; filter:blur(28px); pointer-events:none; }
+  .concierge-head { display:flex; align-items:center; gap:11px; position:relative; z-index:1; }
+  .concierge-cat { width:44px; height:38px; flex:0 0 auto; }
+  .concierge-kicker { color:var(--cyan); font-size:9px; letter-spacing:.14em; margin-bottom:3px; }
+  .concierge-message { color:var(--ink); font-size:14px; font-weight:650; line-height:1.55; }
+  .suggestion-deck { position:relative; height:150px; margin-top:16px; perspective:800px; }
+  .suggestion-card {
+    position:absolute; inset:0; padding:18px; box-sizing:border-box; border-radius:21px;
+    background:linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.055));
+    border:1px solid rgba(255,255,255,.18); box-shadow:0 14px 30px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.16);
+    touch-action:none; user-select:none; cursor:grab; transition:transform .28s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
+  }
+  .suggestion-card[data-depth="1"] { transform:translateY(9px) scale(.96); opacity:.62; z-index:1; }
+  .suggestion-card[data-depth="2"] { transform:translateY(17px) scale(.92); opacity:.3; z-index:0; }
+  .suggestion-card[data-depth="0"] { z-index:3; }
+  .suggestion-card.dragging { transition:none; cursor:grabbing; }
+  .suggestion-card-title { font-size:17px; color:var(--ink); font-weight:720; margin-bottom:7px; }
+  .suggestion-card-reason { font-size:11px; color:var(--ink-dim); line-height:1.6; }
+  .suggestion-card-hint { position:absolute; left:18px; right:18px; bottom:15px; display:flex; justify-content:space-between; color:var(--ink-dim); font-size:9px; }
+  .suggestion-progress { display:flex; justify-content:center; gap:5px; margin-top:12px; }
+  .suggestion-progress i { width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.18); }
+  .suggestion-progress i.active { width:18px; border-radius:5px; background:var(--cyan); }
+  body.theme-simple:not(.theme-dark) .home-concierge { background:linear-gradient(145deg, rgba(255,255,255,.84), rgba(228,240,245,.74)); border-color:rgba(255,255,255,.9); }
   @keyframes catSpeechPop {
     0% { transform: translateX(-50%) scale(0); opacity: 0; }
     15% { transform: translateX(-50%) scale(1.15); opacity: 1; }
@@ -1648,6 +1679,28 @@
   body.theme-fancy .mood-journal-shell *, body.theme-fancy .mood-entry-card *, body.theme-fancy .week-view-shell * {
     color: var(--ink) !important;
   }
+
+  /* Experimental theme: Quiet Future. Uses dark mode as a stable base. */
+  body.theme-quiet {
+    --bg: #07101f; --panel: rgba(15,25,43,.72); --ink: #eef3ff; --ink-dim: #8490a8;
+    --cyan: #7898ff; --magenta: #9b78ff; --yellow: #e5b95f;
+    background: radial-gradient(circle at 82% 8%, rgba(102,76,210,.18), transparent 34%), radial-gradient(circle at 12% 0%, rgba(64,137,210,.15), transparent 30%), #07101f !important;
+  }
+  body.theme-quiet * { font-family: Inter, "Noto Sans JP", "Hiragino Sans", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+  body.theme-quiet .home-concierge { display:block; }
+  body:not(.theme-quiet) .home-concierge { display:none; }
+  body.theme-quiet .hud-header { background:transparent !important; border:0 !important; box-shadow:none !important; }
+  body.theme-quiet .hud-clock-hero,
+  body.theme-quiet .settings-group,
+  body.theme-quiet #calSectionWrap,
+  body.theme-quiet .unified-task-card,
+  body.theme-quiet .mood-journal-shell {
+    background:rgba(12,21,37,.64) !important; border:1px solid rgba(164,184,224,.12) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 18px 48px rgba(0,0,0,.2) !important;
+  }
+  body.theme-quiet .home-bar { background:rgba(9,17,31,.76) !important; border-color:rgba(164,184,224,.16) !important; -webkit-backdrop-filter:blur(22px); backdrop-filter:blur(22px); }
+  body.theme-quiet .item { background:transparent !important; border-left:0 !important; border-radius:0 !important; box-shadow:none !important; }
+  body.theme-quiet .home-tab.active { color:var(--cyan) !important; background:rgba(120,152,255,.1) !important; }
   body.theme-simple .cal-summary-num, body.theme-fancy .cal-summary-num { color: var(--yellow) !important; }
   body.theme-simple .week-compare-verdict, body.theme-fancy .week-compare-verdict { color: var(--cyan) !important; }
   body.theme-simple .mood-journal-textarea, body.theme-fancy .mood-journal-textarea {
@@ -2986,6 +3039,14 @@
 
   <div id="hudHeaderPlaceholder" style="display:none;"></div>
   <div class="hud-header" id="hudHeaderBlock">
+    <section class="home-concierge" id="homeConcierge" aria-label="次のおすすめ">
+      <div class="concierge-head">
+        <div class="concierge-cat" id="conciergeCat"></div>
+        <div><div class="concierge-kicker">YOUR NEXT STEP</div><div class="concierge-message" id="conciergeMessage">今できそうなことを選びました。</div></div>
+      </div>
+      <div class="suggestion-deck" id="suggestionDeck"></div>
+      <div class="suggestion-progress" id="suggestionProgress"></div>
+    </section>
     <div class="hud-clock-hero" onclick="scrollToCalendarTop()">
       <div id="peekCatContainer" class="peek-cat"></div>
       <div class="hud-date" id="clockDate">----/--/--</div>
@@ -3244,6 +3305,7 @@
       <div class="theme-switch">
         <button class="theme-btn active" data-theme="simple" data-i18n="theme_simple">シンプル</button>
         <button class="theme-btn" data-theme="dark" data-i18n="theme_dark">ダーク</button>
+        <button class="theme-btn" data-theme="quiet">Quiet Future</button>
       </div>
     </div>
     <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_bgview_btn" onclick="enterBgViewMode()">🌌 背景だけを見る</button>
@@ -6715,7 +6777,7 @@
       await Promise.all([
         saveProgress(currentTodayExp || 0),
         saveTasks(),
-        saveTheme(document.body.classList.contains('theme-fancy') ? 'fancy' : (document.body.classList.contains('theme-simple') ? 'simple' : 'cyber')),
+        saveTheme(document.body.classList.contains('theme-quiet') ? 'quiet' : (document.body.classList.contains('theme-fancy') ? 'fancy' : (document.body.classList.contains('theme-dark') ? 'dark' : (document.body.classList.contains('theme-simple') ? 'simple' : 'cyber')))),
         saveVolume(),
         saveTodayTasks(),
         saveBadgeHistory(),
@@ -7031,7 +7093,7 @@
   // ---- テーマの保存・復元(v23で追加。以前は選んでも保存されず毎回サイバーに戻っていた) ----
   const DEFAULT_THEME = 'simple';
   function applyThemeClass(themeName) {
-    document.body.classList.remove('theme-simple', 'theme-fancy', 'theme-dark');
+    document.body.classList.remove('theme-simple', 'theme-fancy', 'theme-dark', 'theme-quiet');
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     if (themeName === 'simple') {
       document.body.classList.add('theme-simple');
@@ -7039,12 +7101,14 @@
       document.body.classList.add('theme-simple', 'theme-dark');
     } else if (themeName === 'fancy') {
       document.body.classList.add('theme-fancy');
+    } else if (themeName === 'quiet') {
+      document.body.classList.add('theme-simple', 'theme-dark', 'theme-quiet');
     }
     const isHiddenTheme = (themeName === 'fancy' || themeName === 'cyber');
     const btn = document.querySelector(`.theme-btn[data-theme="${themeName}"]`);
     // サイバー・ファンシーは隠しテーマのため対応ボタンが無い。その場合はどのボタンもactiveにしない。
     if (btn && !isHiddenTheme) btn.classList.add('active');
-    switchBGMVariant(themeName === 'dark' ? 'simple' : themeName);
+    switchBGMVariant((themeName === 'dark' || themeName === 'quiet') ? 'simple' : themeName);
   }
   async function loadTheme() {
     try {
@@ -8945,11 +9009,78 @@
       <ellipse class="cat-paw" cx="10" cy="8" rx="4" ry="3.4" fill="${cat.body}"></ellipse>
     </svg>`;
   }
+  let conciergeSuggestionIndex = 0;
+  let conciergeSuggestions = [];
+  function buildConciergeSuggestions() {
+    const hour = trustedNow.getHours();
+    const todayKey = logicalDateKey(trustedNow);
+    const eventCount = eventsForDate(todayKey).length;
+    const diaryDone = !!(moodJournalData && moodJournalData[todayKey] && moodJournalData[todayKey].length);
+    const suggestions = [];
+    if (eventCount > 0) suggestions.push({ title:`今日の予定を確認`, reason:`${eventCount}件の予定があります。次の時間だけ確認しておきましょう。`, action:'calendar' });
+    if (!diaryDone && hour >= 17) suggestions.push({ title:'今日の日記を書く', reason:'一日が終わる前に、今の気分を短く残せます。', action:'diary' });
+    suggestions.push({ title:'備忘録を残す', reason:'あとで思い出したいことを、忘れる前に記録します。', action:'memento' });
+    if (!diaryDone) suggestions.push({ title:'今の気分を記録', reason:'一言だけでも大丈夫です。今日の状態を残します。', action:'diary' });
+    suggestions.push({ title:'今日のタスクを見る', reason:'残っていることを確認し、次の一つを決めます。', action:'tasks' });
+    if (eventCount === 0) suggestions.push({ title:'これからの予定を見る', reason:'空いている時間と、先の予定を確認できます。', action:'calendar' });
+    return suggestions.slice(0, 3);
+  }
+  function runConciergeAction(action) {
+    if (action === 'calendar') {
+      switchAppGroup('group_calendar');
+      setTimeout(() => document.getElementById('calSectionWrap')?.scrollIntoView({behavior:'smooth', block:'start'}), 120);
+    } else if (action === 'diary') {
+      switchAppGroup('group_diary');
+      setTimeout(() => { document.getElementById('moodComposeShell')?.scrollIntoView({behavior:'smooth', block:'center'}); document.getElementById('moodJournalText')?.focus(); }, 120);
+    } else if (action === 'memento') {
+      openAddMemento();
+    } else {
+      switchAppGroup('group_task');
+      setTimeout(() => document.getElementById('tabsPanelsWrap')?.scrollIntoView({behavior:'smooth', block:'start'}), 120);
+    }
+  }
+  function renderConciergeDeck() {
+    const deck = document.getElementById('suggestionDeck');
+    const progress = document.getElementById('suggestionProgress');
+    if (!deck || !progress) return;
+    const ordered = conciergeSuggestions.slice(conciergeSuggestionIndex).concat(conciergeSuggestions.slice(0, conciergeSuggestionIndex));
+    deck.innerHTML = ordered.map((s, i) => `<article class="suggestion-card" data-depth="${i}" data-action="${s.action}">
+      <div class="suggestion-card-title">${escapeHtml(s.title)}</div><div class="suggestion-card-reason">${escapeHtml(s.reason)}</div>
+      <div class="suggestion-card-hint"><span>← 今は違う</span><span>これにする →</span></div></article>`).join('');
+    progress.innerHTML = conciergeSuggestions.map((_, i) => `<i class="${i === conciergeSuggestionIndex ? 'active' : ''}"></i>`).join('');
+    bindConciergeSwipe(deck.querySelector('[data-depth="0"]'));
+  }
+  function bindConciergeSwipe(card) {
+    if (!card) return;
+    let startX = 0, dx = 0, active = false;
+    card.addEventListener('pointerdown', e => { active = true; startX = e.clientX; dx = 0; card.setPointerCapture(e.pointerId); card.classList.add('dragging'); });
+    card.addEventListener('pointermove', e => { if (!active) return; dx = e.clientX - startX; card.style.transform = `translateX(${dx}px) rotate(${dx / 24}deg)`; });
+    card.addEventListener('pointerup', () => {
+      if (!active) return; active = false; card.classList.remove('dragging');
+      if (Math.abs(dx) < 70) { card.style.transform = ''; return; }
+      const accepted = dx > 0;
+      card.style.transform = `translateX(${accepted ? 130 : -130}%) rotate(${accepted ? 12 : -12}deg)`; card.style.opacity = '0';
+      setTimeout(() => { if (accepted) runConciergeAction(card.dataset.action); conciergeSuggestionIndex = (conciergeSuggestionIndex + 1) % conciergeSuggestions.length; renderConciergeDeck(); }, 220);
+    });
+    card.addEventListener('pointercancel', () => { active = false; card.classList.remove('dragging'); card.style.transform = ''; });
+  }
+  function renderHomeConcierge(cat) {
+    const catEl = document.getElementById('conciergeCat');
+    if (!catEl) return;
+    catEl.innerHTML = buildPeekCatSVG(cat);
+    const hour = trustedNow.getHours();
+    const message = hour < 11 ? 'おはようございます。今の時間に合うことを選びました。' : hour < 17 ? '次に進みやすいことを、3つに絞りました。' : '今日を整えるための候補を、3つ選びました。';
+    document.getElementById('conciergeMessage').textContent = message;
+    conciergeSuggestions = buildConciergeSuggestions();
+    conciergeSuggestionIndex = 0;
+    renderConciergeDeck();
+  }
   function renderTodaysPeekCat() {
     const el = document.getElementById('peekCatContainer');
     if (!el) return;
     const dayIndex = Math.floor(trustedNow.getTime() / 86400000); // 日が変われば、猫も変わる
     const cat = PEEK_CAT_ROSTER[dayIndex % PEEK_CAT_ROSTER.length];
+    renderHomeConcierge(cat);
     el.innerHTML = buildPeekCatSVG(cat) + `<div class="cat-speech-bubble" id="catSpeechBubble"></div>`;
     el.title = `今日は「${cat.name}」が遊びに来ています`;
     el.onclick = (e) => {
@@ -11028,14 +11159,8 @@
     btn.onclick = () => {
       playUIClick();
       logDebug(`テーマボタン押下: ${btn.dataset.theme}`);
-      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.body.classList.remove('theme-fancy', 'theme-dark');
-      document.body.classList.add('theme-simple'); // シンプル・ダークどちらも土台はtheme-simple
-      if (btn.dataset.theme === 'dark') {
-        document.body.classList.add('theme-dark');
-      }
-      saveTheme(btn.dataset.theme === 'dark' ? 'dark' : 'simple');
+      applyThemeClass(btn.dataset.theme);
+      saveTheme(btn.dataset.theme);
       switchBGMVariant('simple'); // ダークも音はシンプル系のまま
     };
 
