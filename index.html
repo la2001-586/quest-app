@@ -1949,8 +1949,23 @@
     font-size: 9.5px; color: rgba(255,255,255,0.25); margin-top: 24px; letter-spacing: 0.02em;
   }
   .exp-chart {
-    display: flex; align-items: flex-end; gap: 4px; height: 90px;
+    position: relative; height: 178px; width: 100%; overflow: hidden;
   }
+  .exp-chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .exp-chart-grid { stroke: rgba(255,255,255,0.09); stroke-width: 1; stroke-dasharray: 3 5; }
+  .exp-chart-area { fill: url(#expAreaGradient); }
+  .exp-chart-line { fill: none; stroke: var(--cyan); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 5px rgba(43,201,204,0.45)); }
+  .exp-chart-dot { fill: var(--cyan); stroke: rgba(10,15,20,0.9); stroke-width: 2; }
+  .exp-chart-dot.is-today { fill: var(--yellow); }
+  .exp-axis-label { fill: var(--ink-dim); font-size: 9px; font-family: "Orbitron", sans-serif; }
+  .exp-chart-empty { height: 100%; display: grid; place-items: center; color: var(--ink-dim); font-size: 11px; text-align: center; line-height: 1.7; }
+  .exp-chart-periods { display: flex; gap: 4px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
+  .exp-chart-periods::-webkit-scrollbar { display: none; }
+  .exp-chart-period-btn { flex: 1 0 auto; min-width: 48px; border: 0; border-bottom: 2px solid transparent; padding: 7px 5px; background: transparent; color: var(--ink-dim); font-size: 10px; font-family: inherit; cursor: pointer; border-radius: 8px 8px 2px 2px; }
+  .exp-chart-period-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); background: rgba(43,201,204,0.08); }
+  .exp-chart-summary { display: flex; justify-content: space-between; align-items: baseline; margin: 0 4px 10px; }
+  .exp-chart-summary strong { color: var(--ink); font-family: "Orbitron", sans-serif; font-size: 18px; }
+  .exp-chart-summary span { color: var(--ink-dim); font-size: 9px; }
   .exp-bar-col {
     flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%;
     justify-content: flex-end;
@@ -2929,7 +2944,15 @@
       </div>
       <div class="cal-section-title" style="margin-top:18px;" data-i18n="cal_chart_title">直近14日間のEXP推移</div>
       <div class="exp-chart-shell">
+        <div class="exp-chart-summary"><strong id="expChartTotal">0 EXP</strong><span id="expChartRange"></span></div>
         <div class="exp-chart" id="expChart"></div>
+        <div class="exp-chart-periods" aria-label="EXP chart range">
+          <button class="exp-chart-period-btn" data-chart-period="all" onclick="switchExpChartPeriod('all')">全期間</button>
+          <button class="exp-chart-period-btn" data-chart-period="year" onclick="switchExpChartPeriod('year')">1年</button>
+          <button class="exp-chart-period-btn" data-chart-period="90" onclick="switchExpChartPeriod('90')">90日</button>
+          <button class="exp-chart-period-btn" data-chart-period="30" onclick="switchExpChartPeriod('30')">30日</button>
+          <button class="exp-chart-period-btn active" data-chart-period="7" onclick="switchExpChartPeriod('7')">7日</button>
+        </div>
       </div>
     </div>
     <div class="cal-secondary-label" data-i18n="cal_secondary_other">その他</div>
@@ -9576,6 +9599,69 @@
   }
 
   // カレンダーの各表示(月/週/日など)を、calSectionWrapという枠の中だけで、同時に逆方向スライドさせる版
+  let currentExpChartPeriod = '7';
+  function switchExpChartPeriod(period) {
+    playUIClick();
+    currentExpChartPeriod = period;
+    document.querySelectorAll('.exp-chart-period-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.chartPeriod === period));
+    renderExpTrendChart();
+  }
+  function renderExpTrendChart() {
+    const container = document.getElementById('expChart');
+    if (!container) return;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const historyDates = Object.keys(dailyHistory || {}).map(key => {
+      const p = key.split('-').map(Number);
+      return new Date(p[0], p[1] - 1, p[2]);
+    }).filter(d => !Number.isNaN(d.getTime()));
+    const requestedDays = currentExpChartPeriod === 'all'
+      ? Math.max(7, historyDates.length ? Math.ceil((today - new Date(Math.min(...historyDates))) / 86400000) + 1 : 7)
+      : currentExpChartPeriod === 'year' ? 365 : Number(currentExpChartPeriod || 7);
+    const days = [];
+    for (let i = requestedDays - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+      const isToday = i === 0;
+      days.push({ date, exp: isToday ? (currentTodayExp || 0) : ((dailyHistory[key] && dailyHistory[key].exp) || 0), isToday });
+    }
+    const bucketSize = requestedDays > 180 ? 30 : requestedDays > 45 ? 7 : 1;
+    const points = [];
+    for (let i = 0; i < days.length; i += bucketSize) {
+      const bucket = days.slice(i, i + bucketSize);
+      points.push({ date: bucket[bucket.length - 1].date, exp: bucket.reduce((sum, d) => sum + d.exp, 0), isToday: bucket.some(d => d.isToday) });
+    }
+    const total = days.reduce((sum, d) => sum + d.exp, 0);
+    const totalEl = document.getElementById('expChartTotal');
+    const rangeEl = document.getElementById('expChartRange');
+    if (totalEl) totalEl.textContent = `${Math.round(total)} EXP`;
+    if (rangeEl) rangeEl.textContent = bucketSize === 30 ? '\u6708\u3054\u3068' : bucketSize === 7 ? '\u9031\u3054\u3068' : '\u65e5\u3054\u3068';
+    if (!points.some(p => p.exp > 0)) {
+      container.innerHTML = '<div class="exp-chart-empty">\u3053\u306e\u671f\u9593\u306e\u8a18\u9332\u306f\u307e\u3060\u3042\u308a\u307e\u305b\u3093<br>\u30af\u30a8\u30b9\u30c8\u3092\u9054\u6210\u3059\u308b\u3068\u30b0\u30e9\u30d5\u304c\u80b2\u3061\u307e\u3059</div>';
+      return;
+    }
+    const width = 360, height = 170, left = 8, right = 40, top = 10, bottom = 24;
+    const plotW = width - left - right, plotH = height - top - bottom;
+    const maxExp = Math.max(...points.map(p => p.exp), 1);
+    const niceMax = Math.max(10, Math.ceil(maxExp / 10) * 10);
+    const coords = points.map((p, index) => ({ ...p,
+      x: left + (points.length === 1 ? plotW / 2 : index * plotW / (points.length - 1)),
+      y: top + plotH - (p.exp / niceMax) * plotH
+    }));
+    const linePath = coords.map((p, i) => `${i ? 'L' : 'M'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+    const areaPath = `${linePath} L ${coords[coords.length - 1].x.toFixed(1)} ${top + plotH} L ${coords[0].x.toFixed(1)} ${top + plotH} Z`;
+    const fmt = d => `${d.getMonth() + 1}/${d.getDate()}`;
+    const labelIndexes = [...new Set([0, Math.floor((coords.length - 1) / 2), coords.length - 1])];
+    container.innerHTML = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="EXP trend chart">
+      <defs><linearGradient id="expAreaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--cyan)" stop-opacity=".48"/><stop offset="100%" stop-color="var(--cyan)" stop-opacity=".03"/></linearGradient></defs>
+      ${[0, .5, 1].map(t => { const y = top + plotH - t * plotH; return `<line class="exp-chart-grid" x1="${left}" y1="${y}" x2="${left + plotW}" y2="${y}"/><text class="exp-axis-label" x="${width - right + 6}" y="${y + 3}">${Math.round(niceMax * t)}</text>`; }).join('')}
+      <path class="exp-chart-area" d="${areaPath}"/><path class="exp-chart-line" d="${linePath}"/>
+      ${coords.map(p => `<circle class="exp-chart-dot${p.isToday ? ' is-today' : ''}" cx="${p.x}" cy="${p.y}" r="${p.isToday ? 4 : 2.6}"><title>${fmt(p.date)}: ${Math.round(p.exp)} EXP</title></circle>`).join('')}
+      ${labelIndexes.map(i => `<text class="exp-axis-label" x="${coords[i].x}" y="${height - 5}" text-anchor="${i === 0 ? 'start' : i === coords.length - 1 ? 'end' : 'middle'}">${fmt(coords[i].date)}</text>`).join('')}
+    </svg>`;
+  }
+
   function animateCalSlideTransition(fromEl, toEl, direction, onDone) {
     const dir = (direction === 'left') ? 1 : -1;
     [fromEl, toEl].forEach(el => {
@@ -10162,7 +10248,7 @@
     if (totalDaysEl) totalDaysEl.textContent = totalDays;
     if (totalExpEl) totalExpEl.textContent = Math.round(totalExpThisMonth);
     if (totalItemsEl) totalItemsEl.textContent = totalItemsThisMonth;
-    renderExpChart();
+    renderExpTrendChart();
     renderWeekCompare();
     renderWeekView();
   }
