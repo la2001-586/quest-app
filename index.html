@@ -2258,54 +2258,13 @@
   }
   .sleep-track-duration { font-size: 11px; color: var(--cyan); font-family: 'Orbitron', sans-serif; margin-left: auto; }
   .mood-journal-textarea {
-    width: 100%; min-height: 120px; resize: vertical; box-sizing: border-box;
+    width: 100%; min-height: 35vh; resize: vertical; box-sizing: border-box;
     background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.12);
     border-radius: 10px; padding: 12px; color: #fff; font-size: 13.5px; line-height: 1.7;
     font-family: inherit; margin-bottom: 10px; transition: border-color 0.2s ease;
   }
   .mood-journal-textarea.unsaved { border-color: var(--yellow); }
   .mood-journal-textarea::placeholder { color: rgba(255,255,255,0.28); }
-  .diary-form-section {
-    margin: 12px 0; padding: 12px; border-radius: 14px;
-    background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.09);
-  }
-  .diary-form-title { font-size: 12px; font-weight: 800; color: var(--ink); margin-bottom: 9px; }
-  .diary-form-hint { font-size: 10.5px; color: var(--ink-dim); line-height: 1.55; margin: -3px 0 9px; }
-  .diary-score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .diary-score-label { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--ink-dim); margin-bottom: 5px; }
-  .diary-score-label output { color: var(--cyan); font-family: 'Orbitron', sans-serif; font-weight: 800; }
-  .diary-score-input { width: 100%; accent-color: var(--cyan); }
-  .diary-outcome-list { display: flex; flex-direction: column; gap: 8px; }
-  .diary-outcome-row {
-    display: grid; grid-template-columns: minmax(0,1fr) 82px 92px 70px; gap: 6px; align-items: center;
-  }
-  .diary-field, .diary-select, .diary-mini-number, .diary-mini-textarea {
-    width: 100%; box-sizing: border-box; border-radius: 9px;
-    border: 1.2px solid rgba(255,255,255,0.13); background: rgba(255,255,255,0.035);
-    color: var(--ink); font-family: inherit; font-size: 12px;
-  }
-  .diary-field, .diary-select, .diary-mini-number { min-height: 38px; padding: 8px 9px; }
-  .diary-mini-number { text-align: center; }
-  .diary-mini-textarea { min-height: 72px; padding: 9px 10px; resize: vertical; line-height: 1.55; }
-  .diary-field::placeholder, .diary-mini-textarea::placeholder { color: var(--ink-dim); opacity: 0.65; }
-  .diary-select option { color: #111; background: #fff; }
-  .diary-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .diary-field-block label { display: block; font-size: 10.5px; font-weight: 700; color: var(--ink-dim); margin: 0 0 5px 2px; }
-  .diary-optional { margin-top: 10px; }
-  .diary-optional summary { cursor: pointer; font-size: 11px; font-weight: 700; color: var(--cyan); }
-  .diary-optional-body { display: flex; flex-direction: column; gap: 8px; margin-top: 9px; }
-  body.theme-simple:not(.theme-dark) .diary-form-section { background: rgba(0,0,0,0.018); border-color: rgba(0,0,0,0.09); }
-  body.theme-simple:not(.theme-dark) .diary-field,
-  body.theme-simple:not(.theme-dark) .diary-select,
-  body.theme-simple:not(.theme-dark) .diary-mini-number,
-  body.theme-simple:not(.theme-dark) .diary-mini-textarea,
-  body.theme-simple:not(.theme-dark) .mood-journal-textarea { background: #fff; border-color: rgba(0,0,0,0.13); color: #222; }
-  @media (max-width: 560px) {
-    .diary-outcome-row { grid-template-columns: minmax(0,1fr) 76px; }
-    .diary-outcome-row .diary-select.status { grid-column: 1; }
-    .diary-outcome-row .diary-mini-number { grid-column: 2; grid-row: 2; }
-    .diary-two-col { grid-template-columns: 1fr; }
-  }
 
   .cal-section-title-row {
     display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;
@@ -3314,7 +3273,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0902_AI_DIARY_V418</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0902_DIARY_RESTORE_V419</div>
   <div class="virtual-pointer-layer" id="virtualPointerLayer" aria-hidden="true">
     <div class="virtual-pointer-hold-ring" id="virtualPointerHoldRing"></div>
     <div class="virtual-pointer-cursor" id="virtualPointerCursor"></div>
@@ -3632,95 +3591,7 @@
         </div>
         <div id="sleepDurationLabel" class="sleep-track-duration"></div>
       </div>
-      <div class="diary-form-section">
-        <div class="diary-form-title">今日のコンディション</div>
-        <div class="diary-form-hint">直感で十分です。AIが翌日の詰め込み量を調整する材料になります。</div>
-        <div class="diary-score-grid">
-          <div>
-            <div class="diary-score-label"><span>体力</span><output id="diaryEnergyOutput">未記録</output></div>
-            <input class="diary-score-input diary-meta-input" id="diaryEnergy" type="range" min="0" max="5" value="0" oninput="handleDiaryMetaInput()">
-          </div>
-          <div>
-            <div class="diary-score-label"><span>集中</span><output id="diaryFocusOutput">未記録</output></div>
-            <input class="diary-score-input diary-meta-input" id="diaryFocus" type="range" min="0" max="5" value="0" oninput="handleDiaryMetaInput()">
-          </div>
-        </div>
-      </div>
-
-      <div class="diary-form-section">
-        <div class="diary-form-title">今日の狙い</div>
-        <div class="diary-form-hint">最大3つ。空欄でも構いません。結果は夜に更新してください。</div>
-        <div class="diary-outcome-list" id="diaryOutcomeList">
-          <div class="diary-outcome-row" data-outcome="0">
-            <input class="diary-field diary-meta-input outcome-text" placeholder="目標 1" oninput="handleDiaryMetaInput()">
-            <select class="diary-select diary-meta-input outcome-priority" onchange="handleDiaryMetaInput()"><option value="high">重要</option><option value="medium">中</option><option value="low">低</option></select>
-            <select class="diary-select diary-meta-input outcome-status status" onchange="handleDiaryMetaInput()"><option value="not_started">未着手</option><option value="partial">一部完了</option><option value="done">完了</option><option value="cancelled">中止</option></select>
-            <input class="diary-mini-number diary-meta-input outcome-minutes" type="number" min="0" step="15" inputmode="numeric" placeholder="分" oninput="handleDiaryMetaInput()">
-          </div>
-          <div class="diary-outcome-row" data-outcome="1">
-            <input class="diary-field diary-meta-input outcome-text" placeholder="目標 2" oninput="handleDiaryMetaInput()">
-            <select class="diary-select diary-meta-input outcome-priority" onchange="handleDiaryMetaInput()"><option value="high">重要</option><option value="medium" selected>中</option><option value="low">低</option></select>
-            <select class="diary-select diary-meta-input outcome-status status" onchange="handleDiaryMetaInput()"><option value="not_started">未着手</option><option value="partial">一部完了</option><option value="done">完了</option><option value="cancelled">中止</option></select>
-            <input class="diary-mini-number diary-meta-input outcome-minutes" type="number" min="0" step="15" inputmode="numeric" placeholder="分" oninput="handleDiaryMetaInput()">
-          </div>
-          <div class="diary-outcome-row" data-outcome="2">
-            <input class="diary-field diary-meta-input outcome-text" placeholder="目標 3" oninput="handleDiaryMetaInput()">
-            <select class="diary-select diary-meta-input outcome-priority" onchange="handleDiaryMetaInput()"><option value="high">重要</option><option value="medium" selected>中</option><option value="low">低</option></select>
-            <select class="diary-select diary-meta-input outcome-status status" onchange="handleDiaryMetaInput()"><option value="not_started">未着手</option><option value="partial">一部完了</option><option value="done">完了</option><option value="cancelled">中止</option></select>
-            <input class="diary-mini-number diary-meta-input outcome-minutes" type="number" min="0" step="15" inputmode="numeric" placeholder="分" oninput="handleDiaryMetaInput()">
-          </div>
-        </div>
-      </div>
-
-      <div class="diary-form-section">
-        <div class="diary-form-title">今日の実績</div>
-        <div class="diary-two-col">
-          <div class="diary-field-block">
-            <label for="diaryTimeline">実際の時間の流れ</label>
-            <textarea id="diaryTimeline" class="diary-mini-textarea diary-meta-input" placeholder="10:00–10:30　起動・準備\n10:30–12:00　初期設定" oninput="handleDiaryMetaInput()" onblur="handleMoodJournalBlur()"></textarea>
-          </div>
-          <div class="diary-field-block">
-            <label for="diaryOutputs">具体的にできたこと</label>
-            <textarea id="diaryOutputs" class="diary-mini-textarea diary-meta-input" placeholder="完成したもの、進んだ量、決めたこと" oninput="handleDiaryMetaInput()" onblur="handleMoodJournalBlur()"></textarea>
-          </div>
-        </div>
-        <div class="diary-field-block" style="margin-top:8px;">
-          <label for="diaryFriction">引っかかったこと・予定外</label>
-          <textarea id="diaryFriction" class="diary-mini-textarea diary-meta-input" placeholder="疲労、着手の遅れ、割り込み、想定より長引いたこと" oninput="handleDiaryMetaInput()" onblur="handleMoodJournalBlur()"></textarea>
-        </div>
-      </div>
-
-      <div class="diary-form-section">
-        <div class="diary-form-title">残りの日への引き継ぎ</div>
-        <div class="diary-two-col">
-          <div class="diary-field-block">
-            <label for="diaryCarryKeep">今週中に残す</label>
-            <textarea id="diaryCarryKeep" class="diary-mini-textarea diary-meta-input" placeholder="未完了でも重要なもの" oninput="handleDiaryMetaInput()" onblur="handleMoodJournalBlur()"></textarea>
-          </div>
-          <div class="diary-field-block">
-            <label for="diaryCarryDrop">延期・縮小・中止してよい</label>
-            <textarea id="diaryCarryDrop" class="diary-mini-textarea diary-meta-input" placeholder="今週から外してもよいもの" oninput="handleDiaryMetaInput()" onblur="handleMoodJournalBlur()"></textarea>
-          </div>
-        </div>
-        <details class="diary-optional">
-          <summary>体調や新しい期限などを追加</summary>
-          <div class="diary-optional-body">
-            <div class="diary-field-block">
-              <label for="diaryConstraints">明日以降の固定予定・期限・制約</label>
-              <textarea id="diaryConstraints" class="diary-mini-textarea diary-meta-input" placeholder="追加された予定、締切、使えない時間" oninput="handleDiaryMetaInput()" onblur="handleMoodJournalBlur()"></textarea>
-            </div>
-            <div class="diary-field-block">
-              <label for="diaryPhysicalNotes">体調メモ</label>
-              <textarea id="diaryPhysicalNotes" class="diary-mini-textarea diary-meta-input" placeholder="痛み、眠気、疲れなど、計画で配慮してほしいこと" oninput="handleDiaryMetaInput()" onblur="handleMoodJournalBlur()"></textarea>
-            </div>
-          </div>
-        </details>
-      </div>
-
-      <div class="diary-field-block">
-        <label for="moodJournalText">自由メモ（任意・これまでの日記もここに残ります）</label>
-        <textarea id="moodJournalText" class="mood-journal-textarea" data-i18n-placeholder="ph_mood_journal" placeholder="考えたことや感情など、形式に収まらない内容を自由に。" oninput="handleMoodJournalInput()" onblur="handleMoodJournalBlur()"></textarea>
-      </div>
+      <textarea id="moodJournalText" class="mood-journal-textarea" data-i18n-placeholder="ph_mood_journal" placeholder="今日の気分、体調、頭に浮かんだこと。何でも自由に。" oninput="handleMoodJournalInput()" onblur="handleMoodJournalBlur()"></textarea>
       <div class="mood-journal-actions">
         <button class="mood-journal-btn dhist-btn" id="diaryUndoBtn" onclick="diaryUndo()" disabled aria-label="1つ戻す"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 14L4 9l5-5"></path><path d="M4 9h11a5 5 0 0 1 0 10h-1"></path></svg></button>
         <button class="mood-journal-btn dhist-btn" id="diaryRedoBtn" onclick="diaryRedo()" disabled aria-label="1つ進む"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M15 14l5-5-5-5"></path><path d="M20 9H9a5 5 0 0 0 0 10h1"></path></svg></button>
@@ -7713,7 +7584,7 @@
         return tb.localeCompare(ta);
       });
       const recentHtml = flatEntries.slice(0, 5).map(entry => {
-        const preview = diaryEntrySummary(entry).replace(/\n/g, ' ').slice(0, 24);
+        const preview = (entry.text || '').replace(/\n/g, ' ').slice(0, 24);
         return `<div style="margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06);">
           <span style="color:var(--cyan);">${entry.dateKey}</span> ${entry.time || ''}<br>
           ${preview ? preview + (entry.text && entry.text.length > 24 ? '…' : '') : '(本文なし)'}
@@ -10137,94 +10008,6 @@
   let currentMoodTag = null; // 今選んでいる気分タグ(v35で追加。great/good/neutral/low/rough または null)
   let editingMoodEntryId = null; // 既存エントリーを編集中ならそのid、新規作成中ならnull
 
-  function emptyDiaryMeta() {
-    return {
-      energy: 0, focus: 0,
-      outcomes: [
-        { text: '', priority: 'high', status: 'not_started', plannedMinutes: '' },
-        { text: '', priority: 'medium', status: 'not_started', plannedMinutes: '' },
-        { text: '', priority: 'medium', status: 'not_started', plannedMinutes: '' },
-      ],
-      timeline: '', outputs: '', friction: '', carryKeep: '', carryDrop: '',
-      constraints: '', physicalNotes: '',
-    };
-  }
-  function normalizeDiaryMeta(meta) {
-    const base = emptyDiaryMeta();
-    if (!meta || typeof meta !== 'object') return base;
-    const outcomes = Array.isArray(meta.outcomes) ? meta.outcomes.slice(0, 3) : [];
-    return {
-      ...base, ...meta,
-      energy: Math.max(0, Math.min(5, Number(meta.energy) || 0)),
-      focus: Math.max(0, Math.min(5, Number(meta.focus) || 0)),
-      outcomes: base.outcomes.map((fallback, i) => ({ ...fallback, ...(outcomes[i] || {}) })),
-    };
-  }
-  function readDiaryMetaForm() {
-    const outcomes = Array.from(document.querySelectorAll('#diaryOutcomeList .diary-outcome-row')).map(row => ({
-      text: row.querySelector('.outcome-text').value.trim(),
-      priority: row.querySelector('.outcome-priority').value,
-      status: row.querySelector('.outcome-status').value,
-      plannedMinutes: row.querySelector('.outcome-minutes').value,
-    }));
-    return normalizeDiaryMeta({
-      energy: document.getElementById('diaryEnergy').value,
-      focus: document.getElementById('diaryFocus').value,
-      outcomes,
-      timeline: document.getElementById('diaryTimeline').value.trim(),
-      outputs: document.getElementById('diaryOutputs').value.trim(),
-      friction: document.getElementById('diaryFriction').value.trim(),
-      carryKeep: document.getElementById('diaryCarryKeep').value.trim(),
-      carryDrop: document.getElementById('diaryCarryDrop').value.trim(),
-      constraints: document.getElementById('diaryConstraints').value.trim(),
-      physicalNotes: document.getElementById('diaryPhysicalNotes').value.trim(),
-    });
-  }
-  function renderDiaryMetaForm(meta) {
-    const value = normalizeDiaryMeta(meta);
-    document.getElementById('diaryEnergy').value = value.energy;
-    document.getElementById('diaryFocus').value = value.focus;
-    Array.from(document.querySelectorAll('#diaryOutcomeList .diary-outcome-row')).forEach((row, i) => {
-      const outcome = value.outcomes[i] || emptyDiaryMeta().outcomes[i];
-      row.querySelector('.outcome-text').value = outcome.text || '';
-      row.querySelector('.outcome-priority').value = outcome.priority || 'medium';
-      row.querySelector('.outcome-status').value = outcome.status || 'not_started';
-      row.querySelector('.outcome-minutes').value = outcome.plannedMinutes || '';
-    });
-    document.getElementById('diaryTimeline').value = value.timeline || '';
-    document.getElementById('diaryOutputs').value = value.outputs || '';
-    document.getElementById('diaryFriction').value = value.friction || '';
-    document.getElementById('diaryCarryKeep').value = value.carryKeep || '';
-    document.getElementById('diaryCarryDrop').value = value.carryDrop || '';
-    document.getElementById('diaryConstraints').value = value.constraints || '';
-    document.getElementById('diaryPhysicalNotes').value = value.physicalNotes || '';
-    updateDiaryScoreOutputs();
-  }
-  function updateDiaryScoreOutputs() {
-    const energy = Number(document.getElementById('diaryEnergy').value) || 0;
-    const focus = Number(document.getElementById('diaryFocus').value) || 0;
-    document.getElementById('diaryEnergyOutput').textContent = energy ? `${energy} / 5` : '未記録';
-    document.getElementById('diaryFocusOutput').textContent = focus ? `${focus} / 5` : '未記録';
-  }
-  function hasDiaryMetaContent(meta) {
-    const m = normalizeDiaryMeta(meta);
-    return !!(m.energy || m.focus || m.timeline || m.outputs || m.friction || m.carryKeep ||
-      m.carryDrop || m.constraints || m.physicalNotes || m.outcomes.some(o => o.text));
-  }
-  function diaryEntrySummary(entry) {
-    if (!entry) return '';
-    const meta = normalizeDiaryMeta(entry.aiMeta);
-    const sections = [];
-    const goals = meta.outcomes.filter(o => o.text).map(o => `${o.text}（${DIARY_STATUS_LABEL[o.status] || o.status}）`);
-    if (goals.length) sections.push(`今日の狙い: ${goals.join('／')}`);
-    if (meta.outputs) sections.push(`できたこと: ${meta.outputs}`);
-    if (meta.timeline) sections.push(`時間の流れ: ${meta.timeline}`);
-    if (meta.friction) sections.push(`引っかかったこと: ${meta.friction}`);
-    if (meta.carryKeep) sections.push(`持ち越し: ${meta.carryKeep}`);
-    if (entry.text) sections.push(entry.text);
-    return sections.join('\n\n');
-  }
-
   async function loadMoodJournal() {
     try {
       const saved = await window.storage.get('quest-mood-journal-v1');
@@ -10264,15 +10047,13 @@
     if (entry) {
       editingMoodEntryId = entry.id;
       document.getElementById('moodJournalText').value = entry.text || '';
-      renderDiaryMetaForm(entry.aiMeta);
       currentMoodImages = entry.images ? [...entry.images] : [];
       currentMoodTag = entry.mood || null;
       moodLastSavedText = entry.text || '';
       moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
     } else {
       editingMoodEntryId = null;
-      document.getElementById('moodJournalText').value = '';
-      renderDiaryMetaForm(emptyDiaryMeta());
+      document.getElementById('moodJournalText').value = '◇今日の目標\n\n\n◇今日の振り返り\n\n\n◇その他\n\n';
       currentMoodImages = [];
       currentMoodTag = null;
       moodLastSavedText = '';
@@ -10302,7 +10083,6 @@
     });
     updateMoodTagToggleUI();
     document.getElementById('moodTagOptions').classList.remove('show'); // 選んだら畳んでスッキリ表示に戻す
-    queueMoodJournalAutosave();
   }
   function updateMoodTagToggleUI() {
     const toggle = document.getElementById('moodTagToggle');
@@ -10333,7 +10113,7 @@
         if (!e) return;
         const hasImg = !!(e.images && e.images.length);
         if (!e.text && !hasImg) return;
-        items.push({ y, m, d, wd, time: e.time || '', text: diaryEntrySummary(e), hasImg });
+        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', hasImg });
       });
     });
     items.sort((a, b) => (b.y - a.y) || (b.m - a.m) || (b.d - a.d) || b.time.localeCompare(a.time));
@@ -10366,7 +10146,7 @@
     if (el) el.innerHTML = '';
     return;
     el.innerHTML = entries.map(entry => {
-      const preview = diaryEntrySummary(entry).slice(0, 40) || '（記録なし）';
+      const preview = (entry.text || '').slice(0, 40) || '（本文なし）';
       const imgCount = entry.images ? entry.images.length : 0;
       const moodEmoji = entry.mood && MOOD_TAG_EMOJI[entry.mood] ? MOOD_TAG_EMOJI[entry.mood] + ' ' : '';
       return `<div class="mood-entry-card" onclick="editMoodEntry('${entry.id}')">
@@ -10384,7 +10164,6 @@
     if (!entry) return;
     editingMoodEntryId = entryId;
     document.getElementById('moodJournalText').value = entry.text || '';
-    renderDiaryMetaForm(entry.aiMeta);
     currentMoodImages = entry.images ? [...entry.images] : [];
     currentMoodTag = entry.mood || null;
     document.querySelectorAll('.mood-tag-btn').forEach(btn => {
@@ -10406,7 +10185,6 @@
     playUIClick();
     editingMoodEntryId = null;
     document.getElementById('moodJournalText').value = '';
-    renderDiaryMetaForm(emptyDiaryMeta());
     currentMoodImages = [];
     currentMoodTag = null;
     document.querySelectorAll('.mood-tag-btn').forEach(btn => btn.classList.remove('active'));
@@ -10549,110 +10327,23 @@
     renderMoodImageThumbs();
   });
 
-  const AI_JOURNAL_INSTRUCTIONS = `<AI_INSTRUCTIONS>
-Act as my daily planning and course-correction partner. Respond in concise Japanese.
-
-Compare this log with my confirmed weekly plan and Google Calendar. Briefly acknowledge meaningful progress, then assess:
-1. What was completed, partially completed, or not started.
-2. Why the actual day differed from the plan, without blame or forced positivity.
-3. How the difference affects the remaining weekly priorities.
-4. The smallest realistic adjustments needed for the remaining days.
-
-Protect fixed commitments, sleep, meals, travel time, recovery, and buffer time. Do not simply push every unfinished task into tomorrow. Clearly identify anything that should be postponed, reduced, or dropped.
-
-Do not invent missing information. Ask one focused question if an important fact is unclear. Propose calendar changes only when necessary, and never modify Google Calendar until I explicitly approve the final plan.
-</AI_INSTRUCTIONS>`;
-  const DIARY_PRIORITY_LABEL = { high: 'High', medium: 'Medium', low: 'Low' };
-  const DIARY_STATUS_LABEL = { not_started: '未着手', partial: '一部完了', done: '完了', cancelled: '中止' };
-  const DIARY_MOOD_LABEL = { good: '良い', neutral: '普通', bad: '低め' };
-  function diaryValue(value) { return String(value || '').trim() || '未記録'; }
-  function getCompletedItemsForDiary(key) {
-    const todayKey = logicalDateKey(trustedNow);
-    if (key === todayKey) {
-      return [
-        ...Array.from(picked).map(k => k.split('|')[1]).filter(Boolean),
-        ...todayTasks.filter(t => t.done).map(t => t.text),
-      ];
-    }
-    const rec = dailyHistory[key] || {};
-    return [...(rec.items || []), ...(rec.todayTasksCompleted || [])];
-  }
-  function buildAIJournalExport(key, entry, options = {}) {
-    const parts = key.split('-').map(Number);
-    const dateLabel = `${parts[0]}/${parts[1]}/${parts[2]}`;
-    const meta = normalizeDiaryMeta(entry && entry.aiMeta);
-    const sleep = sleepData[key] || {};
-    const sleepHours = calcSleepHours(sleep.bedtime, sleep.waketime);
-    const outcomes = meta.outcomes.filter(o => o.text);
-    const completedItems = getCompletedItemsForDiary(key);
-    const events = eventsForDate(key);
-    const outcomeText = outcomes.length ? outcomes.map((o, i) =>
-      `${i + 1}. ${o.text}\n   - Priority: ${DIARY_PRIORITY_LABEL[o.priority] || o.priority || '未記録'}\n   - Status: ${DIARY_STATUS_LABEL[o.status] || o.status || '未記録'}\n   - Planned time: ${o.plannedMinutes ? `${o.plannedMinutes}分` : '未記録'}`
-    ).join('\n\n') : '- 未記録';
-    const completedText = completedItems.length ? completedItems.map(x => `- ${x}`).join('\n') : '- なし／未記録';
-    const eventsText = events.length ? events.map(ev => `- ${ev.time ? `${ev.time}｜` : ''}${ev.text}${ev.done ? '（完了）' : ''}`).join('\n') : '- なし／未記録';
-    const streakLine = Number.isFinite(options.streak) ? `\nStreak: ${options.streak} days` : '';
-    return `${AI_JOURNAL_INSTRUCTIONS}
-
-<DAILY_LOG>
-Date: ${dateLabel}${streakLine}
-
-## Sleep
-- Bedtime: ${diaryValue(sleep.bedtime)}
-- Wake time: ${diaryValue(sleep.waketime)}
-- Duration: ${sleepHours === null ? '未記録' : `${sleepHours.toFixed(1)}h`}
-
-## Condition
-- Energy: ${meta.energy ? `${meta.energy} / 5` : '未記録'}
-- Focus: ${meta.focus ? `${meta.focus} / 5` : '未記録'}
-- Mood: ${entry && entry.mood ? DIARY_MOOD_LABEL[entry.mood] || entry.mood : '未記録'}
-- Physical notes: ${diaryValue(meta.physicalNotes)}
-
-## Intended outcomes
-${outcomeText}
-
-## Completed tasks and routines recorded by the app
-${completedText}
-
-## Scheduled items recorded by the app
-${eventsText}
-
-## Actual timeline
-${diaryValue(meta.timeline)}
-
-## Concrete progress or outputs
-${diaryValue(meta.outputs)}
-
-## Friction or unexpected events
-${diaryValue(meta.friction)}
-
-## Carry-over
-- Keep within this week: ${diaryValue(meta.carryKeep)}
-- May postpone, reduce, or drop: ${diaryValue(meta.carryDrop)}
-
-## Upcoming constraints
-${diaryValue(meta.constraints)}
-
-## Free notes
-${diaryValue(entry && entry.text)}
-
-## Request to AI
-- Compare today's actual results with the confirmed weekly plan.
-- Explain the effect on the remaining days.
-- Suggest only the minimum necessary adjustments.
-</DAILY_LOG>`;
-  }
   async function copyForAIConsult() {
-    const key = logicalDateKey(trustedNow);
     const text = document.getElementById('moodJournalText').value.trim();
-    const aiMeta = readDiaryMetaForm();
-    const sleep = sleepData[key] || {};
-    const hasAppRecord = getCompletedItemsForDiary(key).length > 0 || eventsForDate(key).length > 0 || sleep.bedtime || sleep.waketime;
-    if (!text && !hasDiaryMetaContent(aiMeta) && !currentMoodTag && currentMoodImages.length === 0 && !hasAppRecord) {
-      showToast(currentLang === 'en' ? 'Write something first' : '先に記録を入力してください');
+    if (!text) {
+      showToast(currentLang === 'en' ? 'Write something first' : '先に何か書いてみてください');
       return;
     }
-    const prompt = buildAIJournalExport(key, { text, mood: currentMoodTag, aiMeta }, { streak: calculateStreak() });
+    const today = new Date();
+    const dateLabel = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`;
+    const streak = calculateStreak();
+    const bedtime = document.getElementById('sleepBedtime').value;
+    const waketime = document.getElementById('sleepWaketime').value;
+    let sleepLine = '';
+    if (bedtime && waketime) sleepLine = `\n睡眠: ${bedtime} 〜 ${waketime}`;
+
+    const prompt = (currentLang === 'en')
+      ? `Here is my journal from ${dateLabel}. First note one thing I did well, then point out anything worth improving — honestly, but kindly and constructively. End with one small step I could take next. Keep it brief.\n\n[${dateLabel}] (streak ${streak})${sleepLine}\n${text}`
+      : `以下は${dateLabel}の自分の記録です。まず良かった点にふれ、その上で気づいた課題を率直に、でも前向きに指摘してください。最後に、次に活かせそうな小さな一歩を一つ添えてください。簡潔にお願いします。\n\n【${dateLabel}の記録】(連続記録${streak}日目)${sleepLine}\n${text}`;
 
     try {
       await navigator.clipboard.writeText(prompt);
@@ -10692,7 +10383,7 @@ ${diaryValue(entry && entry.text)}
         if (!e) return;
         const hasImg = !!(e.images && e.images.length);
         if (!e.text && !hasImg) return;
-        items.push({ y, m, d, wd, time: e.time || '', text: diaryEntrySummary(e), mood: e.mood || '', hasImg });
+        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', mood: e.mood || '', hasImg });
       });
     });
     items.sort((a, b) => (b.y - a.y) || (b.m - a.m) || (b.d - a.d) || b.time.localeCompare(a.time));
@@ -10724,24 +10415,6 @@ ${diaryValue(entry && entry.text)}
     box.innerHTML = dhHtml;
   }
 
-  function queueMoodJournalAutosave() {
-    const text = document.getElementById('moodJournalText').value;
-    const meta = readDiaryMetaForm();
-    const hasContent = text.trim() || currentMoodImages.length || currentMoodTag || hasDiaryMetaContent(meta);
-    if (hasContent) {
-      const info = document.getElementById('moodJournalSavedInfo');
-      if (info) info.innerHTML = '<span class="saving-dots"><i></i><i></i><i></i></span>保存中…';
-    }
-    clearTimeout(moodJournalAutosaveTimer);
-    moodJournalAutosaveTimer = setTimeout(() => {
-      if (!hasContent) return;
-      saveMoodJournal(true);
-    }, 1600);
-  }
-  function handleDiaryMetaInput() {
-    updateDiaryScoreOutputs();
-    queueMoodJournalAutosave();
-  }
   function handleMoodJournalInput() {
     const el = document.getElementById('moodJournalText');
     const cur = el.value;
@@ -10749,21 +10422,31 @@ ${diaryValue(entry && entry.text)}
     // --- 取り消し/やり直し用の履歴を積む(プログラムからの復元中は積まない) ---
     if (!diaryHistoryApplying) scheduleDiaryHistory();
 
-    queueMoodJournalAutosave();
+    // --- 保存中インジケータ(息づく三点) ---
+    if (cur.trim() || currentMoodImages.length || currentMoodTag) {
+      const info = document.getElementById('moodJournalSavedInfo');
+      if (info) info.innerHTML = '<span class="saving-dots"><i></i><i></i><i></i></span>保存中…';
+    }
+
+    clearTimeout(moodJournalAutosaveTimer);
+    moodJournalAutosaveTimer = setTimeout(() => {
+      const text = document.getElementById('moodJournalText').value;
+      // 空欄・気分タグも画像も無い状態では、自動保存しない(「内容が空です」を毎回出さないため)
+      if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag) return;
+      saveMoodJournal(true); // 自動保存扱い(ボタンの「保存しました」演出は省略)
+    }, 2000);
   }
   function handleMoodJournalBlur() {
     // 手動保存ボタンが無いので、入力欄から離れた瞬間、2秒待たずに即座に保存する
     clearTimeout(moodJournalAutosaveTimer);
     const text = document.getElementById('moodJournalText').value;
-    const meta = readDiaryMetaForm();
-    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !hasDiaryMetaContent(meta)) return;
+    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag) return;
     saveMoodJournal(true);
   }
   async function saveMoodJournal(isAutosave) {
     const key = logicalDateKey(trustedNow);
     const text = document.getElementById('moodJournalText').value;
-    const aiMeta = readDiaryMetaForm();
-    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !hasDiaryMetaContent(aiMeta)) {
+    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag) {
       showToast('内容が空です');
       return;
     }
@@ -10775,13 +10458,13 @@ ${diaryValue(entry && entry.text)}
       // 既存エントリーの更新
       const idx = moodJournalData[key].findIndex(e => e.id === editingMoodEntryId);
       if (idx !== -1) {
-        moodJournalData[key][idx] = { ...moodJournalData[key][idx], text, images: [...currentMoodImages], time: nowTime, mood: currentMoodTag, aiMeta };
+        moodJournalData[key][idx] = { ...moodJournalData[key][idx], text, images: [...currentMoodImages], time: nowTime, mood: currentMoodTag };
       }
     } else {
       // 新規エントリーの追加(これが「保存したら過去データになる」の実体)
       const newEntry = {
         id: 'mood_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-        time: nowTime, text, images: [...currentMoodImages], mood: currentMoodTag, aiMeta,
+        time: nowTime, text, images: [...currentMoodImages], mood: currentMoodTag,
       };
       moodJournalData[key].push(newEntry);
       editingMoodEntryId = newEntry.id;
@@ -12435,7 +12118,7 @@ ${diaryValue(entry && entry.text)}
         const textId = `dayDetailMoodEntryText_${i}`;
         return `<div style="margin-bottom:10px;">
           <div style="font-family:'Orbitron',sans-serif; font-size:9.5px; color:var(--cyan); margin-bottom:2px;">${entry.time || ''}</div>
-          <div id="${textId}" class="clamp-text">${moodEmoji}${escapeHtml(diaryEntrySummary(entry))}</div>
+          <div id="${textId}" class="clamp-text">${moodEmoji}${escapeHtml(entry.text || '')}</div>
           <span class="clamp-expand-btn" onclick="document.getElementById('${textId}').classList.toggle('clamp-text'); this.textContent = this.textContent === '続きを読む' ? '短く表示' : '続きを読む';">続きを読む</span>
           <div>${imgs}</div>
         </div>`;
@@ -12453,9 +12136,25 @@ ${diaryValue(entry && entry.text)}
   async function copyDayForAIAnalysis() {
     const key = dayDetailCurrentKey;
     if (!key) return;
+    const [y, m, d] = key.split('-');
+    const todayKey = logicalDateKey(trustedNow);
+    const record = (key === todayKey)
+      ? { count: picked.size, exp: currentTodayExp || 0, items: [...picked].map(k => k.split('|')[1]) }
+      : (dailyHistory[key] || { count: 0, exp: 0, items: [] });
+    const allItems = [...(record.items || []), ...(record.todayTasksCompleted || [])];
+    const itemsText = allItems.length ? allItems.join('、') : 'なし';
+
     const moodEntries = moodJournalData[key] || [];
-    const entry = moodEntries.length ? moodEntries[moodEntries.length - 1] : { text: '', mood: null, aiMeta: emptyDiaryMeta() };
-    const prompt = buildAIJournalExport(key, entry);
+    const moodText = moodEntries.length
+      ? moodEntries.map(e => `[${e.time || ''}] ${escapeHtml(e.text || '')}`).join('\n')
+      : 'なし';
+
+    const events = eventsForDate(key);
+    const eventsText = events.length
+      ? events.map(ev => `${ev.time ? ev.time + ' ' : ''}${ev.text}${ev.done ? '(完了)' : ''}`).join('\n')
+      : 'なし';
+
+    const prompt = `以下は${y}年${m}月${d}日の自分の記録です。客観的に見て、率直な感想・気づき・次に活かせそうなことがあれば教えてください。優しく取り繕うより、正直な評価を希望します。\n\n【こなしたタスク・日課】(${record.count}件、獲得EXP ${Math.round(record.exp)})\n${itemsText}\n\n【予定】\n${eventsText}\n\n【気分日記】\n${moodText}`;
 
     try {
       await navigator.clipboard.writeText(prompt);
