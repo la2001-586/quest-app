@@ -1,34 +1,14 @@
 // index の Service Worker(通知機能の土台)
-// v3 / app V415: リマインド通知 + アプリ本体を常に最新版へ更新
+// v2: リマインド通知に「10分後にもう一度」ボタン(スヌーズ)を追加
 
 const NOTIFY_SERVER_URL = 'https://wondrous-hotteok-44dee9.netlify.app';
-const APP_VERSION = '415';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil((async () => {
-    await self.clients.claim();
-    const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    await Promise.all(clients.map((client) => {
-      try {
-        const url = new URL(client.url);
-        if (url.origin !== self.location.origin || url.searchParams.get('appv') === APP_VERSION) return;
-        url.searchParams.set('appv', APP_VERSION);
-        return client.navigate(url.href);
-      } catch (e) {
-        return undefined;
-      }
-    }));
-  })());
-});
-
-// 画面本体は端末やGitHub Pagesの古いキャッシュより、ネット上の最新版を優先する。
-self.addEventListener('fetch', (event) => {
-  if (event.request.mode !== 'navigate') return;
-  event.respondWith(fetch(event.request, { cache: 'no-store' }));
+  event.waitUntil(self.clients.claim());
 });
 
 // プッシュ通知を受け取った時の処理
