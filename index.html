@@ -2933,13 +2933,15 @@
   .virtual-pointer-hold-ring { position:absolute; width:34px; height:34px; margin:-17px 0 0 -17px; border:2px solid rgba(110,221,255,.24); border-radius:50%; opacity:0; }
   .virtual-pointer-layer.is-arming .virtual-pointer-hold-ring { opacity:1; animation:virtualPointerArm .8s linear forwards; }
   @keyframes virtualPointerArm { from { transform:scale(.72); border-color:rgba(110,221,255,.22); } to { transform:scale(1.12); border-color:var(--cyan); box-shadow:0 0 18px rgba(43,201,204,.55); } }
-  .virtual-pointer-cursor { position:absolute; width:22px; height:28px; opacity:0; filter:drop-shadow(0 0 7px rgba(95,218,255,.85)); transform:translate(1px,-25px); }
+  .virtual-pointer-cursor { position:absolute; width:28px; height:34px; opacity:0; filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #42ddff) drop-shadow(0 0 20px rgba(67,129,255,.95)); transform:translate(1px,-31px); }
   .virtual-pointer-layer.is-active .virtual-pointer-cursor { opacity:1; }
-  .virtual-pointer-cursor::before { content:""; position:absolute; left:0; bottom:0; width:0; height:0; border-top:22px solid #eafcff; border-right:13px solid transparent; transform:rotate(-12deg); transform-origin:left bottom; }
-  .virtual-pointer-cursor::after { content:""; position:absolute; left:3px; bottom:4px; width:0; height:0; border-top:15px solid #163449; border-right:8px solid transparent; transform:rotate(-12deg); transform-origin:left bottom; }
+  .virtual-pointer-layer.is-active .virtual-pointer-cursor { animation:virtualPointerGlow .8s ease-in-out infinite alternate; }
+  @keyframes virtualPointerGlow { from { transform:translate(1px,-31px) scale(.96); } to { transform:translate(1px,-31px) scale(1.08); } }
+  .virtual-pointer-cursor::before { content:""; position:absolute; left:0; bottom:0; width:0; height:0; border-top:28px solid #ffffff; border-right:17px solid transparent; transform:rotate(-12deg); transform-origin:left bottom; }
+  .virtual-pointer-cursor::after { content:""; position:absolute; left:4px; bottom:5px; width:0; height:0; border-top:19px solid #168fbd; border-right:10px solid transparent; transform:rotate(-12deg); transform-origin:left bottom; }
   .virtual-pointer-speed { position:absolute; transform:translate(17px,11px); padding:3px 7px; border:1px solid rgba(96,214,255,.4); border-radius:10px; background:rgba(5,17,28,.86); color:#bcefff; font:700 8px/1.2 "Orbitron",sans-serif; white-space:nowrap; opacity:0; }
   .virtual-pointer-layer.is-active .virtual-pointer-speed { opacity:.9; }
-  .virtual-pointer-target { outline:2px solid var(--cyan) !important; outline-offset:3px !important; box-shadow:0 0 18px rgba(43,201,204,.5) !important; }
+  .virtual-pointer-target { outline:3px solid #67e8ff !important; outline-offset:4px !important; box-shadow:0 0 8px #fff, 0 0 24px rgba(43,201,255,.85) !important; }
   @media (prefers-reduced-motion:reduce) { .virtual-pointer-layer.is-arming .virtual-pointer-hold-ring { animation:none; } }
 </style>
 </head>
@@ -3312,11 +3314,11 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0902_AI_DIARY_V417</div>
+  <div id="buildTag" onclick="handleBuildTagTap()" class="stb-version">BUILD 0902_AI_DIARY_V418</div>
   <div class="virtual-pointer-layer" id="virtualPointerLayer" aria-hidden="true">
     <div class="virtual-pointer-hold-ring" id="virtualPointerHoldRing"></div>
     <div class="virtual-pointer-cursor" id="virtualPointerCursor"></div>
-    <div class="virtual-pointer-speed" id="virtualPointerSpeed">縦 ×5.0 / 横 ×1.8</div>
+    <div class="virtual-pointer-speed" id="virtualPointerSpeed">縦 ×4.2 / 横 ×2.3</div>
   </div>
 </div>
 
@@ -3959,7 +3961,7 @@
   <div class="settings-group" style="border: 1.5px dashed rgba(255,80,80,0.5);">
     <div class="settings-label" style="color:#FF5050;" data-i18n="dev_section_label"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"></path></svg> 開発者用(本番公開前に削除)</div>
     <div class="settings-row" style="margin-bottom:10px;">
-      <span style="color:#FF8080; font-size:12px; line-height:1.5;">長押しポインター（試作）<br><small style="color:var(--ink-dim);">0.8秒長押し・縦×5／横×1.8</small></span>
+      <span style="color:#FF8080; font-size:12px; line-height:1.5;">長押しポインター（試作）<br><small style="color:var(--ink-dim);">0.8秒長押し・縦×4.2／横×2.3</small></span>
       <label class="toggle-switch">
         <input type="checkbox" id="virtualPointerToggle" checked onchange="setVirtualPointerEnabled(this.checked)">
         <span class="toggle-track"></span>
@@ -7877,8 +7879,8 @@
 
   // ===== 0.8秒長押し・加速ポインター（開発試作） =====
   const VIRTUAL_POINTER_HOLD_MS = 800;
-  const VIRTUAL_POINTER_X_GAIN = 1.8;
-  const VIRTUAL_POINTER_Y_GAIN = 5.0;
+  const VIRTUAL_POINTER_X_GAIN = 2.3;
+  const VIRTUAL_POINTER_Y_GAIN = 4.2;
   let virtualPointerEnabled = true;
   let virtualPointerState = null;
   let virtualPointerTarget = null;
