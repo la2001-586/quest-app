@@ -9,7 +9,7 @@
 - **Repo**: https://github.com/la2001-586/quest-app
 - **デプロイ**: `main` に push → **Netlify が自動ビルド** → オーナーが **iPhone(Safari/PWA)** で実機確認。オーナーは main への直 push を許可済み。
 - ミラー用ブランチ `claude/memory-check-y2byvf` にも同内容を push していた（任意）。
-- **ビルドタグ**: 画面隅の `#buildTag`（`BUILD MMDD_XXX_Vnnn`）。**変更ごとに必ず bump**（実機に反映が来たか確認するため）。現状 `BUILD 0902_DIARY_RESTORE_V419`。
+- **ビルドタグ**: 画面隅の `#buildTag`（`BUILD MMDD_XXX_Vnnn`）。**変更ごとに必ず bump**（実機に反映が来たか確認するため）。現状 `BUILD 0903_POINTER_SPLIT_V420`。
 - **実機で直接テストできない**ので、push 前に必ずヘッドレスで描画検証する（§5）。
 
 ## 2. アーキテクチャ
@@ -25,8 +25,9 @@
 - `fancy` → `theme-fancy` / `cyber` → クラス無し(基底)
 - **落とし穴**: `theme-simple`(1クラス) vs `theme-mono`(2クラス) の詳細度差＋大量の `!important`。色を足すときは全テーマ（明/暗/mono）で見えるか要確認。
 
-## 4. 現在の状態（V419）
-0. **日記UI復元（V419）**: V411で追加されたAI軌道修正向けの多項目フォームを撤回し、V410時点の自由記述中心の日記UIとコピー形式へ復元。V412以降のEXP推移、PWA自動更新、仮想ポインター等は保持。
+## 4. 現在の状態（V420）
+0. **試作入力機能の本体分離（V420）**: 開発検証中の長押し入力機能を公開アプリから除去し、通常操作だけの本体へ戻した。ビルドタグ `BUILD 0903_POINTER_SPLIT_V420`。
+1. **日記UI復元（V419）**: V411で追加されたAI軌道修正向けの多項目フォームを撤回し、V410時点の自由記述中心の日記UIとコピー形式へ復元。V412以降のEXP推移とPWA自動更新は保持。
 1. **星の奥行き視差(dark)**: `buildNightStars()` が星を far/mid/near の3層に分割、スクロールで層ごとに違う距離だけ動く。
 2. **完了音「和音＋芯 重厚」**: `playSelectSound()` を旧ビープから、FMベルのメジャーadd9和音＋低いプラック＋サブベースに置換。専用バス `ensureSoundBus()`（**リミッター**＋短いリバーブ）経由。合成ヘルパ `_fmBell/_pluck/_sub/_note`。
 3. **タスクの音＆チェック修正**: `toggleScheduledEvent`(カレンダー予定) も完了時に `playSelectSound`。完了チェックが白系テーマで見えなかったのを、濃オレンジ地+白（mono は黒地+白）に修正。
