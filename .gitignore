@@ -1,0 +1,15 @@
+node_modules/
+www/
+
+# Native build outputs and local machine settings
+android/.gradle/
+android/local.properties
+android/**/build/
+ios/App/DerivedData/
+ios/App/build/
+
+# Signing material must never be committed
+*.jks
+*.keystore
+*.p12
+*.mobileprovision

@@ -1,0 +1,13 @@
+{
+  "appId": "com.dailystation.app",
+  "appName": "Daily Station",
+  "webDir": "www",
+  "backgroundColor": "#F7F7F7",
+  "plugins": {
+    "StatusBar": {
+      "overlaysWebView": true,
+      "style": "LIGHT",
+      "backgroundColor": "#07080B"
+    }
+  }
+}

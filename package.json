@@ -1,0 +1,28 @@
+{
+  "name": "daily-station",
+  "version": "0.4.25",
+  "private": true,
+  "description": "Daily Station web app and Capacitor native shells",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build-web.mjs",
+    "native:sync": "pnpm run build && cap sync",
+    "native:android": "pnpm run native:sync && cap open android",
+    "native:ios": "pnpm run native:sync && cap open ios",
+    "verify:web": "node scripts/verify-web.mjs",
+    "verify:native": "pnpm run build && cap sync && pnpm run verify:web"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.0.0"
+  },
+  "packageManager": "pnpm@11.19.0"
+}
