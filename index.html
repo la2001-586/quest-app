@@ -2902,7 +2902,7 @@
   }
   .pin-toggle-btn.pinned { opacity: 1; filter: none; }
 
-  .theme-switch { display: flex; gap: 6px; }
+  .theme-switch { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
   .theme-btn, .lang-btn, .textscale-btn {
     background: rgba(255,255,255,0.05); border: 1.2px solid rgba(255,255,255,0.15);
     color: var(--ink-dim); font-size: 10.5px; font-weight: 700; padding: 6px 12px;
@@ -2911,6 +2911,17 @@
   }
   .theme-btn:active, .lang-btn:active, .textscale-btn:active { transform: scale(0.92); }
   .theme-btn.active, .lang-btn.active, .textscale-btn.active { background: var(--cyan); color: var(--bg); border-color: var(--cyan); }
+  .theme-btn-prism { display: inline-flex; align-items: center; gap: 5px; }
+  .theme-prism-dot {
+    width: 9px; height: 9px; border-radius: 4px; flex: 0 0 auto;
+    background: conic-gradient(from 210deg, #72e6cf, #74cfff, #b89bff, #ffc08f, #72e6cf);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 0 8px rgba(117,207,255,.35);
+  }
+  .theme-btn-prism.active {
+    color: #17202b !important; border-color: rgba(255,255,255,.92) !important;
+    background: linear-gradient(125deg, rgba(112,232,207,.7), rgba(255,255,255,.9) 42%, rgba(171,139,255,.46), rgba(255,177,130,.54)) !important;
+    box-shadow: inset 0 1px 0 #fff, 0 8px 18px rgba(93,128,151,.14) !important;
+  }
   .startpage-switch { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .startpage-btn {
     display: inline-flex; align-items: center; gap: 5px;
@@ -3376,9 +3387,10 @@
       linear-gradient(145deg, #0d1118, #111820 52%, #16131a) !important;
   }
   .prism-atmosphere {
-    position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+    display: none; position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
     opacity: 1; contain: strict;
   }
+  body.prism-motion-ui .prism-atmosphere { display: block; }
   .prism-atmosphere::before {
     content: ""; position: absolute; inset: 0;
     background-image:
@@ -3588,6 +3600,163 @@
   body.prism-motion-ui .prism-layer-enter > *:nth-child(4) { animation-delay: .165s; }
   body.prism-motion-ui .prism-layer-enter > *:nth-child(n+5) { animation-delay: .20s; }
 
+  /* Page roles: one material system, distinct functional accents. */
+  body.prism-motion-ui #appGroupWrap_group_other { --page-rgb: 96, 210, 181; --page-rgb-soft: 194, 246, 231; }
+  body.prism-motion-ui #appGroupWrap_group_calendar { --page-rgb: 91, 190, 244; --page-rgb-soft: 203, 235, 255; }
+  body.prism-motion-ui #appGroupWrap_group_task { --page-rgb: 240, 144, 107; --page-rgb-soft: 255, 224, 209; }
+  body.prism-motion-ui #appGroupWrap_group_diary { --page-rgb: 157, 128, 229; --page-rgb-soft: 231, 220, 255; }
+  body.prism-motion-ui #page-settings { --page-rgb: 94, 178, 163; --page-rgb-soft: 216, 242, 237; }
+  body.prism-motion-ui.multipage-mode .app-group-wrap {
+    background:
+      radial-gradient(circle at 12% 8%, rgba(var(--page-rgb-soft, 194,246,231),.28), transparent 30%),
+      linear-gradient(145deg, rgba(255,255,255,.76), rgba(255,255,255,.31) 43%, rgba(var(--page-rgb, 112,232,207),.075) 73%, rgba(var(--prism-peach),.065));
+  }
+  body.prism-motion-ui.multipage-mode .app-group-wrap > .hud-header:first-of-type,
+  body.prism-motion-ui.multipage-mode .app-group-wrap > .settings-group:first-of-type,
+  body.prism-motion-ui.multipage-mode .app-group-wrap > #calSectionWrap:first-of-type,
+  body.prism-motion-ui.multipage-mode .app-group-wrap > .mood-journal-shell:first-of-type {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.94),
+      inset 3px 0 0 rgba(var(--page-rgb,112,232,207),.25),
+      0 18px 42px rgba(58,83,103,.10) !important;
+  }
+
+  /* Headings and dividers communicate hierarchy without extra decoration. */
+  body.prism-motion-ui .settings-label,
+  body.prism-motion-ui .cal-section-title,
+  body.prism-motion-ui .group-label {
+    display: inline-flex; align-items: center; gap: 7px; width: auto;
+    color: rgba(var(--prism-ink),.66) !important; letter-spacing: .11em;
+  }
+  body.prism-motion-ui .settings-label::before,
+  body.prism-motion-ui .cal-section-title::before,
+  body.prism-motion-ui .group-label::before {
+    content: ""; width: 18px; height: 4px; border-radius: 999px;
+    background: linear-gradient(90deg, rgba(var(--page-rgb,112,232,207),.95), rgba(var(--prism-violet),.58));
+    box-shadow: 0 0 12px rgba(var(--page-rgb,112,232,207),.22);
+  }
+  body.prism-motion-ui .settings-row + .settings-row {
+    border-top: 1px solid rgba(73,100,112,.085) !important;
+  }
+  body.prism-motion-ui .settings-row { min-height: 48px; }
+
+  /* Primary actions keep the requested precise dark accent; secondary controls stay translucent. */
+  body.prism-motion-ui .add-task-btn,
+  body.prism-motion-ui .evt-add,
+  body.prism-motion-ui .mood-journal-btn.primary {
+    border: 1px solid rgba(255,255,255,.72) !important;
+    background: linear-gradient(145deg, #202631, #11151c) !important;
+    color: #fff !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 11px 25px rgba(31,41,53,.2), 0 0 0 5px rgba(var(--page-rgb,112,232,207),.07) !important;
+    transition: transform .28s cubic-bezier(.2,.9,.25,1), box-shadow .28s ease !important;
+  }
+  body.prism-motion-ui .add-task-btn:hover,
+  body.prism-motion-ui .evt-add:hover,
+  body.prism-motion-ui .mood-journal-btn.primary:hover {
+    transform: translateY(-2px) scale(1.025);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.24), 0 16px 30px rgba(31,41,53,.24), 0 0 0 7px rgba(var(--page-rgb,112,232,207),.09) !important;
+  }
+  body.prism-motion-ui .settings-btn,
+  body.prism-motion-ui .cal-view-btn,
+  body.prism-motion-ui .mood-journal-btn:not(.primary),
+  body.prism-motion-ui .startpage-btn,
+  body.prism-motion-ui .theme-btn,
+  body.prism-motion-ui .lang-btn,
+  body.prism-motion-ui .textscale-btn {
+    border-color: rgba(104,126,139,.16) !important;
+    background: linear-gradient(145deg, rgba(255,255,255,.58), rgba(255,255,255,.28)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.82), 0 6px 15px rgba(67,91,107,.07);
+  }
+  body.prism-motion-ui .theme-btn.active:not(.theme-btn-prism),
+  body.prism-motion-ui .lang-btn.active,
+  body.prism-motion-ui .textscale-btn.active,
+  body.prism-motion-ui .startpage-btn.active,
+  body.prism-motion-ui .cal-view-btn.active {
+    color: #17302e !important;
+    border-color: rgba(var(--page-rgb,112,232,207),.34) !important;
+    background: linear-gradient(145deg, rgba(var(--page-rgb-soft,194,246,231),.8), rgba(255,255,255,.66)) !important;
+    box-shadow: inset 0 1px 0 #fff, 0 8px 18px rgba(var(--page-rgb,112,232,207),.11) !important;
+  }
+
+  /* Completion controls: a quiet ring at rest, luminous material only after completion. */
+  body.prism-motion-ui .check-box {
+    border: 1.5px solid rgba(45,58,67,.30) !important;
+    background: rgba(255,255,255,.56) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 0 0 4px rgba(var(--page-rgb,112,232,207),.055);
+    transition: transform .35s cubic-bezier(.18,.9,.25,1.25), background .3s ease, box-shadow .3s ease !important;
+  }
+  body.prism-motion-ui .item.picked .check-box,
+  body.prism-motion-ui .item.done .check-box,
+  body.prism-motion-ui .item.today-routine .check-box {
+    color: #fff !important; border-color: rgba(255,255,255,.82) !important;
+    background: linear-gradient(145deg, rgba(var(--page-rgb,112,232,207),.98), rgba(var(--prism-violet),.82)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.78), 0 7px 18px rgba(var(--page-rgb,112,232,207),.22), 0 0 0 5px rgba(var(--page-rgb,112,232,207),.075) !important;
+    transform: scale(1.05);
+  }
+  body.prism-motion-ui .item.picked,
+  body.prism-motion-ui .item.done { background: linear-gradient(90deg, rgba(var(--page-rgb,112,232,207),.075), transparent 52%) !important; }
+
+  /* Calendar: selection and today are different states rather than one stronger border. */
+  body.prism-motion-ui .cal-day:not(.empty) { border-radius: 15px !important; transition: transform .24s ease, background .24s ease, box-shadow .24s ease !important; }
+  body.prism-motion-ui .cal-day:not(.empty):hover { transform: translateY(-2px); background: rgba(255,255,255,.68) !important; box-shadow: 0 9px 20px rgba(58,89,112,.09); }
+  body.prism-motion-ui .cal-day.today {
+    background: linear-gradient(145deg, rgba(var(--prism-mint),.24), rgba(255,255,255,.58)) !important;
+    box-shadow: inset 0 0 0 1.5px rgba(28,45,46,.72), 0 8px 20px rgba(var(--prism-mint),.12) !important;
+  }
+  body.prism-motion-ui .cal-day.selected:not(.today) {
+    background: linear-gradient(145deg, rgba(var(--prism-cyan),.17), rgba(var(--prism-violet),.09)) !important;
+    box-shadow: inset 0 0 0 1px rgba(var(--prism-cyan),.48) !important;
+  }
+
+  /* Inputs sit one optical layer below cards; focus brings them forward. */
+  body.prism-motion-ui input[type="text"],
+  body.prism-motion-ui input[type="time"],
+  body.prism-motion-ui input[type="date"],
+  body.prism-motion-ui textarea,
+  body.prism-motion-ui select,
+  body.prism-motion-ui .dh-search {
+    border: 1px solid rgba(77,104,117,.14) !important;
+    background: rgba(255,255,255,.34) !important;
+    box-shadow: inset 0 2px 5px rgba(51,74,87,.035), 0 1px 0 rgba(255,255,255,.86) !important;
+    transition: border-color .25s ease, box-shadow .25s ease, background .25s ease, transform .25s ease;
+  }
+  body.prism-motion-ui input:focus,
+  body.prism-motion-ui textarea:focus,
+  body.prism-motion-ui select:focus,
+  body.prism-motion-ui .dh-search:focus-within {
+    outline: none !important; border-color: rgba(var(--page-rgb,112,232,207),.5) !important;
+    background: rgba(255,255,255,.66) !important;
+    box-shadow: inset 0 1px 0 #fff, 0 0 0 4px rgba(var(--page-rgb,112,232,207),.09), 0 12px 26px rgba(64,88,104,.09) !important;
+    transform: translateY(-1px);
+  }
+
+  /* Dialogs and feedback belong to the same depth system. */
+  body.prism-motion-ui .modal-card,
+  body.prism-motion-ui .grand-modal-card,
+  body.prism-motion-ui .badge-modal-card {
+    border: 1px solid rgba(255,255,255,.75) !important;
+    background: linear-gradient(145deg, rgba(255,255,255,.82), rgba(246,251,252,.57), rgba(var(--prism-violet),.08)) !important;
+    box-shadow: inset 0 1px 0 #fff, 0 30px 90px rgba(42,59,76,.24) !important;
+    backdrop-filter: blur(32px) saturate(145%); -webkit-backdrop-filter: blur(32px) saturate(145%);
+  }
+  body.prism-motion-ui .toast {
+    border: 1px solid rgba(255,255,255,.72) !important;
+    background: linear-gradient(135deg, rgba(30,37,48,.88), rgba(18,23,31,.82)) !important;
+    color: #fff !important; box-shadow: 0 18px 45px rgba(31,42,56,.28) !important;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  }
+  body.prism-motion-ui :focus-visible {
+    outline: 2px solid rgba(var(--prism-cyan),.72) !important; outline-offset: 3px !important;
+  }
+  body.prism-motion-ui button:disabled { filter: saturate(.45); opacity: .42; box-shadow: none !important; }
+
+  /* Navigation accent follows destination while retaining a single dock material. */
+  body.prism-motion-ui .home-tab[data-group="group_other"].active::before { background: linear-gradient(145deg, rgba(96,210,181,.34), rgba(255,255,255,.58)); }
+  body.prism-motion-ui .home-tab[data-group="group_calendar"].active::before { background: linear-gradient(145deg, rgba(91,190,244,.30), rgba(255,255,255,.6)); }
+  body.prism-motion-ui .home-tab[data-group="group_task"].active::before { background: linear-gradient(145deg, rgba(240,144,107,.29), rgba(255,255,255,.62), rgba(var(--prism-violet),.12)); }
+  body.prism-motion-ui .home-tab[data-group="group_diary"].active::before { background: linear-gradient(145deg, rgba(157,128,229,.29), rgba(255,255,255,.62)); }
+  body.prism-motion-ui .home-tab[data-page="settings"].active::before { background: linear-gradient(145deg, rgba(94,178,163,.28), rgba(255,255,255,.62)); }
+
   @keyframes prismFloatA { to { transform: translate3d(14vw,8vh,0) scale(1.14) rotate(9deg); } }
   @keyframes prismFloatB { to { transform: translate3d(-12vw,-9vh,0) scale(.88) rotate(-12deg); } }
   @keyframes prismFloatC { to { transform: translate3d(-7vw,-8vh,0) scale(1.08); } }
@@ -3622,7 +3791,7 @@
 
 </style>
 </head>
-<body class="theme-simple prism-motion-ui">
+<body class="theme-simple">
 <div class="prism-atmosphere" aria-hidden="true">
   <div class="prism-aurora prism-aurora-a"></div>
   <div class="prism-aurora prism-aurora-b"></div>
@@ -4440,6 +4609,7 @@
         <button class="theme-btn active" data-theme="simple" data-i18n="theme_simple">シンプル</button>
         <button class="theme-btn" data-theme="dark" data-i18n="theme_dark">ダーク</button>
         <button class="theme-btn" data-theme="mono">白</button>
+        <button class="theme-btn theme-btn-prism" data-theme="prism" data-i18n="theme_prism"><span class="theme-prism-dot" aria-hidden="true"></span>プリズム</button>
       </div>
     </div>
     <button class="settings-btn" style="margin-top:10px;" data-i18n="opt_bgview_btn" onclick="enterBgViewMode()">🌌 背景だけを見る</button>
@@ -5232,6 +5402,7 @@
       "theme_cyber": "سايبر",
       "theme_simple": "بسيط",
       "theme_dark": "داكن",
+      "theme_prism": "منشور",
       "opt_sound_label": "الصوت",
       "opt_sound_vol_row": "مستوى المؤثرات الصوتية",
       "opt_test_sound_btn": "🔊 جرّب الصوت",
@@ -5456,7 +5627,7 @@
       hometab_task: 'タスク', hometab_settings: 'オプション',
       opt_title: 'オプション', opt_sub: '見た目と音、運営への連絡',
       opt_appearance_label: '見た目', opt_theme_row: 'デザインテーマ',
-      theme_cyber: 'サイバー', theme_simple: 'シンプル', theme_dark: 'ダーク',
+      theme_cyber: 'サイバー', theme_simple: 'シンプル', theme_dark: 'ダーク', theme_prism: 'プリズム',
       opt_sound_label: 'サウンド', opt_sound_vol_row: '効果音の音量',
       opt_test_sound_btn: '🔊 音を試す', opt_sound_toggle_row: '効果音を鳴らす',
       opt_boundary_label: '1日の区切り', opt_boundary_row: '区切りの時刻',
@@ -5595,7 +5766,7 @@
       hometab_task: 'Tasks', hometab_settings: 'Options',
       opt_title: 'Options', opt_sub: 'Appearance, sound, and contact',
       opt_appearance_label: 'Appearance', opt_theme_row: 'Design Theme',
-      theme_cyber: 'Cyber', theme_simple: 'Simple', theme_dark: 'Dark',
+      theme_cyber: 'Cyber', theme_simple: 'Simple', theme_dark: 'Dark', theme_prism: 'Prism',
       opt_sound_label: 'Sound', opt_sound_vol_row: 'SFX Volume',
       opt_test_sound_btn: '🔊 Test Sound', opt_sound_toggle_row: 'Enable Sound Effects',
       opt_boundary_label: 'Day Boundary', opt_boundary_row: 'Boundary Time',
@@ -8086,7 +8257,7 @@
       await Promise.all([
         saveProgress(currentTodayExp || 0),
         saveTasks(),
-        saveTheme(document.body.classList.contains('theme-fancy') ? 'fancy' : (document.body.classList.contains('theme-simple') ? 'simple' : 'cyber')),
+        saveTheme(getAppliedThemeName()),
         saveVolume(),
         saveTodayTasks(),
         saveBadgeHistory(),
@@ -8367,7 +8538,7 @@
 
   function sanitizeBackupField(field, value) {
     if (field === 'quickMemo') return String(value ?? '').slice(0, 200000);
-    if (field === 'theme') return ['simple', 'dark', 'mono', 'fancy', 'cyber'].includes(value) ? value : 'simple';
+    if (field === 'theme') return ['simple', 'dark', 'mono', 'prism', 'fancy', 'cyber'].includes(value) ? value : 'simple';
     if (field === 'lang') return ['ja', 'en', 'ar'].includes(value) ? value : 'ja';
     if (field === 'volume') return String(Math.min(1, Math.max(0, Number(value) || 0.7)));
     if (field === 'bgmOn' || field === 'multiPageMode') return value === '1' ? '1' : '0';
@@ -8485,6 +8656,14 @@
 
   // ---- テーマの保存・復元(v23で追加。以前は選んでも保存されず毎回サイバーに戻っていた) ----
   const DEFAULT_THEME = 'simple';
+  function getAppliedThemeName() {
+    if (document.body.classList.contains('prism-motion-ui')) return 'prism';
+    if (document.body.classList.contains('theme-fancy')) return 'fancy';
+    if (document.body.classList.contains('theme-dark')) return 'dark';
+    if (document.body.classList.contains('theme-mono')) return 'mono';
+    if (document.body.classList.contains('theme-simple')) return 'simple';
+    return 'cyber';
+  }
   function syncNativeChrome(themeName) {
     const capacitor = window.Capacitor;
     if (!capacitor || typeof capacitor.isNativePlatform !== 'function' || !capacitor.isNativePlatform()) return;
@@ -8496,7 +8675,7 @@
     Promise.resolve(statusBar.setBackgroundColor({ color })).catch(() => {});
   }
   function applyThemeClass(themeName) {
-    document.body.classList.remove('theme-simple', 'theme-fancy', 'theme-dark', 'theme-mono');
+    document.body.classList.remove('theme-simple', 'theme-fancy', 'theme-dark', 'theme-mono', 'prism-motion-ui');
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     if (themeName === 'simple') {
       document.body.classList.add('theme-simple');
@@ -8504,6 +8683,8 @@
       document.body.classList.add('theme-simple', 'theme-dark');
     } else if (themeName === 'mono') {
       document.body.classList.add('theme-simple', 'theme-mono'); // 「白と余白」= theme-simpleの土台にモノクロ+編集的な上書き
+    } else if (themeName === 'prism') {
+      document.body.classList.add('theme-simple', 'prism-motion-ui');
     } else if (themeName === 'fancy') {
       document.body.classList.add('theme-fancy');
     }
@@ -8511,8 +8692,9 @@
     const btn = document.querySelector(`.theme-btn[data-theme="${themeName}"]`);
     // サイバー・ファンシーは隠しテーマのため対応ボタンが無い。その場合はどのボタンもactiveにしない。
     if (btn && !isHiddenTheme) btn.classList.add('active');
-    switchBGMVariant((themeName === 'dark' || themeName === 'mono') ? 'simple' : themeName);
+    switchBGMVariant((themeName === 'dark' || themeName === 'mono' || themeName === 'prism') ? 'simple' : themeName);
     syncNativeChrome(themeName);
+    if (themeName === 'prism' && window.prismMotionUI) requestAnimationFrame(() => window.prismMotionUI.animatePage());
   }
   async function loadTheme() {
     try {
@@ -13425,6 +13607,7 @@
     }
 
     function animatePrismPage() {
+      if (!document.body.classList.contains('prism-motion-ui')) return;
       const surface = visiblePrismSurface();
       if (!surface) return;
       decoratePrismCards(surface);
@@ -13462,7 +13645,7 @@
 
     let pointerFrame = 0;
     document.addEventListener('pointermove', function (event) {
-      if (reducedMotion.matches || pointerFrame) return;
+      if (!document.body.classList.contains('prism-motion-ui') || reducedMotion.matches || pointerFrame) return;
       pointerFrame = requestAnimationFrame(function () {
         pointerFrame = 0;
         document.body.style.setProperty('--prism-x', event.clientX + 'px');
@@ -13487,6 +13670,7 @@
     }, { passive: true });
 
     document.addEventListener('click', function (event) {
+      if (!document.body.classList.contains('prism-motion-ui')) return;
       const action = event.target.closest && event.target.closest('button, .home-tab, .check-box, .cal-day, .misc-grid-tile, [onclick]');
       if (!action) return;
       const rect = action.getBoundingClientRect();
