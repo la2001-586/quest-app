@@ -1,6 +1,10 @@
 {
+  "id": "./",
   "name": "Daily Station",
   "short_name": "Daily Station",
+  "description": "日課、タスク、カレンダー、日記、アラーム、メモを端末内でまとめて管理する生活記録アプリ",
+  "lang": "ja",
+  "categories": ["productivity", "lifestyle"],
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

@@ -1476,6 +1476,256 @@
   .today-task-item.done .today-task-check { background: #F0906B; color: #2a1200; }
   .today-task-item.done .today-task-text { text-decoration: line-through; opacity: 0.5; }
   .today-task-text { flex: 1; word-break: break-word; }
+  .routine-progress-glass {
+    display: flex; align-items: center; gap: 12px;
+    margin: 0 4px 12px; padding: 11px 13px;
+    border: 1px solid rgba(94,154,133,0.18); border-radius: 15px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.48), rgba(224,242,235,0.2));
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  }
+  body.theme-simple:not(.theme-dark) .routine-progress-glass {
+    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(226,242,236,0.58));
+    box-shadow: 0 5px 18px rgba(52,96,80,0.08);
+  }
+  body.theme-dark .routine-progress-glass,
+  body:not(.theme-simple):not(.theme-fancy) .routine-progress-glass {
+    background: linear-gradient(135deg, rgba(54,75,68,0.48), rgba(21,29,26,0.56));
+    border-color: rgba(126,197,172,0.2);
+  }
+  /* 採用案04: プリズムエッジ。面を派手に染めず、ガラスの縁だけに淡い屈折色を置く。 */
+  .routine-progress-glass {
+    position: relative; overflow: hidden; border-color: transparent;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.5), rgba(224,242,235,0.24)) padding-box,
+      linear-gradient(125deg, rgba(255,255,255,.95), rgba(115,190,164,.55), rgba(136,184,218,.5), rgba(255,255,255,.9)) border-box;
+  }
+  body.theme-simple:not(.theme-dark) .routine-progress-glass {
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.9), rgba(226,242,236,.58)) padding-box,
+      linear-gradient(125deg, rgba(255,255,255,.98), rgba(107,187,159,.6), rgba(132,184,220,.52), rgba(255,255,255,.95)) border-box;
+  }
+  body.theme-dark .routine-progress-glass,
+  body:not(.theme-simple):not(.theme-fancy) .routine-progress-glass {
+    background:
+      linear-gradient(135deg, rgba(54,75,68,.5), rgba(21,29,26,.58)) padding-box,
+      linear-gradient(125deg, rgba(183,235,216,.5), rgba(88,168,140,.72), rgba(95,145,183,.65), rgba(220,247,238,.42)) border-box;
+  }
+  .routine-progress-glass::after,
+  #panel-routine::after {
+    content: ""; position: absolute; pointer-events: none;
+    width: 42%; height: 180%; top: -40%; left: -55%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.62), rgba(183,229,214,.24), transparent);
+    transform: skewX(-18deg); opacity: 0;
+  }
+  .routine-progress-glass::after { z-index: 0; }
+  .routine-progress-glass > * { position: relative; z-index: 1; }
+  .routine-progress-glass.progress-bump::after,
+  #panel-routine.prism-bump::after { animation: routinePrismSweep .82s cubic-bezier(.22,.8,.28,1); }
+  #panel-routine {
+    position: relative; overflow: hidden;
+    border: 1px solid transparent; border-radius: 17px;
+    background:
+      linear-gradient(rgba(255,255,255,.025), rgba(255,255,255,.025)) padding-box,
+      linear-gradient(135deg, rgba(255,255,255,.58), rgba(94,171,145,.38), rgba(115,163,202,.32), rgba(255,255,255,.48)) border-box;
+    box-shadow: 0 10px 30px rgba(40,83,68,.06);
+  }
+  body.theme-simple:not(.theme-dark) #panel-routine,
+  body.theme-fancy #panel-routine {
+    background:
+      linear-gradient(rgba(255,255,255,.82), rgba(255,255,255,.82)) padding-box,
+      linear-gradient(135deg, rgba(255,255,255,.98), rgba(104,188,159,.48), rgba(137,187,221,.44), rgba(255,255,255,.96)) border-box;
+  }
+  #panel-routine::after { z-index: 20; }
+  .routine-progress-ring {
+    --routine-ring-offset: 100;
+    width: 48px; height: 48px; flex: 0 0 48px; border-radius: 50%;
+    display: grid; place-items: center; position: relative;
+    filter: drop-shadow(0 4px 8px rgba(69,128,107,0.14));
+  }
+  .routine-progress-ring svg {
+    grid-area: 1 / 1; width: 48px; height: 48px; transform: rotate(-90deg); overflow: visible;
+  }
+  .routine-progress-track { fill: none; stroke: rgba(94,154,133,0.13); stroke-width: 5; }
+  .routine-progress-fill {
+    fill: none; stroke: url(#routineProgressGradient); stroke-width: 5; stroke-linecap: round;
+    stroke-dasharray: 100; stroke-dashoffset: var(--routine-ring-offset);
+    transition: stroke-dashoffset .9s cubic-bezier(.2,.85,.24,1);
+  }
+  .routine-progress-value {
+    grid-area: 1 / 1; position: relative; z-index: 1;
+    font-size: 10px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  .routine-progress-copy { min-width: 0; }
+  .routine-progress-title { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+  .routine-progress-detail { margin-top: 2px; font-size: 10.5px; color: var(--ink-dim); }
+  #list-routine { position: relative; }
+  #list-routine .swipe-del-wrap { overflow: visible; }
+  #list-routine .swipe-del-trash { border-radius: 0; overflow: hidden; }
+  #list-routine .swipe-del-wrap:not(:last-child)::before,
+  #list-routine .swipe-del-wrap:not(:last-child)::after {
+    content: ""; position: absolute; z-index: 6; pointer-events: none;
+    --routine-timeline-center: 31.32px;
+    left: calc(var(--routine-timeline-center) - 1px); top: calc(50% + 11px); bottom: calc(-50% + 11px); width: 2px;
+    border-radius: 999px;
+  }
+  #list-routine .swipe-del-wrap:not(:last-child)::before {
+    left: calc(var(--routine-timeline-center) - .5px); width: 1px;
+    background: linear-gradient(180deg, rgba(94,154,133,0.18), rgba(94,154,133,0.07));
+  }
+  #list-routine .swipe-del-wrap:not(:last-child)::after {
+    left: calc(var(--routine-timeline-center) - 2px); width: 4px;
+    background: linear-gradient(180deg, rgba(111,183,158,.86), rgba(74,142,119,.28));
+    clip-path: polygon(20% 0, 80% 0, 58% 100%, 42% 100%);
+    box-shadow: 0 0 7px rgba(94,154,133,0.16);
+    opacity: 0; transform: scaleY(0); transform-origin: top;
+  }
+  #list-routine .swipe-del-wrap.connector-active::after {
+    opacity: 1; transform: scaleY(1);
+    animation: routineConnectorDraw .58s cubic-bezier(.2,.8,.24,1) both;
+  }
+  #list-routine .item { position: relative; z-index: 5; }
+  #list-routine .item.rise-in { animation-name: routineItemRiseAligned !important; }
+  #list-routine .swipe-del-wrap:has(.item.rise-in) .swipe-del-trash { opacity: 0; }
+  #list-routine .check-box { position: relative; z-index: 7; }
+  #list-routine .item.just-completed { animation: routineRowComplete .66s cubic-bezier(.2,.86,.3,1) both !important; }
+  #list-routine .item.just-reopened { animation: routineRowReopen .42s ease-out both !important; }
+  #list-routine .item.just-completed .check-box::after {
+    content: ""; position: absolute; inset: -6px; border-radius: 50%;
+    border: 1px solid rgba(94,154,133,0.46);
+    animation: routineNodeRipple .82s ease-out both;
+  }
+  .routine-completed-time {
+    flex-shrink: 0; margin-left: auto; font-size: 10.5px; line-height: 1;
+    color: #4F806F; font-variant-numeric: tabular-nums; letter-spacing: .02em;
+    animation: routineTimeIn .5s .08s cubic-bezier(.2,.8,.3,1) both;
+  }
+  body.theme-dark .routine-completed-time,
+  body:not(.theme-simple):not(.theme-fancy) .routine-completed-time { color: #8BC7B1; }
+  .routine-progress-glass.progress-bump .routine-progress-ring { animation: routineRingBreathe .72s cubic-bezier(.2,.85,.3,1); }
+  .routine-progress-glass.progress-bump .routine-progress-detail { animation: routineDetailSettle .5s ease-out; }
+  @keyframes routineConnectorDraw { from { opacity: .2; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+  @keyframes routineItemRiseAligned { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes routineNodeRipple { 0% { opacity: .8; transform: scale(.55); } 100% { opacity: 0; transform: scale(1.65); } }
+  @keyframes routineRowComplete { 0% { transform: scale(1); } 42% { transform: scale(.985); } 72% { transform: scale(1.008); } 100% { transform: scale(1); } }
+  @keyframes routineRowReopen { 0% { opacity: .72; transform: translateX(-2px); } 100% { opacity: 1; transform: none; } }
+  @keyframes routineTimeIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+  @keyframes routineRingBreathe { 0% { transform: scale(.94); } 48% { transform: scale(1.08); } 100% { transform: scale(1); } }
+  @keyframes routineDetailSettle { from { opacity: .35; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+  @keyframes routinePrismSweep {
+    0% { left: -55%; opacity: 0; }
+    18% { opacity: .72; }
+    72% { opacity: .34; }
+    100% { left: 118%; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .routine-progress-fill { transition: none; }
+    #list-routine .swipe-del-wrap.connector-active::after,
+    #list-routine .item.just-completed,
+    #list-routine .item.just-reopened,
+    #list-routine .item.just-completed .check-box::after,
+    .routine-completed-time,
+    .routine-progress-glass.progress-bump .routine-progress-ring,
+    .routine-progress-glass.progress-bump .routine-progress-detail,
+    .routine-progress-glass.progress-bump::after,
+    #panel-routine.prism-bump::after { animation: none !important; }
+  }
+  /* 日課画面の構図を再設計。縦長の空箱ではなく、概要→一覧→追加の順で完結する一枚のワークスペースにする。 */
+  body.multipage-mode #page-task {
+    width: 100%; max-width: 560px; padding: 24px 16px 96px !important; box-sizing: border-box;
+  }
+  body.multipage-mode #page-task .folder-stack { filter: none; }
+  body.multipage-mode #page-task .folder-tab-row {
+    z-index: 3; gap: 4px; margin: 0 6px 12px; padding: 4px;
+    border: 1px solid rgba(91,137,121,.13); border-radius: 16px;
+    background: rgba(237,243,241,.76);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.82);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  }
+  body.multipage-mode #page-task .folder-tab {
+    height: 40px; border-radius: 12px !important; transform: none !important;
+    font-family: inherit; font-size: 12.5px; letter-spacing: 0; color: rgba(32,48,43,.48);
+    background: transparent; text-shadow: none; box-shadow: none;
+  }
+  body.multipage-mode #page-task .folder-tab.active {
+    color: #27483c; background: rgba(255,255,255,.94);
+    box-shadow: 0 5px 16px rgba(43,80,66,.11), inset 0 0 0 1px rgba(255,255,255,.9);
+  }
+  body.multipage-mode #page-task #tabsPanelsWrap {
+    min-height: 0 !important; margin: 0 !important; padding: 14px !important;
+    border: 1px solid rgba(78,132,112,.13) !important; border-radius: 24px !important;
+    background: rgba(255,255,255,.83) !important;
+    box-shadow: 0 18px 52px rgba(38,75,61,.11) !important;
+    -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  }
+  .routine-overview {
+    display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  body.multipage-mode #page-task .routine-progress-glass {
+    min-height: 76px; margin: 0; padding: 13px 15px; border-radius: 18px;
+    box-shadow: none;
+  }
+  .routine-stock-link-wrap { margin: 0; text-align: right; }
+  .routine-stock-link {
+    display: inline-flex; align-items: center; gap: 5px; padding: 9px 11px;
+    border: 1px solid rgba(75,126,108,.14); border-radius: 12px;
+    background: rgba(242,248,246,.86); color: #55766a; font-size: 10.5px;
+    line-height: 1.2; text-decoration: none; white-space: nowrap; cursor: pointer;
+  }
+  body.multipage-mode #page-task #panel-routine {
+    margin: 0; padding: 0 0 12px !important; min-height: 0 !important;
+    border-radius: 20px; overflow: hidden;
+    background:
+      linear-gradient(rgba(255,255,255,.94), rgba(250,253,252,.9)) padding-box,
+      linear-gradient(135deg, rgba(255,255,255,.98), rgba(104,188,159,.4), rgba(137,187,221,.34), rgba(255,255,255,.96)) border-box;
+    box-shadow: 0 10px 30px rgba(40,83,68,.07);
+  }
+  body.multipage-mode #page-task #comboHint-routine {
+    min-height: auto; margin: 0; padding: 13px 16px;
+    border-bottom: 1px solid rgba(55,105,87,.1);
+    background: linear-gradient(90deg, rgba(232,246,240,.82), rgba(239,247,250,.68));
+    color: #355b4d; font-size: 11px;
+  }
+  body.multipage-mode #page-task #list-routine .item {
+    min-height: 64px; padding: 14px 18px 14px 52px !important;
+    border-left: none !important; border-bottom-color: rgba(52,91,77,.09) !important;
+  }
+  body.multipage-mode #page-task #list-routine .item::before { display: none !important; }
+  body.multipage-mode #page-task #list-routine .check-box { margin-left: -36px; }
+  body.multipage-mode #page-task #list-routine .item-label { font-size: 13.5px; letter-spacing: .01em; }
+  body.multipage-mode #page-task #list-routine .routine-completed-time { font-size: 10px; color: #5d8b7b; }
+  body.multipage-mode #page-task #list-routine .swipe-del-wrap:first-child .item { border-top: none !important; }
+  body.multipage-mode #page-task #list-routine .swipe-del-wrap:last-child .item { border-bottom: none !important; }
+  body.multipage-mode #page-task #list-routine .swipe-del-trash {
+    top: 2px; right: 2px; bottom: 2px; width: 72px; border-radius: 10px;
+  }
+  body.multipage-mode #page-task #panel-routine > .add-task-btn {
+    position: relative; inset: auto; z-index: 2; width: calc(100% - 24px); height: 46px;
+    margin: 12px 12px 0; padding: 0 16px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    border: 1px solid rgba(72,134,111,.18); background: rgba(228,242,236,.7);
+    color: #386b59; font-size: 12px; font-weight: 700;
+    box-shadow: none;
+  }
+  body.multipage-mode #page-task #panel-routine > .add-task-btn:active {
+    transform: scale(.985); background: rgba(216,236,227,.92); box-shadow: none;
+  }
+  .routine-add-plus { font-size: 19px; font-weight: 500; line-height: 1; }
+  .routine-add-label { line-height: 1; }
+  body.theme-dark.multipage-mode #page-task .folder-tab-row,
+  body:not(.theme-simple):not(.theme-fancy).multipage-mode #page-task .folder-tab-row { background: rgba(20,28,25,.75); border-color: rgba(126,197,172,.16); }
+  body.theme-dark.multipage-mode #page-task .folder-tab,
+  body:not(.theme-simple):not(.theme-fancy).multipage-mode #page-task .folder-tab { color: rgba(225,239,234,.5); }
+  body.theme-dark.multipage-mode #page-task .folder-tab.active,
+  body:not(.theme-simple):not(.theme-fancy).multipage-mode #page-task .folder-tab.active { color: #cce7dd; background: rgba(72,101,91,.55); }
+  body.theme-dark.multipage-mode #page-task #tabsPanelsWrap,
+  body:not(.theme-simple):not(.theme-fancy).multipage-mode #page-task #tabsPanelsWrap { background: rgba(14,20,18,.84) !important; }
+  @media (max-width: 520px) {
+    body.multipage-mode #page-task { padding-inline: 10px !important; }
+    .routine-overview { grid-template-columns: 1fr; }
+    .routine-stock-link-wrap { margin-top: -4px; }
+    .routine-stock-link { width: 100%; justify-content: center; box-sizing: border-box; }
+  }
   .item.today-routine {
     border-left-color: var(--low);
     background: linear-gradient(160deg, rgba(20,42,30,0.97), rgba(12,15,20,0.97));
@@ -2903,9 +3153,482 @@
     }
   }
 
+  /* ================= V426: GLASS SYSTEM FOR NON-TASK PAGES =================
+     タスク管理で採用した薄いガラス面とプリズム縁を、ホーム・カレンダー・日記・
+     オプションにも同じ密度で展開する。情報構造と操作は変えず、面の階層だけを統一。 */
+  body.multipage-mode {
+    --page-glass-surface: rgba(255,255,255,.72);
+    --page-glass-surface-strong: rgba(255,255,255,.88);
+    --page-glass-surface-soft: rgba(239,247,244,.58);
+    --page-glass-border: rgba(92,151,130,.18);
+    --page-glass-line: rgba(61,111,94,.10);
+    --page-glass-shadow: 0 18px 52px rgba(38,75,61,.11), inset 0 1px 0 rgba(255,255,255,.88);
+    --page-glass-inner-shadow: 0 8px 24px rgba(43,80,66,.07), inset 0 1px 0 rgba(255,255,255,.72);
+  }
+  body.multipage-mode.theme-dark,
+  body.multipage-mode:not(.theme-simple):not(.theme-fancy) {
+    --page-glass-surface: rgba(25,33,31,.72);
+    --page-glass-surface-strong: rgba(31,42,38,.88);
+    --page-glass-surface-soft: rgba(43,60,54,.48);
+    --page-glass-border: rgba(126,197,172,.20);
+    --page-glass-line: rgba(184,224,209,.10);
+    --page-glass-shadow: 0 22px 58px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08);
+    --page-glass-inner-shadow: 0 10px 28px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.07);
+  }
+
+  /* Calendar — a single quiet glass workspace with lighter nested panes. */
+  body.multipage-mode #appGroupWrap_group_calendar #calSectionWrap {
+    margin: 0 !important; padding: 16px !important;
+    border: 1px solid transparent !important; border-radius: 24px !important;
+    background:
+      linear-gradient(var(--page-glass-surface), var(--page-glass-surface)) padding-box,
+      linear-gradient(135deg, rgba(255,255,255,.98), rgba(91,174,155,.50), rgba(124,181,218,.42), rgba(255,255,255,.90)) border-box !important;
+    box-shadow: var(--page-glass-shadow) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.08); backdrop-filter: blur(20px) saturate(1.08);
+  }
+  body.multipage-mode #appGroupWrap_group_calendar #calSectionWrap::before {
+    background:
+      radial-gradient(150px 95px at 8% 0%, rgba(255,255,255,.72), transparent 74%),
+      radial-gradient(220px 150px at 100% 8%, rgba(123,193,211,.13), transparent 72%),
+      linear-gradient(120deg, transparent 28%, rgba(255,255,255,.15) 45%, transparent 62%);
+    opacity: .88;
+  }
+  body.multipage-mode #appGroupWrap_group_calendar .cal-grid-shell,
+  body.multipage-mode #appGroupWrap_group_calendar .cal-linked,
+  body.multipage-mode #appGroupWrap_group_calendar .week-view-shell {
+    border: 1px solid var(--page-glass-border); border-radius: 18px;
+    background: linear-gradient(145deg, var(--page-glass-surface-strong), var(--page-glass-surface-soft));
+    box-shadow: var(--page-glass-inner-shadow);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  }
+  body.multipage-mode #appGroupWrap_group_calendar .cal-grid-shell { padding: 12px; }
+  body.multipage-mode #appGroupWrap_group_calendar .cal-linked { margin-top: 12px; padding: 12px; }
+  body.multipage-mode #appGroupWrap_group_calendar .week-view-nav button {
+    border: 1px solid var(--page-glass-border); border-radius: 11px;
+    background: rgba(255,255,255,.42); box-shadow: inset 0 1px 0 rgba(255,255,255,.72);
+  }
+  body.multipage-mode #appGroupWrap_group_calendar .cal-day {
+    border-radius: 11px !important; transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+  }
+  body.multipage-mode #appGroupWrap_group_calendar .cal-day:not(.empty):active { transform: scale(.94); }
+  body.multipage-mode #appGroupWrap_group_calendar .cal-daycard {
+    border: 1px solid var(--page-glass-line); border-radius: 15px;
+    background: rgba(255,255,255,.28);
+  }
+
+  /* Diary — paper warmth inside the same glass material. */
+  body.multipage-mode #appGroupWrap_group_diary > .cal-section { margin: 0 0 14px !important; }
+  body.multipage-mode #appGroupWrap_group_diary .mood-journal-shell,
+  body.multipage-mode #appGroupWrap_group_diary .mood-entry-card {
+    position: relative; overflow: hidden;
+    border: 1px solid transparent !important; border-radius: 24px !important;
+    background:
+      linear-gradient(var(--page-glass-surface), var(--page-glass-surface)) padding-box,
+      linear-gradient(138deg, rgba(255,255,255,.98), rgba(150,126,201,.36), rgba(104,184,159,.42), rgba(255,255,255,.90)) border-box !important;
+    box-shadow: var(--page-glass-shadow) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.06); backdrop-filter: blur(20px) saturate(1.06);
+  }
+  body.multipage-mode #appGroupWrap_group_diary .mood-journal-shell::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(180px 110px at 0% 0%, rgba(255,255,255,.64), transparent 72%),
+      radial-gradient(180px 120px at 100% 10%, rgba(180,153,216,.10), transparent 76%);
+  }
+  body.multipage-mode #appGroupWrap_group_diary .mood-journal-shell > * { position: relative; z-index: 1; }
+  body.multipage-mode #appGroupWrap_group_diary .mood-journal-textarea,
+  body.multipage-mode #appGroupWrap_group_diary .sleep-track-field,
+  body.multipage-mode #appGroupWrap_group_diary .dh-search {
+    border: 1px solid var(--page-glass-border) !important; border-radius: 15px !important;
+    background: linear-gradient(145deg, rgba(255,255,255,.58), rgba(238,244,242,.34)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 7px 20px rgba(45,72,62,.05) !important;
+  }
+  body.multipage-mode #appGroupWrap_group_diary .mood-tag-toggle,
+  body.multipage-mode #appGroupWrap_group_diary .mood-journal-btn,
+  body.multipage-mode #appGroupWrap_group_diary .dh-chip {
+    border: 1px solid var(--page-glass-border) !important;
+    background: rgba(255,255,255,.46) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.70);
+  }
+
+  /* Home — existing utilities become a calm set of glass cards. */
+  body.multipage-mode #appGroupWrap_group_other .hud-header,
+  body.multipage-mode #appGroupWrap_group_other .settings-group {
+    position: relative; overflow: hidden;
+    border: 1px solid transparent !important; border-radius: 24px !important;
+    background:
+      linear-gradient(var(--page-glass-surface), var(--page-glass-surface)) padding-box,
+      linear-gradient(135deg, rgba(255,255,255,.98), rgba(94,177,148,.45), rgba(141,189,220,.36), rgba(255,255,255,.90)) border-box !important;
+    box-shadow: var(--page-glass-shadow) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.06); backdrop-filter: blur(20px) saturate(1.06);
+  }
+  body.multipage-mode #appGroupWrap_group_other .settings-group { padding: 16px !important; margin-bottom: 14px !important; }
+  body.multipage-mode #appGroupWrap_group_other .settings-row,
+  body.multipage-mode #appGroupWrap_group_other .misc-grid-tile {
+    border-color: var(--page-glass-line) !important;
+  }
+  body.multipage-mode #appGroupWrap_group_other .settings-btn,
+  body.multipage-mode #appGroupWrap_group_other .misc-grid-tile {
+    background: linear-gradient(145deg, rgba(255,255,255,.54), rgba(235,245,241,.32)) !important;
+    border: 1px solid var(--page-glass-border) !important;
+    box-shadow: var(--page-glass-inner-shadow) !important;
+  }
+
+  /* Options — repeated settings groups use one material and clearer inner controls. */
+  body.multipage-mode #page-settings {
+    width: 100%; max-width: 560px; padding: 24px 16px 104px !important; box-sizing: border-box;
+  }
+  body.multipage-mode #page-settings .hud-header,
+  body.multipage-mode #page-settings .settings-group {
+    position: relative; overflow: hidden;
+    border: 1px solid transparent !important; border-radius: 22px !important;
+    background:
+      linear-gradient(var(--page-glass-surface), var(--page-glass-surface)) padding-box,
+      linear-gradient(135deg, rgba(255,255,255,.98), rgba(102,181,154,.42), rgba(137,184,218,.34), rgba(255,255,255,.90)) border-box !important;
+    box-shadow: var(--page-glass-shadow) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.06); backdrop-filter: blur(20px) saturate(1.06);
+  }
+  body.multipage-mode #page-settings .hud-header { padding: 16px 18px !important; margin-bottom: 14px !important; }
+  body.multipage-mode #page-settings .settings-group { margin-bottom: 14px !important; }
+  body.multipage-mode #page-settings .settings-row + .settings-row { border-top-color: var(--page-glass-line) !important; }
+  body.multipage-mode #page-settings .settings-btn,
+  body.multipage-mode #page-settings .theme-btn,
+  body.multipage-mode #page-settings .lang-btn,
+  body.multipage-mode #page-settings .textscale-btn,
+  body.multipage-mode #page-settings .startpage-btn,
+  body.multipage-mode #page-settings input,
+  body.multipage-mode #page-settings select,
+  body.multipage-mode #page-settings textarea {
+    border: 1px solid var(--page-glass-border) !important;
+    background: linear-gradient(145deg, rgba(255,255,255,.56), rgba(235,245,241,.34)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 6px 16px rgba(45,72,62,.05) !important;
+  }
+  body.multipage-mode #page-settings .theme-btn.active,
+  body.multipage-mode #page-settings .lang-btn.active,
+  body.multipage-mode #page-settings .textscale-btn.active,
+  body.multipage-mode #page-settings .startpage-btn.active {
+    background: linear-gradient(145deg, rgba(210,239,229,.88), rgba(221,237,245,.72)) !important;
+    border-color: rgba(79,153,126,.30) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 7px 18px rgba(51,105,85,.10) !important;
+  }
+
+  /* Dark variants keep glass transparent without turning it into gray plastic. */
+  body.multipage-mode.theme-dark #appGroupWrap_group_calendar .cal-grid-shell,
+  body.multipage-mode.theme-dark #appGroupWrap_group_calendar .cal-linked,
+  body.multipage-mode.theme-dark #appGroupWrap_group_calendar .week-view-shell,
+  body.multipage-mode.theme-dark #appGroupWrap_group_diary .mood-journal-textarea,
+  body.multipage-mode.theme-dark #appGroupWrap_group_diary .sleep-track-field,
+  body.multipage-mode.theme-dark #appGroupWrap_group_diary .dh-search,
+  body.multipage-mode.theme-dark #page-settings .settings-btn,
+  body.multipage-mode.theme-dark #page-settings .theme-btn,
+  body.multipage-mode.theme-dark #page-settings .lang-btn,
+  body.multipage-mode.theme-dark #page-settings .textscale-btn,
+  body.multipage-mode.theme-dark #page-settings .startpage-btn,
+  body.multipage-mode.theme-dark #page-settings input,
+  body.multipage-mode.theme-dark #page-settings select,
+  body.multipage-mode.theme-dark #page-settings textarea,
+  body.multipage-mode:not(.theme-simple):not(.theme-fancy) #appGroupWrap_group_calendar .cal-grid-shell,
+  body.multipage-mode:not(.theme-simple):not(.theme-fancy) #appGroupWrap_group_calendar .cal-linked,
+  body.multipage-mode:not(.theme-simple):not(.theme-fancy) #appGroupWrap_group_diary .mood-journal-textarea,
+  body.multipage-mode:not(.theme-simple):not(.theme-fancy) #page-settings .settings-btn {
+    background: linear-gradient(145deg, rgba(52,69,63,.62), rgba(26,36,32,.44)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 8px 22px rgba(0,0,0,.17) !important;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    body.multipage-mode #appGroupWrap_group_calendar #calSectionWrap,
+    body.multipage-mode #appGroupWrap_group_diary .mood-journal-shell,
+    body.multipage-mode #appGroupWrap_group_other .settings-group,
+    body.multipage-mode #page-settings .settings-group {
+      animation: pageGlassSettle .45s cubic-bezier(.2,.78,.28,1) both;
+    }
+  }
+  @keyframes pageGlassSettle {
+    from { opacity: .45; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ================= Prism Motion UI v1 =================
+     The data model stays untouched; this layer turns the existing screens into
+     one translucent, animated visual system inspired by the selected concepts. */
+  body.prism-motion-ui {
+    --prism-mint: 112, 232, 207;
+    --prism-cyan: 111, 211, 255;
+    --prism-violet: 171, 139, 255;
+    --prism-peach: 255, 177, 130;
+    --prism-ink: 22, 28, 37;
+    --prism-x: 50vw;
+    --prism-y: 32vh;
+    --prism-glass: rgba(255,255,255,.49);
+    --prism-line: rgba(255,255,255,.75);
+    --prism-shadow: 0 24px 70px rgba(74,102,127,.16), 0 5px 18px rgba(69,83,105,.08);
+    background:
+      radial-gradient(circle at var(--prism-x) var(--prism-y), rgba(var(--prism-cyan),.13), transparent 26rem),
+      linear-gradient(145deg, #fbfcff 0%, #f5fbf9 47%, #fff9f5 100%) !important;
+    min-height: 100dvh;
+    isolation: isolate;
+  }
+  body.prism-motion-ui.theme-dark {
+    --prism-glass: rgba(28,32,42,.54);
+    --prism-line: rgba(255,255,255,.14);
+    --prism-shadow: 0 26px 80px rgba(0,0,0,.34), 0 8px 22px rgba(0,0,0,.2);
+    background:
+      radial-gradient(circle at var(--prism-x) var(--prism-y), rgba(var(--prism-violet),.10), transparent 28rem),
+      linear-gradient(145deg, #0d1118, #111820 52%, #16131a) !important;
+  }
+  .prism-atmosphere {
+    position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+    opacity: 1; contain: strict;
+  }
+  .prism-atmosphere::before {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(88,116,131,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,116,131,.045) 1px, transparent 1px);
+    background-size: 84px 84px;
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 8%, transparent 74%);
+    mask-image: radial-gradient(ellipse at center, #000 8%, transparent 74%);
+  }
+  .prism-aurora {
+    position: absolute; border-radius: 999px; filter: blur(20px); opacity: .27;
+    mix-blend-mode: multiply; will-change: transform;
+  }
+  .prism-aurora-a {
+    width: min(58vw, 680px); aspect-ratio: 1; left: -17vw; top: 3vh;
+    background: radial-gradient(circle at 65% 45%, rgba(var(--prism-cyan),.72), rgba(var(--prism-violet),.22) 48%, transparent 70%);
+    animation: prismFloatA 16s ease-in-out infinite alternate;
+  }
+  .prism-aurora-b {
+    width: min(48vw, 560px); aspect-ratio: 1; right: -12vw; top: 28vh;
+    background: radial-gradient(circle at 38% 42%, rgba(var(--prism-peach),.58), rgba(var(--prism-violet),.18) 52%, transparent 71%);
+    animation: prismFloatB 19s ease-in-out infinite alternate;
+  }
+  .prism-aurora-c {
+    width: min(52vw, 620px); aspect-ratio: 1; left: 34vw; bottom: -31vw;
+    background: radial-gradient(circle at 50% 35%, rgba(var(--prism-mint),.64), rgba(var(--prism-cyan),.15) 54%, transparent 72%);
+    animation: prismFloatC 22s ease-in-out infinite alternate;
+  }
+  .prism-ghost-stack { position: absolute; right: max(3vw, 20px); top: 11vh; width: 112px; height: 128px; opacity: .28; }
+  .prism-ghost-stack i {
+    position: absolute; width: 92px; height: 66px; border: 1px solid rgba(255,255,255,.82); border-radius: 22px;
+    background: linear-gradient(135deg, rgba(var(--prism-cyan),.22), rgba(255,255,255,.16) 48%, rgba(var(--prism-peach),.2));
+    box-shadow: inset 0 1px 0 #fff, 0 12px 28px rgba(77,115,139,.1); transform: rotate(-8deg);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .prism-ghost-stack i:nth-child(1){ top:0; left:0; animation: ghostLayer 6s ease-in-out infinite; }
+  .prism-ghost-stack i:nth-child(2){ top:25px; left:10px; animation: ghostLayer 6s .35s ease-in-out infinite; }
+  .prism-ghost-stack i:nth-child(3){ top:50px; left:20px; animation: ghostLayer 6s .7s ease-in-out infinite; }
+
+  body.prism-motion-ui .cityscape-bg,
+  body.prism-motion-ui .cosmic-bg,
+  body.prism-motion-ui .cloud-bg,
+  body.prism-motion-ui .cyber-fx,
+  body.prism-motion-ui .shootingstar-fx,
+  body.prism-motion-ui .particle-field,
+  body.prism-motion-ui .ambient-vignette { opacity: 0 !important; pointer-events: none !important; }
+  body.prism-motion-ui .tile-bg,
+  body.prism-motion-ui .tile-bg-far,
+  body.prism-motion-ui .tile-bg-wall { opacity: .34 !important; }
+
+  body.prism-motion-ui .wrap.page,
+  body.prism-motion-ui #page-task,
+  body.prism-motion-ui #page-settings { position: relative; z-index: 2; }
+  body.prism-motion-ui.multipage-mode #page-task,
+  body.prism-motion-ui.multipage-mode #page-settings {
+    width: min(100%, 610px) !important;
+    padding: 28px 18px 130px !important;
+    perspective: 1200px;
+  }
+  body.prism-motion-ui.multipage-mode .app-group-wrap {
+    position: relative; overflow: visible; border-radius: 34px; padding: 16px !important;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,.74), rgba(255,255,255,.30) 43%, rgba(var(--prism-cyan),.08) 72%, rgba(var(--prism-peach),.09));
+    border: 1px solid var(--prism-line);
+    box-shadow: var(--prism-shadow), inset 0 1px 0 rgba(255,255,255,.94), inset 0 -1px 0 rgba(var(--prism-violet),.09);
+    backdrop-filter: blur(28px) saturate(135%); -webkit-backdrop-filter: blur(28px) saturate(135%);
+    transform-style: preserve-3d;
+  }
+  body.prism-motion-ui.multipage-mode .app-group-wrap::before,
+  body.prism-motion-ui.multipage-mode #page-settings::before {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; z-index: 5;
+    background:
+      radial-gradient(260px circle at var(--card-x, 50%) var(--card-y, 5%), rgba(255,255,255,.72), transparent 58%),
+      linear-gradient(115deg, transparent 18%, rgba(var(--prism-violet),.10) 36%, rgba(var(--prism-cyan),.13) 50%, transparent 68%);
+    mix-blend-mode: screen; opacity: .58;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; padding: 1px;
+  }
+  body.prism-motion-ui.theme-dark.multipage-mode .app-group-wrap {
+    background: linear-gradient(145deg, rgba(37,43,55,.72), rgba(24,30,41,.38) 55%, rgba(var(--prism-violet),.08));
+  }
+  body.prism-motion-ui.multipage-mode #appGroupWrap_group_task::after {
+    content: ""; position: absolute; left: 50%; top: 54%; width: 128px; height: 88px; z-index: 0;
+    border: 1px solid rgba(255,255,255,.82); border-radius: 27px; pointer-events: none;
+    background:
+      radial-gradient(circle at 72% 34%, rgba(var(--prism-peach),.22), transparent 23%),
+      linear-gradient(145deg, rgba(var(--prism-cyan),.15), rgba(255,255,255,.32) 48%, rgba(var(--prism-violet),.12));
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.9),
+      -13px 16px 0 -1px rgba(255,255,255,.2),
+      -13px 16px 0 0 rgba(var(--prism-cyan),.09),
+      13px -16px 0 -1px rgba(255,255,255,.22),
+      13px -16px 0 0 rgba(var(--prism-violet),.08),
+      0 28px 55px rgba(72,101,122,.09);
+    opacity: .46; transform: translate(-50%,-50%) rotate(-5deg);
+    animation: prismEmptyDeck 7s ease-in-out infinite;
+  }
+  body.prism-motion-ui.multipage-mode #appGroupWrap_group_task > * { position: relative; z-index: 1; }
+
+  body.prism-motion-ui.multipage-mode .app-group-wrap > :not(.page-id-bar),
+  body.prism-motion-ui.multipage-mode #page-settings > * {
+    transform-style: preserve-3d;
+  }
+  body.prism-motion-ui.multipage-mode .hud-header,
+  body.prism-motion-ui.multipage-mode .settings-group,
+  body.prism-motion-ui.multipage-mode .unified-task-card,
+  body.prism-motion-ui.multipage-mode #calSectionWrap,
+  body.prism-motion-ui.multipage-mode .mood-journal-shell,
+  body.prism-motion-ui.multipage-mode #panel-routine,
+  body.prism-motion-ui.multipage-mode #panel-task {
+    position: relative;
+    border: 1px solid rgba(255,255,255,.74) !important;
+    border-radius: 25px !important;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.62), rgba(255,255,255,.30) 52%, rgba(var(--prism-mint),.07)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 16px 38px rgba(58,83,103,.09) !important;
+    backdrop-filter: blur(20px) saturate(128%); -webkit-backdrop-filter: blur(20px) saturate(128%);
+    transition: transform .42s cubic-bezier(.2,.85,.24,1), box-shadow .42s ease, border-color .28s ease;
+  }
+  body.prism-motion-ui.theme-dark.multipage-mode .hud-header,
+  body.prism-motion-ui.theme-dark.multipage-mode .settings-group,
+  body.prism-motion-ui.theme-dark.multipage-mode .unified-task-card,
+  body.prism-motion-ui.theme-dark.multipage-mode #calSectionWrap,
+  body.prism-motion-ui.theme-dark.multipage-mode .mood-journal-shell,
+  body.prism-motion-ui.theme-dark.multipage-mode #panel-routine,
+  body.prism-motion-ui.theme-dark.multipage-mode #panel-task {
+    border-color: rgba(255,255,255,.12) !important;
+    background: linear-gradient(135deg, rgba(46,53,67,.7), rgba(23,29,39,.38) 58%, rgba(var(--prism-cyan),.06)) !important;
+  }
+  @media (hover:hover) and (pointer:fine) {
+    body.prism-motion-ui.multipage-mode .prism-interactive-card:hover {
+      transform: translateY(-5px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg)) translateZ(10px);
+      box-shadow: inset 0 1px 0 #fff, 0 26px 52px rgba(68,92,115,.15) !important;
+      border-color: rgba(255,255,255,.96) !important;
+    }
+  }
+
+  body.prism-motion-ui.multipage-mode .item,
+  body.prism-motion-ui.multipage-mode .alarm-row,
+  body.prism-motion-ui.multipage-mode .memento-card,
+  body.prism-motion-ui.multipage-mode .cal-daycard,
+  body.prism-motion-ui.multipage-mode .dh-row,
+  body.prism-motion-ui.multipage-mode .misc-grid-tile {
+    position: relative; overflow: hidden;
+    transition: transform .28s cubic-bezier(.2,.9,.25,1), background .25s ease, box-shadow .28s ease, opacity .25s ease;
+  }
+  body.prism-motion-ui.multipage-mode .item::after,
+  body.prism-motion-ui.multipage-mode .alarm-row::after,
+  body.prism-motion-ui.multipage-mode .misc-grid-tile::after {
+    content: "" !important; display: block !important; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,.5) 46%, transparent 67%);
+    transform: translateX(-125%); opacity: .55;
+  }
+  body.prism-motion-ui.multipage-mode .item:active,
+  body.prism-motion-ui.multipage-mode .alarm-row:active,
+  body.prism-motion-ui.multipage-mode .misc-grid-tile:active { transform: scale(.975) translateY(1px); }
+  body.prism-motion-ui .prism-sheen::after { animation: prismSheen .68s cubic-bezier(.2,.8,.3,1); }
+
+  body.prism-motion-ui .home-bar {
+    left: 50% !important; right: auto !important; bottom: max(14px, env(safe-area-inset-bottom)) !important;
+    width: min(calc(100% - 28px), 650px) !important; min-height: 72px;
+    transform: translateX(-50%) !important; padding: 8px 10px !important; z-index: 120;
+    border: 1px solid rgba(255,255,255,.8) !important; border-radius: 25px !important;
+    background: linear-gradient(145deg, rgba(255,255,255,.72), rgba(245,251,255,.46), rgba(var(--prism-mint),.08)) !important;
+    box-shadow: 0 18px 48px rgba(50,72,92,.18), inset 0 1px 0 #fff !important;
+    backdrop-filter: blur(28px) saturate(150%); -webkit-backdrop-filter: blur(28px) saturate(150%);
+    overflow: visible;
+  }
+  body.prism-motion-ui.theme-dark .home-bar {
+    border-color: rgba(255,255,255,.16) !important;
+    background: linear-gradient(145deg, rgba(36,43,57,.78), rgba(22,28,38,.6), rgba(var(--prism-violet),.08)) !important;
+  }
+  body.prism-motion-ui .home-tab { position: relative; border-radius: 18px; transition: transform .38s cubic-bezier(.2,.9,.25,1), color .25s ease, background .3s ease; }
+  body.prism-motion-ui .home-tab::before {
+    content: ""; position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; border-radius: 17px;
+    background: linear-gradient(145deg, rgba(var(--prism-cyan),.22), rgba(var(--prism-violet),.13), rgba(var(--prism-peach),.18));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 9px 22px rgba(78,110,134,.13);
+    transform: translate(-50%,-50%) scale(.35) rotate(-8deg); opacity: 0;
+    transition: transform .45s cubic-bezier(.18,.9,.28,1.25), opacity .28s ease;
+  }
+  body.prism-motion-ui .home-tab.active { transform: translateY(-7px); color: #172532 !important; }
+  body.prism-motion-ui.theme-dark .home-tab.active { color: #f7fbff !important; }
+  body.prism-motion-ui .home-tab.active::before { transform: translate(-50%,-50%) scale(1) rotate(0); opacity: 1; }
+  body.prism-motion-ui .home-tab-icon,
+  body.prism-motion-ui .home-tab-label { position: relative; z-index: 1; }
+  body.prism-motion-ui .home-tab.active .home-tab-icon { animation: navGlyphLand .52s cubic-bezier(.2,.9,.25,1.35); }
+
+  body.prism-motion-ui button,
+  body.prism-motion-ui .home-tab,
+  body.prism-motion-ui [onclick] { isolation: isolate; }
+  .prism-ripple {
+    position: fixed; z-index: 9999; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; pointer-events: none;
+    border: 1px solid rgba(255,255,255,.9);
+    background: radial-gradient(circle, rgba(255,255,255,.9), rgba(var(--prism-cyan),.38) 35%, rgba(var(--prism-violet),.12) 58%, transparent 72%);
+    box-shadow: 0 0 18px rgba(var(--prism-cyan),.32);
+    animation: prismRipple .62s cubic-bezier(.15,.72,.22,1) forwards;
+  }
+  .prism-spark {
+    position: fixed; z-index: 10000; width: 7px; height: 7px; border-radius: 50%; pointer-events: none;
+    background: var(--spark, #fff); box-shadow: 0 0 10px var(--spark, #fff);
+    animation: prismSpark .72s cubic-bezier(.15,.7,.25,1) forwards;
+  }
+  body.prism-motion-ui .prism-page-enter { animation: prismPageEnter .72s cubic-bezier(.18,.82,.22,1) both !important; }
+  body.prism-motion-ui .prism-layer-enter > * { animation: prismLayerEnter .58s cubic-bezier(.18,.85,.25,1) both; }
+  body.prism-motion-ui .prism-layer-enter > *:nth-child(2) { animation-delay: .055s; }
+  body.prism-motion-ui .prism-layer-enter > *:nth-child(3) { animation-delay: .11s; }
+  body.prism-motion-ui .prism-layer-enter > *:nth-child(4) { animation-delay: .165s; }
+  body.prism-motion-ui .prism-layer-enter > *:nth-child(n+5) { animation-delay: .20s; }
+
+  @keyframes prismFloatA { to { transform: translate3d(14vw,8vh,0) scale(1.14) rotate(9deg); } }
+  @keyframes prismFloatB { to { transform: translate3d(-12vw,-9vh,0) scale(.88) rotate(-12deg); } }
+  @keyframes prismFloatC { to { transform: translate3d(-7vw,-8vh,0) scale(1.08); } }
+  @keyframes ghostLayer { 0%,100%{ transform: translateY(0) rotate(-8deg); } 50%{ transform: translateY(-8px) rotate(-4deg); } }
+  @keyframes prismEmptyDeck {
+    0%,100% { transform: translate(-50%,-50%) rotate(-5deg) translateY(0); filter: hue-rotate(0deg); }
+    50% { transform: translate(-50%,-50%) rotate(2deg) translateY(-11px); filter: hue-rotate(16deg); }
+  }
+  @keyframes prismSheen { from{ transform:translateX(-125%); } to{ transform:translateX(125%); } }
+  @keyframes navGlyphLand { 0%{ transform:translateY(5px) scale(.82); opacity:.4; } 65%{ transform:translateY(-2px) scale(1.12); } 100%{ transform:none; opacity:1; } }
+  @keyframes prismRipple { 0%{ transform:scale(.35); opacity:.95; } 100%{ transform:scale(6.5); opacity:0; } }
+  @keyframes prismSpark { 0%{ transform:translate(0,0) scale(1); opacity:1; } 100%{ transform:translate(var(--tx),var(--ty)) scale(.1); opacity:0; } }
+  @keyframes prismPageEnter { 0%{ opacity:0; transform:translateY(26px) scale(.965) rotateX(4deg); filter:blur(4px); } 65%{ opacity:1; filter:blur(0); } 100%{ transform:none; } }
+  @keyframes prismLayerEnter { from{ opacity:0; transform:translateY(20px) translateZ(-25px) scale(.975); } to{ opacity:1; transform:none; } }
+
+  @media (max-width: 620px) {
+    body.prism-motion-ui.multipage-mode #page-task,
+    body.prism-motion-ui.multipage-mode #page-settings { padding-inline: 10px !important; padding-top: 14px !important; }
+    body.prism-motion-ui.multipage-mode .app-group-wrap { padding: 10px !important; border-radius: 28px; }
+    body.prism-motion-ui .home-bar { width: calc(100% - 18px) !important; min-height: 66px; bottom: max(8px, env(safe-area-inset-bottom)) !important; }
+    .prism-ghost-stack { right: -22px; top: 9vh; transform: scale(.72); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .prism-aurora, .prism-ghost-stack i,
+    body.prism-motion-ui.multipage-mode #appGroupWrap_group_task::after,
+    body.prism-motion-ui .home-tab.active .home-tab-icon,
+    body.prism-motion-ui .prism-page-enter,
+    body.prism-motion-ui .prism-layer-enter > * { animation: none !important; }
+    body.prism-motion-ui * { scroll-behavior: auto !important; }
+    .prism-ripple, .prism-spark { display:none !important; }
+  }
+
 </style>
 </head>
-<body class="theme-simple">
+<body class="theme-simple prism-motion-ui">
+<div class="prism-atmosphere" aria-hidden="true">
+  <div class="prism-aurora prism-aurora-a"></div>
+  <div class="prism-aurora prism-aurora-b"></div>
+  <div class="prism-aurora prism-aurora-c"></div>
+  <div class="prism-ghost-stack"><i></i><i></i><i></i></div>
+</div>
 <div class="opening-overlay" id="openingOverlay">
   <div class="opening-title" id="openingTitle"></div>
   <div class="opening-tagline" id="openingTagline" data-i18n="app_tagline">あなたの生活に、そっと寄り添う汎用エージェントアプリ</div>
@@ -3524,31 +4247,34 @@
   </div>
 
   <div id="folderPanelRoutine" class="folder-panel">
-  <div style="text-align:right; margin-bottom:6px;">
-    <span style="font-size:10.5px; color:var(--ink-dim); text-decoration:underline; cursor:pointer;" onclick="openRoutineStock()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> 日課ストックを見る</span>
+  <div class="routine-overview">
+  <div class="routine-progress-glass" id="routineProgressGlass" aria-live="polite">
+    <div class="routine-progress-ring" id="routineProgressRing">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <defs>
+          <linearGradient id="routineProgressGradient" x1="8" y1="40" x2="40" y2="8" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#4A8E77"></stop>
+            <stop offset="1" stop-color="#82C8AF"></stop>
+          </linearGradient>
+        </defs>
+        <circle class="routine-progress-track" cx="24" cy="24" r="19"></circle>
+        <circle class="routine-progress-fill" cx="24" cy="24" r="19" pathLength="100"></circle>
+      </svg>
+      <span class="routine-progress-value" id="routineProgressValue">0%</span>
+    </div>
+    <div class="routine-progress-copy">
+      <div class="routine-progress-title" id="routineProgressTitle">今日の進捗</div>
+      <div class="routine-progress-detail" id="routineProgressDetail">0 / 0 完了</div>
+    </div>
   </div>
-  <div class="tabs" id="tabs">
-    <div class="tab active" data-lv="low" data-i18n="tab_low">軽量級</div>
-    <div class="tab" data-lv="mid" data-i18n="tab_mid">中量級</div>
-    <div class="tab" data-lv="high" data-i18n="tab_high">重量級</div>
+  <div class="routine-stock-link-wrap">
+    <span class="routine-stock-link" onclick="openRoutineStock()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> 日課ストック</span>
   </div>
-
-  <div class="panel show" id="panel-low" data-lv="low">
-    <div class="combo-hint" id="comboHint-low"></div>
-    <div id="list-low"></div>
-    <button class="add-task-btn" onclick="openAddTask('low')">＋</button>
   </div>
-
-  <div class="panel" id="panel-mid" data-lv="mid">
-    <div class="combo-hint" id="comboHint-mid"></div>
-    <div id="list-mid"></div>
-    <button class="add-task-btn" onclick="openAddTask('mid')">＋</button>
-  </div>
-
-  <div class="panel" id="panel-high" data-lv="high">
-    <div class="combo-hint" id="comboHint-high"></div>
-    <div id="list-high"></div>
-    <button class="add-task-btn" onclick="openAddTask('high')">＋</button>
+  <div class="panel show" id="panel-routine">
+    <div class="combo-hint" id="comboHint-routine"></div>
+    <div id="list-routine"></div>
+    <button class="add-task-btn" onclick="openAddTask()"><span class="routine-add-plus">＋</span><span class="routine-add-label">日課を追加</span></button>
   </div>
   </div>
   </div>
@@ -3652,7 +4378,7 @@
     <div class="grand-rays"></div>
     <div class="grand-icon" id="grandIcon">🜁</div>
     <div class="grand-label" id="grandLabel">COMBO</div>
-    <div class="grand-title" id="grandTitle">軽量級・グッド</div>
+    <div class="grand-title" id="grandTitle">日課・コンボ</div>
     <div class="grand-exp">+<span id="grandExp">12</span></div>
     <div class="grand-sub" id="grandSub">よくがんばりました！</div>
   </div>
@@ -4045,12 +4771,6 @@
     <input id="routineEditEmoji" type="text" maxlength="4" placeholder="🎯" style="width:56px; text-align:center; font-size:20px; padding:8px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px;">
     <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">日課名</div>
     <input id="routineEditLabel" type="text" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px; box-sizing:border-box;">
-    <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">階級</div>
-    <select id="routineEditLevel" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px; box-sizing:border-box;">
-      <option value="low">軽量級</option>
-      <option value="mid">中量級</option>
-      <option value="high">重量級</option>
-    </select>
     <div style="font-size:11px; color:var(--ink-dim); margin-bottom:6px;">属性（色分け）</div>
     <select id="routineEditAttr" style="width:100%; font-size:14px; padding:11px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; margin-bottom:14px; box-sizing:border-box;">
       <option value="routine">日課</option>
@@ -5133,23 +5853,33 @@
 
   // 初期シードデータ(初回起動時、まだ保存データが無い場合のみ使われる)
   const DEFAULT_TASKS = [
-    { id: 't1', label: "ギター", emoji: "🎸", level: "low", tag: "自宅" },
-    { id: 't2', label: "読書", emoji: "📖", level: "low", tag: "自宅" },
-    { id: 't3', label: "水を飲む", emoji: "💧", level: "low", tag: "自宅" },
-    { id: 't4', label: "ジョギング", emoji: "🏃", level: "mid", tag: "外出" },
-    { id: 't5', label: "部屋の掃除", emoji: "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><path d='M19 5L9 15'></path><path d='M9 15l-5 5 3-8z'></path><path d='M13 9l2 2'></path></svg>", level: "mid", tag: "自宅" },
-    { id: 't6', label: "研究のまとめ作業", emoji: "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><path d='M12 20h9'></path><path d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z'></path></svg>", level: "high", tag: "重量級" },
+    { id: 't1', label: "ギター", emoji: "🎸", level: "routine", tag: "自宅" },
+    { id: 't2', label: "読書", emoji: "📖", level: "routine", tag: "自宅" },
+    { id: 't3', label: "水を飲む", emoji: "💧", level: "routine", tag: "自宅" },
+    { id: 't4', label: "ジョギング", emoji: "🏃", level: "routine", tag: "外出" },
+    { id: 't5', label: "部屋の掃除", emoji: "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><path d='M19 5L9 15'></path><path d='M9 15l-5 5 3-8z'></path><path d='M13 9l2 2'></path></svg>", level: "routine", tag: "自宅" },
+    { id: 't6', label: "研究のまとめ作業", emoji: "<svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block; vertical-align:-0.15em;'><path d='M12 20h9'></path><path d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z'></path></svg>", level: "routine", tag: "自宅" },
   ];
 
   let taskList = []; // 実際に画面に表示・編集される、現在のタスク一覧
 
-  const EXP_BASE = { low: 5, mid: 8, high: 29 };
-  const DIVERSITY_BONUS = 30;
+  const ROUTINE_LEVEL = 'routine';
+  const EXP_BASE = { routine: 8 };
   const COMBO_TIERS = {
-    low:  [ { need: 3, name: 'グッド', exp: 12 }, { need: 6, name: 'ナイス', exp: 28 }, { need: 9, name: 'パーフェクト', exp: 50 } ],
-    mid:  [ { need: 3, name: 'コンボ', exp: 18 }, { need: 6, name: 'ビッグコンボ', exp: 42 }, { need: 9, name: 'メガコンボ', exp: 75 } ],
-    high: [ { need: 2, name: 'あと少し', exp: 40 }, { need: 3, name: 'すごい！', exp: 90 }, { need: 4, name: 'かんぺき！', exp: 160 } ],
+    routine: [ { need: 3, name: 'コンボ', exp: 18 }, { need: 6, name: 'ビッグコンボ', exp: 42 }, { need: 9, name: 'メガコンボ', exp: 75 } ],
   };
+
+  function routineKey(label) {
+    return `${ROUTINE_LEVEL}|${String(label || '')}`;
+  }
+  function routineLabelFromKey(key) {
+    const text = String(key || '');
+    const separator = text.indexOf('|');
+    return separator === -1 ? text : text.slice(separator + 1);
+  }
+  function normalizeRoutineKey(key) {
+    return routineKey(routineLabelFromKey(key));
+  }
 
   // ---- 音声システム(効果音合成 + BGM) ----
   let soundOn = true;
@@ -5838,8 +6568,7 @@
   let bankedExp = 0;
   let level = 1;
   let isInitializing = true; // 初期読み込み中は演出を発火させないためのフラグ
-  let balanced = false;
-  const comboReached = { low: 0, mid: 0, high: 0 };
+  const comboReached = { routine: 0 };
   const expWobbleCache = {};
   // ---- 日付・時刻の管理(境界時刻の考慮 + ネット時刻の利用) ----
   let dayBoundaryHour = 4; // 1日の境目となる時刻(デフォルト午前4時)。設定で変更可能
@@ -6480,6 +7209,14 @@
     try {
       const saved = await window.storage.get('quest-events-v1');
       scheduledEvents = (saved && saved.value) ? (sanitizeBackupField('events', JSON.parse(saved.value)) || []) : [];
+      let migrated = false;
+      scheduledEvents.forEach(event => {
+        if (!event.linkedTaskKey) return;
+        const normalized = normalizeRoutineKey(event.linkedTaskKey);
+        if (normalized !== event.linkedTaskKey) migrated = true;
+        event.linkedTaskKey = normalized;
+      });
+      if (migrated) await saveScheduledEvents();
     } catch (e) { scheduledEvents = []; }
   }
   async function saveScheduledEvents() {
@@ -6546,8 +7283,17 @@
     else if (becameUndone) reopenScheduledTaskTiming(ev, timingOccurrenceKey);
     if (ev.linkedTaskKey && (justCompleted || justUncompleted)) {
       // 日課と紐づいた予定は、日課側のチェック状態も連動させる(EXPも日課側の計算にそのまま乗せ、二重加算はしない)
-      if (justCompleted) picked.add(ev.linkedTaskKey);
-      else picked.delete(ev.linkedTaskKey);
+      if (justCompleted) {
+        picked.add(ev.linkedTaskKey);
+        routineCompletedAt[ev.linkedTaskKey] = Date.now();
+        routineAnimationKey = ev.linkedTaskKey;
+        routineAnimationKind = 'complete';
+      } else {
+        picked.delete(ev.linkedTaskKey);
+        delete routineCompletedAt[ev.linkedTaskKey];
+        routineAnimationKey = ev.linkedTaskKey;
+        routineAnimationKind = 'reopen';
+      }
       updateSummary();
       renderAllTasks(); // 日課タブの見た目(チェック済み表示)もすぐ反映する
     } else if (justCompleted) {
@@ -6656,6 +7402,9 @@
   let todayTasks = []; // [{id, text, done, createdAt, startedAt, completedAt, elapsedMs}] 今日限定の単発タスク
   let focusMode = null; // v38で追加。{ target, startDate, endDate, log: { "YYYY-M-D": true } } または null(非アクティブ)
   let currentTodayExp = 0; // 今日、今の時点での暫定獲得経験値(カレンダー表示用)
+  let routineCompletedAt = {}; // { routineKey: timestamp } 今日の日課を完了した時刻
+  let routineAnimationKey = null;
+  let routineAnimationKind = '';
 
   function expForNextLevel(lv) { return Math.round(30 * Math.pow(lv, 1.15)) + 10; }
 
@@ -6673,17 +7422,18 @@
     playUIClick();
     const closingKey = logicalDateKey(trustedNow); // 実時刻とは無関係に、「今、閉じる対象の日」として扱う
 
-    // ①軽量級・中量級・重量級で選んだ項目を、履歴に確定する
+    // ①選んだ日課を履歴に確定する
     const prevPicked = [...picked];
     if (prevPicked.length > 0) {
       dailyHistory[closingKey] = {
         count: prevPicked.length,
         exp: currentTodayExp || 0,
-        items: prevPicked.map(k => k.split('|')[1]),
+        items: prevPicked.map(routineLabelFromKey),
       };
     }
     bankedExp = (bankedExp || 0) + (currentTodayExp || 0);
     picked.clear();
+    routineCompletedAt = {};
     currentTodayExp = 0;
 
     // ②「今日のタスク」を、完了済みは履歴へ、未完了は持ち越しへ、それぞれ片付ける
@@ -6718,7 +7468,13 @@
           // 論理上、同じ日: 今日の分の累計と選択状態を復元
           bankedExp = data.bankedExp || 0;
           if (Array.isArray(data.pickedToday)) {
-            data.pickedToday.forEach(k => picked.add(k));
+            data.pickedToday.forEach(k => picked.add(normalizeRoutineKey(k)));
+          }
+          if (data.routineCompletedAt && typeof data.routineCompletedAt === 'object') {
+            Object.entries(data.routineCompletedAt).forEach(([key, value]) => {
+              const timestamp = Number(value);
+              if (Number.isFinite(timestamp) && timestamp > 0) routineCompletedAt[normalizeRoutineKey(key)] = timestamp;
+            });
           }
         } else {
           // 論理上の日付が変わっていた: 前回分の選択を履歴として確定し、選択状態はリセット
@@ -6729,11 +7485,12 @@
             dailyHistory[data.lastLogicalDate] = {
               count: prevPicked.length,
               exp: prevExp,
-              items: prevPicked.map(k => k.split('|')[1]),
+              items: prevPicked.map(routineLabelFromKey),
             };
           }
           bankedExp = (data.bankedExp || 0) + (data.lastTodayExp || 0);
           picked.clear();
+          routineCompletedAt = {};
         }
       }
     } catch (e) {
@@ -6764,6 +7521,7 @@
         lastSaveTimestamp: Date.now(), // v105で追加。日付誤判定に対する安全装置に使う
         dayBoundaryHour,
         pickedToday: [...picked],
+        routineCompletedAt,
         lastTodayExp: todayExp || 0,
         dailyHistory,
       }));
@@ -6793,16 +7551,21 @@
   }
 
   function renderAllTasks() {
-    ['low', 'mid', 'high'].forEach(lv => {
-      const el = document.getElementById(`list-${lv}`);
-      el.innerHTML = '';
-    });
+    const list = document.getElementById('list-routine');
+    if (!list) return;
+    list.innerHTML = '';
     totalItemCount = 0;
-    taskList.filter(task => task.active !== false).forEach(task => {
+    const activeTasks = taskList.filter(task => task.active !== false);
+    activeTasks.forEach((task, index) => {
       totalItemCount++;
-      const key = `${task.level}|${task.label}`;
+      const key = routineKey(task.label);
+      const isComplete = picked.has(key);
+      const nextTask = activeTasks[index + 1];
+      const nextIsComplete = nextTask ? picked.has(routineKey(nextTask.label)) : false;
       const wrap = document.createElement('div');
       wrap.className = 'swipe-del-wrap';
+      if (isComplete) wrap.classList.add('is-complete');
+      if (isComplete && nextIsComplete) wrap.classList.add('connector-active');
       const trash = document.createElement('div');
       trash.className = 'swipe-del-trash';
       trash.innerHTML = TRASH_ICON_SVG;
@@ -6810,21 +7573,27 @@
       wrap.appendChild(trash);
       const div = document.createElement('div');
       div.className = 'item';
-      if (picked.has(key)) div.classList.add('picked');
-      if (isFocusModeActive() && !picked.has(key)) div.classList.add('excused');
-      if (isFocusModeActive() && picked.has(key)) div.classList.add('focus-bonus');
+      if (isComplete) div.classList.add('picked');
+      if (key === routineAnimationKey && routineAnimationKind === 'complete') div.classList.add('just-completed');
+      if (key === routineAnimationKey && routineAnimationKind === 'reopen') div.classList.add('just-reopened');
+      if (isFocusModeActive() && !isComplete) div.classList.add('excused');
+      if (isFocusModeActive() && isComplete) div.classList.add('focus-bonus');
       div.dataset.key = key;
       div.dataset.taskId = task.id;
       div.style.setProperty('--item-accent', attrMuted(task.attr || 'routine'));
       const noteHtml = task.note
         ? `<div class="item-note">${escapeHtml(task.note)}</div>`
         : '';
+      const completedTimeHtml = isComplete
+        ? `<span class="routine-completed-time">${escapeHtml(formatRoutineCompletionTime(key))}</span>`
+        : '';
       div.innerHTML = `
         <div class="check-box"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
         <div class="item-main">
           <div class="item-main-row">
-            <span class="item-emoji">${escapeHtml(task.emoji || '')}</span>
+            <span class="item-emoji">${escapeHtml(routineEmojiText(task))}</span>
             <span class="item-label">${escapeHtml(task.label || '')}</span>
+            ${completedTimeHtml}
             <span class="item-tag">${escapeHtml(task.tag || '')}</span>
           </div>
           ${noteHtml}
@@ -6839,15 +7608,96 @@
       };
       attachDragHandlers(div, task);
       wrap.appendChild(div);
-      document.getElementById(`list-${task.level}`).appendChild(wrap);
+      list.appendChild(wrap);
       initSwipeDelete(wrap);
     });
+    renderRoutineProgress();
+    routineAnimationKey = null;
+    routineAnimationKind = '';
+  }
+
+  function formatRoutineCompletionTime(key) {
+    const timestamp = Number(routineCompletedAt[key]);
+    if (!Number.isFinite(timestamp) || timestamp <= 0) return currentLang === 'en' ? 'Done' : '完了';
+    return new Date(timestamp).toLocaleTimeString(currentLang === 'en' ? 'en-US' : 'ja-JP', {
+      hour: '2-digit', minute: '2-digit', hour12: false,
+    });
+  }
+
+  function renderRoutineProgress() {
+    const ring = document.getElementById('routineProgressRing');
+    const glass = document.getElementById('routineProgressGlass');
+    const panel = document.getElementById('panel-routine');
+    const value = document.getElementById('routineProgressValue');
+    const detail = document.getElementById('routineProgressDetail');
+    const title = document.getElementById('routineProgressTitle');
+    if (!ring || !value || !detail || !title) return;
+    const activeKeys = taskList.filter(task => task.active !== false).map(task => routineKey(task.label));
+    const doneCount = activeKeys.filter(key => picked.has(key)).length;
+    const total = activeKeys.length;
+    const percent = total > 0 ? Math.round(doneCount / total * 100) : 0;
+    const previousPercent = Number(ring.dataset.percent);
+    ring.style.setProperty('--routine-ring-offset', String(100 - percent));
+    ring.dataset.percent = String(percent);
+    animateRoutinePercent(value, Number.isFinite(previousPercent) ? previousPercent : percent, percent);
+    if (glass && Number.isFinite(previousPercent) && previousPercent !== percent) {
+      glass.classList.remove('progress-bump');
+      void glass.offsetWidth;
+      glass.classList.add('progress-bump');
+      const clearGlassPrism = event => {
+        if (event.animationName !== 'routinePrismSweep') return;
+        glass.classList.remove('progress-bump');
+        glass.removeEventListener('animationend', clearGlassPrism);
+      };
+      glass.addEventListener('animationend', clearGlassPrism);
+      if (panel) {
+        panel.classList.remove('prism-bump');
+        void panel.offsetWidth;
+        panel.classList.add('prism-bump');
+        const clearPanelPrism = event => {
+          if (event.animationName !== 'routinePrismSweep') return;
+          panel.classList.remove('prism-bump');
+          panel.removeEventListener('animationend', clearPanelPrism);
+        };
+        panel.addEventListener('animationend', clearPanelPrism);
+      }
+    }
+    title.textContent = currentLang === 'en' ? "Today's progress" : '今日の進捗';
+    detail.textContent = currentLang === 'en' ? `${doneCount} / ${total} complete` : `${doneCount} / ${total} 完了`;
+  }
+
+  function animateRoutinePercent(el, fromValue, toValue) {
+    if (el._routineAnimationFrame) cancelAnimationFrame(el._routineAnimationFrame);
+    if (fromValue === toValue || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+      el.textContent = `${toValue}%`;
+      return;
+    }
+    const startedAt = performance.now();
+    const duration = 560;
+    const step = now => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = `${Math.round(fromValue + (toValue - fromValue) * eased)}%`;
+      if (progress < 1) el._routineAnimationFrame = requestAnimationFrame(step);
+      else el._routineAnimationFrame = null;
+    };
+    el._routineAnimationFrame = requestAnimationFrame(step);
   }
 
   function escapeHtml(str) {
     const d = document.createElement('div');
     d.textContent = String(str ?? '');
     return d.innerHTML;
+  }
+
+  function routineEmojiText(task) {
+    const value = String((task && task.emoji) || '').trim();
+    if (value && !value.includes('<')) return value;
+    const id = String((task && task.id) || '');
+    const label = String((task && task.label) || '');
+    if (id === 't5' || label.includes('掃除')) return '🧹';
+    if (id === 't6' || label.includes('研究')) return '📝';
+    return '🎯';
   }
 
   function safeRecordId(value, prefix = 'id') {
@@ -6909,13 +7759,12 @@
     document.body.style.overscrollBehavior = 'contain';
 
     const ghost = document.getElementById('dragGhost');
-    ghost.textContent = `${task.emoji || ''} ${task.label}`;
+    ghost.textContent = `${routineEmojiText(task)} ${task.label}`;
     ghost.style.display = 'block';
     ghost.style.left = startX + 'px';
     ghost.style.top = startY + 'px';
 
     const bar = document.getElementById('dropZoneBar');
-    bar.classList.add('show');
 
     function findDropZoneAt(x, y) {
       // 第一段階: ブラウザに直接「その座標に何があるか」を聞く確実な方式
@@ -6942,25 +7791,14 @@
       ghost.style.top = e.clientY + 'px';
       // ghost自体がelementFromPointに引っかからないよう、判定の瞬間だけ一時的に隠す
       ghost.style.display = 'none';
-      const hoverZone = findDropZoneAt(e.clientX, e.clientY);
-      let hoverItemEl = null;
-      if (!hoverZone) {
-        // ドロップゾーンの上にいない時だけ、同じ段位内の他タスクの上かどうかを見て並び替える(v34)
-        const el = document.elementFromPoint(e.clientX, e.clientY);
-        const candidate = el ? el.closest('.item') : null;
-        if (candidate && candidate !== div) hoverItemEl = candidate;
-      }
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const candidate = el ? el.closest('.item') : null;
+      const hoverItemEl = (candidate && candidate !== div) ? candidate : null;
       ghost.style.display = 'block';
-      document.querySelectorAll('.drop-zone').forEach(zone => {
-        zone.classList.toggle('active', zone.dataset.zone === hoverZone);
-      });
       if (hoverItemEl && hoverItemEl.dataset.taskId) {
-        const hoverTask = taskList.find(t2 => t2.id === hoverItemEl.dataset.taskId);
-        if (hoverTask && hoverTask.level === task.level) {
-          const rect = hoverItemEl.getBoundingClientRect();
-          const isAfter = e.clientY > rect.top + rect.height / 2;
-          hoverItemEl.parentNode.insertBefore(div, isAfter ? hoverItemEl.nextSibling : hoverItemEl);
-        }
+        const rect = hoverItemEl.getBoundingClientRect();
+        const isAfter = e.clientY > rect.top + rect.height / 2;
+        hoverItemEl.parentNode.insertBefore(div.parentNode, isAfter ? hoverItemEl.parentNode.nextSibling : hoverItemEl.parentNode);
       }
     }
     function finishDrag(e, hasPosition) {
@@ -6968,31 +7806,15 @@
       window.removeEventListener('pointerup', finishDrag);
       window.removeEventListener('pointercancel', onCancel);
 
-      // 修正(v33): バーを非表示にする"前"に判定する。以前は先にbar.classList.remove('show')して
-      // からfindDropZoneAtを呼んでいたため、判定時にはドロップゾーンが既に非表示(display:none)になっており
-      // elementFromPointが常にnullを返す=削除・移動が絶対に成立しないバグになっていた。
-      let targetZone = null;
-      if (hasPosition) {
-        ghost.style.display = 'none';
-        targetZone = findDropZoneAt(e.clientX, e.clientY);
-      }
-
       ghost.style.display = 'none';
-      bar.classList.remove('show');
+      if (bar) bar.classList.remove('show');
       div.classList.remove('dragging');
       document.body.style.userSelect = '';
       document.body.style.webkitUserSelect = '';
       document.body.style.overscrollBehavior = '';
 
-      document.querySelectorAll('.drop-zone').forEach(zone => zone.classList.remove('active'));
-      logDebug(`ドロップ座標(${Math.round(e.clientX)},${Math.round(e.clientY)}) → 判定ゾーン: ${targetZone || 'なし'}`);
-
-      if (targetZone && ['low', 'mid', 'high'].includes(targetZone) && targetZone !== task.level) {
-        moveTaskToLevel(task.id, targetZone);
-      } else if (!targetZone) {
-        // ゾーン外に落とされた場合: ドラッグ中にDOM上で並び替えた順序を、実データ(taskList)にも反映する
-        syncTaskOrderFromDOM(task.level);
-      }
+      logDebug(`日課の並び順を更新: ${task.label}`);
+      syncTaskOrderFromDOM();
       dragState = null;
     }
     function onUp(e) { finishDrag(e, true); }
@@ -7003,37 +7825,17 @@
     window.addEventListener('pointercancel', onCancel);
   }
 
-  function syncTaskOrderFromDOM(level) {
-    const listEl = document.getElementById(`list-${level}`);
+  function syncTaskOrderFromDOM() {
+    const listEl = document.getElementById('list-routine');
     if (!listEl) return;
-    const orderedIds = Array.from(listEl.children).map(el => el.dataset.taskId);
-    const itemsInLevel = taskList.filter(t => t.level === level);
-    const others = taskList.filter(t => t.level !== level);
+    const orderedIds = Array.from(listEl.children).map(el => el.querySelector('.item')?.dataset.taskId).filter(Boolean);
     const reordered = orderedIds
-      .map(id => itemsInLevel.find(t => t.id === id))
+      .map(id => taskList.find(t => t.id === id))
       .filter(Boolean);
-    // 万一DOMとデータの数が食い違っていたら(バグ等)、安全側に倒して元の順序のまま何もしない
-    if (reordered.length !== itemsInLevel.length) return;
-    taskList = others.concat(reordered);
+    if (reordered.length !== taskList.filter(t => t.active !== false).length) return;
+    const inactive = taskList.filter(t => t.active === false);
+    taskList = reordered.concat(inactive);
     saveTasks();
-  }
-
-  function moveTaskToLevel(taskId, newLevel) {
-    const task = taskList.find(t => t.id === taskId);
-    if (!task) return;
-    const oldKey = `${task.level}|${task.label}`;
-    task.level = newLevel;
-    playUIClick();
-    showToast(t('task_moved_toast', { task: task.label, level: levelDisplayName(newLevel) }));
-    saveTasks();
-    // 不意の提案が、移動前のこのタスクを指していた場合は無効化する(達成不能なまま残さない)
-    if (surpriseQuest && (surpriseQuest.status === 'pending' || surpriseQuest.status === 'accepted') && surpriseQuest.key === oldKey) {
-      surpriseQuest.status = 'expired';
-      saveSurpriseQuest();
-      renderSurpriseQuestBanner();
-    }
-    renderAllTasks();
-    updateSummary();
   }
 
   function deleteTask(taskId) {
@@ -7041,8 +7843,9 @@
     const idx = taskList.findIndex(t => t.id === taskId);
     if (idx === -1) return;
     const removed = taskList[idx];
-    const key = `${removed.level}|${removed.label}`;
+    const key = routineKey(removed.label);
     picked.delete(key);
+    delete routineCompletedAt[key];
     taskList.splice(idx, 1);
     playUIClick();
     showToast(`「${removed.label}」を削除しました`);
@@ -7058,9 +7861,7 @@
   }
 
   // ---- タスク追加モーダル ----
-  let addTaskTargetLevel = 'low';
-  function openAddTask(level) {
-    addTaskTargetLevel = level;
+  function openAddTask() {
     document.getElementById('addTaskEmoji').value = '';
     document.getElementById('addTaskLabel').value = '';
     document.getElementById('addTaskTime').value = '';
@@ -7081,7 +7882,7 @@
     }
     const newTask = {
       id: 'custom_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-      label, emoji: emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>', level: addTaskTargetLevel, tag: 'カスタム', attr,
+      label, emoji: emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>', level: ROUTINE_LEVEL, tag: 'カスタム', attr,
     };
     taskList.push(newTask);
     if (time) {
@@ -7089,7 +7890,7 @@
       // これで、リマインド設定・完了の連動も、カレンダーの予定と同じ仕組みがそのまま使える。
       const todayKey = logicalDateKey(trustedNow);
       addScheduledEvent(todayKey, time, `${emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>'} ${label}`, 'daily', attrColor(attr), {
-        linkedTaskKey: `${newTask.level}|${newTask.label}`, attr,
+        linkedTaskKey: routineKey(newTask.label), attr,
       });
     }
     saveTasks();
@@ -7135,7 +7936,6 @@
     editingRoutineId = id;
     document.getElementById('routineEditEmoji').value = (task.emoji && task.emoji.indexOf('<') === -1) ? task.emoji : '';
     document.getElementById('routineEditLabel').value = task.label || '';
-    document.getElementById('routineEditLevel').value = task.level || 'low';
     document.getElementById('routineEditAttr').value = task.attr || 'routine';
     document.getElementById('routineEditNote').value = task.note || '';
     document.getElementById('routineEditModal').classList.add('show');
@@ -7153,7 +7953,7 @@
     const emoji = document.getElementById('routineEditEmoji').value.trim();
     task.label = label;
     if (emoji) task.emoji = emoji; // 空欄なら今の絵文字(またはSVG)をそのまま残す
-    task.level = document.getElementById('routineEditLevel').value || task.level;
+    task.level = ROUTINE_LEVEL;
     task.attr = document.getElementById('routineEditAttr').value || 'routine';
     task.note = document.getElementById('routineEditNote').value.trim();
     saveTasks();
@@ -7538,7 +8338,7 @@
       if (key === 'dateKey' || key === 'carriedFrom') {
         return /^\d{4}-\d{1,2}-\d{1,2}$/.test(value) ? value : '';
       }
-      if (key === 'level') return ['low', 'mid', 'high'].includes(value) ? value : 'low';
+      if (key === 'level') return ['routine', 'low', 'mid', 'high'].includes(value) ? value : ROUTINE_LEVEL;
       if (key === 'attr') return ['routine', 'health', 'study', 'work', 'event', 'task'].includes(value) ? value : 'task';
       if (key === 'color') return /^#[0-9a-f]{6}$/i.test(value) ? value : '';
       if (key === 'mood') return ['good', 'neutral', 'bad', ''].includes(value) ? value : '';
@@ -7668,6 +8468,9 @@
         taskList = JSON.parse(JSON.stringify(DEFAULT_TASKS));
         await saveTasks();
       }
+      const needsMigration = taskList.some(task => task.level !== ROUTINE_LEVEL);
+      taskList.forEach(task => { task.level = ROUTINE_LEVEL; });
+      if (needsMigration) await saveTasks();
     } catch (e) {
       taskList = JSON.parse(JSON.stringify(DEFAULT_TASKS));
     }
@@ -7806,20 +8609,19 @@
       if (currentLogicalDate !== lastKnownLogicalDate) {
         // 論理上の日付が変わった: 今日の分を履歴として確定し、選択状態をリセットする
         let todayExpAtSwitch = 0;
-        picked.forEach(key => { todayExpAtSwitch += wobbleFor(key, EXP_BASE[key.split('|')[0]]); });
+        picked.forEach(key => { todayExpAtSwitch += wobbleFor(key, EXP_BASE.routine); });
         if (picked.size > 2) todayExpAtSwitch = Math.round(todayExpAtSwitch * (1 + (picked.size - 2) * 0.08));
-        const levelsPicked = new Set([...picked].map(k => k.split('|')[0]));
-        if (levelsPicked.has('low') && levelsPicked.has('mid') && levelsPicked.has('high')) todayExpAtSwitch += DIVERSITY_BONUS;
 
         if (picked.size > 0) {
           dailyHistory[lastKnownLogicalDate] = {
             count: picked.size,
             exp: todayExpAtSwitch,
-            items: [...picked].map(k => k.split('|')[1]),
+            items: [...picked].map(routineLabelFromKey),
           };
           bankedExp += todayExpAtSwitch;
         }
         picked.clear();
+        routineCompletedAt = {};
         document.querySelectorAll('.item.picked').forEach(el => el.classList.remove('picked'));
         currentTodayExp = 0;
         lastKnownLogicalDate = currentLogicalDate;
@@ -7840,11 +8642,17 @@
   function toggleItem(div, key) {
     if (picked.has(key)) {
       picked.delete(key);
+      delete routineCompletedAt[key];
+      routineAnimationKey = key;
+      routineAnimationKind = 'reopen';
       div.classList.remove('picked', 'focus-bonus');
       if (isFocusModeActive()) div.classList.add('excused');
       playDeselectSound();
     } else {
       picked.add(key);
+      routineCompletedAt[key] = Date.now();
+      routineAnimationKey = key;
+      routineAnimationKind = 'complete';
       div.classList.remove('excused');
       div.classList.add('picked');
       if (isFocusModeActive()) div.classList.add('focus-bonus');
@@ -7858,6 +8666,7 @@
         showToast(currentLang === 'en' ? `✨ Surprise quest complete! +${surpriseQuest.bonusExp} EXP` : `✨ 不意の提案を達成！ +${surpriseQuest.bonusExp} EXP`);
       }
     }
+    renderAllTasks();
     updateSummary();
   }
 
@@ -8006,10 +8815,9 @@
     document.getElementById('pickCountBadge').textContent = currentLang === 'en' ? `Selected ${count}` : `選択 ${count}`;
 
     let todayExp = 0;
-    picked.forEach(key => { todayExp += wobbleFor(key, EXP_BASE[key.split('|')[0]]); });
+    picked.forEach(key => { todayExp += wobbleFor(key, EXP_BASE.routine); });
 
-    const countByLevel = { low: 0, mid: 0, high: 0 };
-    picked.forEach(key => { countByLevel[key.split('|')[0]]++; });
+    const countByLevel = { routine: picked.size };
 
     const comboHits = [];
     Object.keys(COMBO_TIERS).forEach(lv => {
@@ -8017,10 +8825,6 @@
       COMBO_TIERS[lv].forEach(tier => { if (countByLevel[lv] >= tier.need) reached = tier; });
       if (reached) { todayExp += reached.exp; comboHits.push({ level: lv, name: reached.name, exp: reached.exp, need: reached.need }); }
     });
-
-    const levelsPicked = new Set([...picked].map(k => k.split('|')[0]));
-    const isBalanced = levelsPicked.has('low') && levelsPicked.has('mid') && levelsPicked.has('high');
-    if (isBalanced) todayExp += DIVERSITY_BONUS;
 
     const displayExp = bankedExp + todayExp;
     const { level: lv, expIntoLevel, expNeeded } = recalcLevelFrom(displayExp);
@@ -8052,23 +8856,12 @@
     const progressSparkEl = document.getElementById('progressSpark');
     if (progressSparkEl) progressSparkEl.style.opacity = count > 0 ? '1' : '0';
 
-    if (isBalanced && !balanced) {
-      balanced = true; // 状態は更新するが、起動時は祝福モーダルを出さない(後の操作で誤発火しないよう状態だけ合わせる)
-      if (!isInitializing) showGrandModal({
-        icon: '🌈', label: 'BONUS', title: t('diversity_bonus_title'),
-        exp: DIVERSITY_BONUS, sub: t('diversity_bonus_sub'),
-        tone: 'tone-magenta',
-      });
-    } else if (!isBalanced) {
-      balanced = false;
-    }
-
     comboHits.forEach(hit => {
       if (hit.need > comboReached[hit.level]) {
         comboReached[hit.level] = hit.need; // 状態だけ更新。起動時は祝福モーダルを出さない
         if (!isInitializing) showGrandModal({
           icon: '✨', label: 'COMBO',
-          title: t('combo_title', { level: levelDisplayName(hit.level), name: comboDisplayName(hit.name) }),
+          title: t('combo_title', { level: currentLang === 'en' ? 'Routines' : '日課', name: comboDisplayName(hit.name) }),
           exp: hit.exp, sub: t('combo_cleared_sub', { need: hit.need }),
           tone: 'tone-yellow',
         });
@@ -8183,9 +8976,10 @@
   function clearAll() {
     playUIClick();
     picked.clear();
+    routineCompletedAt = {};
     document.querySelectorAll('.item').forEach(i => i.classList.remove('picked'));
-    balanced = false;
-    comboReached.low = 0; comboReached.mid = 0; comboReached.high = 0;
+    comboReached.routine = 0;
+    renderAllTasks();
     updateSummary();
   }
 
@@ -8205,54 +8999,6 @@
       it._riseTimer = setTimeout(() => { it.classList.remove('rise-in'); it.style.animationDelay = ''; }, delay + 540);
     });
   }
-  function switchToTab(lv) {
-    const tab = document.querySelector(`.tab[data-lv="${lv}"]`);
-    if (!tab) return;
-    playUIClick();
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
-    const panel = document.getElementById('panel-' + lv);
-    panel.classList.add('show');
-    staggerRise(panel);
-  }
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.onclick = () => switchToTab(tab.dataset.lv);
-  });
-
-  // ---- 段位タブのスワイプ切り替え(v68で追加) ----
-  // 階級スワイプ(軽量/中量/重量)が成立した時刻。直後のページスワイプ二重発火を防ぐために使う
-  let lastLevelSwipeAt = 0;
-  (function initTabSwipe() {
-    const wrap = document.getElementById('tabsPanelsWrap');
-    if (!wrap) return;
-    const TAB_ORDER = ['low', 'mid', 'high'];
-    let startX = 0, startY = 0, startTime = 0;
-    wrap.addEventListener('touchstart', (e) => {
-      if (e.touches.length !== 1) return;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      startTime = Date.now();
-    }, { passive: true });
-    wrap.addEventListener('touchend', (e) => {
-      if (!e.changedTouches || e.changedTouches.length === 0) return;
-      const dx = e.changedTouches[0].clientX - startX;
-      const dy = e.changedTouches[0].clientY - startY;
-      const dt = Date.now() - startTime;
-      // 横方向にはっきり・かつ素早く動いた場合だけスワイプとみなす(長押しドラッグの誤爆を避ける)
-      if (dt < 600 && Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy) * 1.6) {
-        const activeTab = document.querySelector('.tab.active');
-        const currentLv = activeTab ? activeTab.dataset.lv : 'low';
-        let idx = TAB_ORDER.indexOf(currentLv);
-        if (dx < 0 && idx < TAB_ORDER.length - 1) idx++;
-        else if (dx > 0 && idx > 0) idx--;
-        else return;
-        lastLevelSwipeAt = Date.now(); // このスワイプは階級切替が消費した(ページ切替はスキップさせる)
-        switchToTab(TAB_ORDER[idx]);
-      }
-    }, { passive: true });
-  })();
-
   // ---- 2本指ジェスチャー(ピンチズーム)検知(v71で追加) ----
   // .itemのtouch-action:noneはドラッグ操作のためだが、2本指の拡大縮小まで
   // 巻き込んで無効化してしまっていたため、2本指になった瞬間だけ一時的に解除する
@@ -8297,6 +9043,12 @@
     try {
       const saved = await window.storage.get('quest-surprise-v1');
       surpriseQuest = (saved && saved.value) ? sanitizeBackupField('surprise', JSON.parse(saved.value)) : null;
+      if (surpriseQuest) {
+        const previousKey = surpriseQuest.key;
+        surpriseQuest.key = normalizeRoutineKey(surpriseQuest.key || surpriseQuest.label);
+        surpriseQuest.level = ROUTINE_LEVEL;
+        if (surpriseQuest.key !== previousKey) await saveSurpriseQuest();
+      }
     } catch (e) {
       surpriseQuest = null;
     }
@@ -8309,16 +9061,16 @@
 
   function generateSurpriseQuest() {
     const todayKey = logicalDateKey(trustedNow);
-    const candidates = taskList.filter(t => t.active !== false && !picked.has(`${t.level}|${t.label}`));
+    const candidates = taskList.filter(t => t.active !== false && !picked.has(routineKey(t.label)));
     if (candidates.length === 0) return false; // 提案できるタスクが無ければ何もしない
     const task = candidates[Math.floor(Math.random() * candidates.length)];
-    const base = EXP_BASE[task.level] || 5;
+    const base = EXP_BASE.routine;
     surpriseQuest = {
       date: todayKey,
-      key: `${task.level}|${task.label}`,
-      level: task.level,
+      key: routineKey(task.label),
+      level: ROUTINE_LEVEL,
       label: task.label,
-      emoji: task.emoji || '',
+      emoji: routineEmojiText(task),
       offeredAt: Date.now(),
       expiresAt: Date.now() + 60 * 60 * 1000, // ちょうど1時間後
       status: 'pending',
@@ -8738,7 +9490,7 @@
     if (yesterdayCount === 0) {
       return isEn
         ? 'Yesterday looked like a rest day. No pressure — maybe start today with just one small task.'
-        : '昨日は少し休めた日でしたね。今日は無理せず、軽量級から1つだけ選んでみましょうか。';
+        : '昨日は少し休めた日でしたね。今日は無理せず、日課から1つだけ選んでみましょうか。';
     }
     if (streak >= 14) {
       return isEn
@@ -8967,12 +9719,10 @@
   function renderRoutineStockList() {
     const el = document.getElementById('routineStockList');
     if (!el) return;
-    const levelLabel = { low: '軽量級', mid: '中量級', high: '重量級' };
     el.innerHTML = taskList.map(task => `
       <div class="stock-item${task.active === false ? ' inactive' : ''}">
-        <span class="stock-item-emoji">${task.emoji || '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg>'}</span>
+        <span class="stock-item-emoji">${escapeHtml(routineEmojiText(task))}</span>
         <span class="stock-item-label">${escapeHtml(task.label)}</span>
-        <span class="stock-item-level">${levelLabel[task.level] || ''}</span>
         <label class="toggle-switch">
           <input type="checkbox" ${task.active === false ? '' : 'checked'} onchange="toggleTaskActive('${task.id}')">
           <span class="toggle-track"></span>
@@ -8987,7 +9737,7 @@
     saveTasks();
     // 不意の提案の対象タスクが非表示化された場合、パネルから完了できなくなるため無効化する
     if (task.active === false && surpriseQuest && (surpriseQuest.status === 'pending' || surpriseQuest.status === 'accepted')) {
-      const key = `${task.level}|${task.label}`;
+      const key = routineKey(task.label);
       if (surpriseQuest.key === key) {
         surpriseQuest.status = 'expired';
         saveSurpriseQuest();
@@ -9824,7 +10574,6 @@
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
       if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-      if (Date.now() - lastLevelSwipeAt < 500) return; // 直前に階級スワイプが成立していたら、ページ切替はしない(二重防止)
       const dir = dx < 0 ? 'left' : 'right';
 
       if (multiPageModeOn) {
@@ -10843,7 +11592,7 @@
     labelEl.textContent = (key === todayKey) ? (currentLang === 'en' ? 'Today' : '今日') : `${m}/${d}`;
 
     const record = (key === todayKey)
-      ? { count: picked.size, exp: currentTodayExp || 0, items: [...picked].map(k => k.split('|')[1]) }
+      ? { count: picked.size, exp: currentTodayExp || 0, items: [...picked].map(routineLabelFromKey) }
       : (dailyHistory[key] || { count: 0, exp: 0, items: [] });
     document.getElementById('dayViewCount').textContent = record.count;
     document.getElementById('dayViewExp').textContent = `+${Math.round(record.exp)}`;
@@ -11177,7 +11926,7 @@
   function _calSame(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
   function calRecordFor(key) {
     const todayKey = logicalDateKey(trustedNow);
-    if (key === todayKey) return { count: picked.size, exp: currentTodayExp || 0, items: [...picked].map(k => k.split('|')[1]) };
+    if (key === todayKey) return { count: picked.size, exp: currentTodayExp || 0, items: [...picked].map(routineLabelFromKey) };
     return dailyHistory[key] || { count: 0, exp: 0, items: [] };
   }
   function _calYmHTML(d) { return '<span class="y">' + d.getFullYear() + '</span><span class="m">' + (d.getMonth() + 1) + '月</span>'; }
@@ -11730,20 +12479,12 @@
     const todayKey = logicalDateKey(trustedNow);
     const sections = [];
 
-    // 日課(段位タスク)
+    // 日課
     if (picked.size > 0) {
-      const byLevel = { low: [], mid: [], high: [] };
-      picked.forEach(key => {
-        const [level, label] = key.split('|');
-        if (byLevel[level]) byLevel[level].push(label);
-      });
+      const routines = [...picked].map(routineLabelFromKey);
       const levelNames = { low: '🌿 軽量級', mid: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> 中量級', high: '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1.5 1 2 2.5 2 4a5 5 0 0 1-10 0c0-5 3-6 3-11 1 1 2 1 2-2z"></path></svg> 重量級' };
-      ['low', 'mid', 'high'].forEach(lv => {
-        if (byLevel[lv].length > 0) {
-          sections.push(`<div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin:10px 0 4px;">${levelNames[lv]}</div>` +
-            byLevel[lv].map(t => `<div style="font-size:12.5px; color:#fff; padding:3px 0;">✓ ${escapeHtml(t)}</div>`).join(''));
-        }
-      });
+      sections.push(`<div style="font-size:10px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin:10px 0 4px;">日課</div>` +
+        routines.map(t => `<div style="font-size:12.5px; color:#fff; padding:3px 0;">✓ ${escapeHtml(t)}</div>`).join(''));
     }
     // 今日のタスク(完了分)
     const doneToday = todayTasks.filter(t => t.done);
@@ -12044,7 +12785,7 @@
     const [y, m, d] = key.split('-');
     const todayKey = logicalDateKey(trustedNow);
     const record = (key === todayKey)
-      ? { count: picked.size, exp: currentTodayExp || 0, items: [...picked].map(k => k.split('|')[1]) }
+      ? { count: picked.size, exp: currentTodayExp || 0, items: [...picked].map(routineLabelFromKey) }
       : (dailyHistory[key] || { count: 0, exp: 0, items: [] });
     const allItems = [...(record.items || []), ...(record.todayTasksCompleted || [])];
     const itemsText = allItems.length ? allItems.join('、') : 'なし';
@@ -12652,6 +13393,142 @@
     }
   }
   window.addEventListener('load', retireLegacyPushNotifications, { once: true });
+  // ===== Prism Motion UI: presentation-only interaction layer =====
+  (function initPrismMotionUI() {
+    if (window.__prismMotionUIReady) return;
+    window.__prismMotionUIReady = true;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const cardSelector = [
+      '.hud-header', '.settings-group', '.unified-task-card', '#calSectionWrap',
+      '.mood-journal-shell', '#panel-routine', '#panel-task', '.misc-grid-tile'
+    ].join(',');
+
+    function decoratePrismCards(root) {
+      (root || document).querySelectorAll(cardSelector).forEach(function (card) {
+        card.classList.add('prism-interactive-card');
+      });
+    }
+
+    function restartClass(el, className, duration) {
+      if (!el || reducedMotion.matches) return;
+      el.classList.remove(className);
+      void el.offsetWidth;
+      el.classList.add(className);
+      window.setTimeout(function () { el.classList.remove(className); }, duration || 760);
+    }
+
+    function visiblePrismSurface() {
+      const settings = document.getElementById('page-settings');
+      if (settings && settings.classList.contains('show')) return settings;
+      return document.querySelector('.app-group-wrap:not([style*="display: none"])') ||
+        document.querySelector('.app-group-wrap');
+    }
+
+    function animatePrismPage() {
+      const surface = visiblePrismSurface();
+      if (!surface) return;
+      decoratePrismCards(surface);
+      restartClass(surface, 'prism-page-enter', 820);
+      restartClass(surface, 'prism-layer-enter', 780);
+    }
+
+    function makeRipple(x, y) {
+      if (reducedMotion.matches) return;
+      const ripple = document.createElement('i');
+      ripple.className = 'prism-ripple';
+      ripple.style.left = x + 'px';
+      ripple.style.top = y + 'px';
+      document.body.appendChild(ripple);
+      ripple.addEventListener('animationend', function () { ripple.remove(); }, { once: true });
+    }
+
+    function burstPrism(x, y) {
+      if (reducedMotion.matches) return;
+      const colors = ['#ffffff', '#77e8cf', '#79d7ff', '#b39aff', '#ffc08e'];
+      for (let i = 0; i < 8; i++) {
+        const spark = document.createElement('i');
+        const angle = (Math.PI * 2 * i / 8) + (i % 2 ? .14 : 0);
+        const distance = 24 + (i % 3) * 9;
+        spark.className = 'prism-spark';
+        spark.style.left = (x - 3) + 'px';
+        spark.style.top = (y - 3) + 'px';
+        spark.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+        spark.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+        spark.style.setProperty('--spark', colors[i % colors.length]);
+        document.body.appendChild(spark);
+        spark.addEventListener('animationend', function () { spark.remove(); }, { once: true });
+      }
+    }
+
+    let pointerFrame = 0;
+    document.addEventListener('pointermove', function (event) {
+      if (reducedMotion.matches || pointerFrame) return;
+      pointerFrame = requestAnimationFrame(function () {
+        pointerFrame = 0;
+        document.body.style.setProperty('--prism-x', event.clientX + 'px');
+        document.body.style.setProperty('--prism-y', event.clientY + 'px');
+        const card = event.target.closest && event.target.closest('.prism-interactive-card');
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const px = Math.max(0, Math.min(1, (event.clientX - rect.left) / Math.max(1, rect.width)));
+        const py = Math.max(0, Math.min(1, (event.clientY - rect.top) / Math.max(1, rect.height)));
+        card.style.setProperty('--card-x', (px * 100).toFixed(1) + '%');
+        card.style.setProperty('--card-y', (py * 100).toFixed(1) + '%');
+        card.style.setProperty('--tilt-x', ((px - .5) * 2.4).toFixed(2) + 'deg');
+        card.style.setProperty('--tilt-y', ((.5 - py) * 2.4).toFixed(2) + 'deg');
+      });
+    }, { passive: true });
+
+    document.addEventListener('pointerout', function (event) {
+      const card = event.target.closest && event.target.closest('.prism-interactive-card');
+      if (!card || (event.relatedTarget && card.contains(event.relatedTarget))) return;
+      card.style.removeProperty('--tilt-x');
+      card.style.removeProperty('--tilt-y');
+    }, { passive: true });
+
+    document.addEventListener('click', function (event) {
+      const action = event.target.closest && event.target.closest('button, .home-tab, .check-box, .cal-day, .misc-grid-tile, [onclick]');
+      if (!action) return;
+      const rect = action.getBoundingClientRect();
+      const x = event.clientX || rect.left + rect.width / 2;
+      const y = event.clientY || rect.top + rect.height / 2;
+      makeRipple(x, y);
+
+      const sheenTarget = action.closest('.item, .alarm-row, .misc-grid-tile');
+      if (sheenTarget) restartClass(sheenTarget, 'prism-sheen', 720);
+
+      if (action.classList.contains('home-tab')) {
+        window.setTimeout(animatePrismPage, 40);
+      }
+
+      if (action.classList.contains('check-box')) {
+        window.setTimeout(function () {
+          const item = action.closest('.item');
+          if (item && (item.classList.contains('picked') || item.classList.contains('done') || item.classList.contains('today-routine'))) {
+            const checkedRect = action.getBoundingClientRect();
+            burstPrism(checkedRect.left + checkedRect.width / 2, checkedRect.top + checkedRect.height / 2);
+            restartClass(item, 'prism-sheen', 720);
+          }
+        }, 30);
+      }
+    }, false);
+
+    const prismObserver = new MutationObserver(function (changes) {
+      let shouldDecorate = false;
+      changes.forEach(function (change) {
+        if (change.addedNodes && change.addedNodes.length) shouldDecorate = true;
+      });
+      if (shouldDecorate) decoratePrismCards(document);
+    });
+    prismObserver.observe(document.body, { childList: true, subtree: true });
+
+    decoratePrismCards(document);
+    window.setTimeout(function () {
+      decoratePrismCards(document);
+      animatePrismPage();
+    }, 120);
+    window.prismMotionUI = { animatePage: animatePrismPage, burst: burstPrism };
+  })();
 </script>
 </body>
 </html>

@@ -12,7 +12,9 @@
     "native:android": "pnpm run native:sync && cap open android",
     "native:ios": "pnpm run native:sync && cap open ios",
     "verify:web": "node scripts/verify-web.mjs",
-    "verify:native": "pnpm run build && cap sync && pnpm run verify:web"
+    "verify:native": "pnpm run build && cap sync && pnpm run verify:web",
+    "release:audit": "node scripts/release-audit.mjs",
+    "release:check": "pnpm run verify:native && pnpm run release:audit"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

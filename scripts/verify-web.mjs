@@ -25,6 +25,27 @@ for (const marker of ['quest-task-time-log-v1', 'beginTodayTaskTimer', 'finishSc
   if (!html.includes(marker)) failures.push(`task timer marker is missing: ${marker}`);
 }
 
+for (const marker of ['id="panel-routine"', 'id="list-routine"', "const ROUTINE_LEVEL = 'routine'", 'normalizeRoutineKey']) {
+  if (!html.includes(marker)) failures.push(`unified routine marker is missing: ${marker}`);
+}
+
+for (const marker of [
+  'id="routineProgressRing"',
+  'routineCompletedAt',
+  'formatRoutineCompletionTime',
+  'renderRoutineProgress',
+  'animateRoutinePercent',
+  'routineConnectorDraw',
+  'routinePrismSweep',
+  'prism-bump',
+  'routine-overview',
+  'routine-add-label',
+  'routine-timeline-center',
+  'routineItemRiseAligned'
+]) {
+  if (!html.includes(marker)) failures.push(`routine progress marker is missing: ${marker}`);
+}
+
 for (const marker of [
   'Content-Security-Policy',
   'privacy.html',
@@ -49,7 +70,11 @@ const forbiddenMarkers = [
   '現役医学生',
   '本文はハリボテ',
   'Developer Only (remove before launch)',
-  'Show debug log (to be removed)'
+  'Show debug log (to be removed)',
+  'id="routineEditLevel"',
+  'id="panel-low"',
+  'id="panel-mid"',
+  'id="panel-high"'
 ];
 for (const marker of forbiddenMarkers) {
   if (html.includes(marker)) failures.push(`release-only content remains: ${marker}`);
