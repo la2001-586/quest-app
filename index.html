@@ -2533,6 +2533,58 @@
   .mood-journal-textarea.unsaved { border-color: var(--yellow); }
   .mood-journal-textarea::placeholder { color: rgba(255,255,255,0.28); }
 
+  .incident-note {
+    margin: 0 0 12px; border: 1px solid rgba(255,255,255,0.12); border-radius: 14px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018));
+    overflow: hidden; transition: border-color .22s ease, background .22s ease, box-shadow .22s ease;
+  }
+  .incident-note.has-content {
+    border-color: color-mix(in srgb, var(--magenta) 44%, rgba(255,255,255,0.18));
+    background: linear-gradient(145deg, color-mix(in srgb, var(--magenta) 8%, transparent), rgba(255,255,255,0.025));
+  }
+  .incident-note-toggle {
+    width: 100%; display: grid; grid-template-columns: 30px minmax(0,1fr) auto; gap: 10px;
+    align-items: center; padding: 11px 12px; border: 0; background: transparent; color: var(--ink);
+    text-align: left; cursor: pointer; font-family: inherit;
+  }
+  .incident-note-icon {
+    width: 30px; height: 30px; display: grid; place-items: center; border-radius: 10px;
+    color: var(--magenta); background: color-mix(in srgb, var(--magenta) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--magenta) 24%, transparent); font-size: 16px;
+  }
+  .incident-note-title { display: block; font-size: 12.5px; font-weight: 750; letter-spacing: .02em; }
+  .incident-note-sub { display: block; margin-top: 2px; color: var(--ink-dim); font-size: 10px; font-weight: 500; }
+  .incident-note-chevron { color: var(--ink-dim); transition: transform .22s ease; font-size: 15px; }
+  .incident-note.open .incident-note-chevron { transform: rotate(180deg); }
+  .incident-note-body {
+    display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .26s cubic-bezier(.2,.8,.2,1), opacity .2s ease;
+  }
+  .incident-note.open .incident-note-body { grid-template-rows: 1fr; opacity: 1; }
+  .incident-note-fields { min-height: 0; overflow: hidden; padding: 0 12px; }
+  .incident-note.open .incident-note-fields { padding-bottom: 12px; }
+  .incident-field + .incident-field { margin-top: 10px; }
+  .incident-field-label { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+  .incident-field-label strong { font-size: 11px; color: var(--ink); }
+  .incident-field-label span { font-size: 9.5px; color: var(--ink-dim); }
+  .incident-field textarea {
+    width: 100%; min-height: 62px; resize: vertical; box-sizing: border-box; padding: 9px 10px;
+    border-radius: 10px; border: 1px solid rgba(255,255,255,.11); background: rgba(0,0,0,.12);
+    color: var(--ink); font-family: inherit; font-size: 12.5px; line-height: 1.6; outline: none;
+    transition: border-color .18s ease, background .18s ease;
+  }
+  .incident-field textarea:focus { border-color: color-mix(in srgb, var(--magenta) 52%, transparent); background: rgba(255,255,255,.035); }
+  .incident-field textarea::placeholder { color: var(--ink-dim); opacity: .72; }
+  .incident-note-foot { margin-top: 9px; font-size: 9.5px; line-height: 1.5; color: var(--ink-dim); }
+  body.theme-simple:not(.theme-dark) .incident-note,
+  body.theme-fancy:not(.theme-dark) .incident-note { border-color: rgba(40,47,59,.11); background: rgba(255,255,255,.48); }
+  body.theme-simple:not(.theme-dark) .incident-field textarea,
+  body.theme-fancy:not(.theme-dark) .incident-field textarea { background: rgba(255,255,255,.56); border-color: rgba(40,47,59,.11); }
+  .incident-history {
+    margin-top: 8px; padding: 8px 10px; border-left: 2px solid color-mix(in srgb, var(--magenta) 55%, transparent);
+    border-radius: 0 8px 8px 0; background: color-mix(in srgb, var(--magenta) 6%, transparent);
+    white-space: pre-wrap; font-size: 11px; line-height: 1.55; color: inherit;
+  }
+
   .cal-section-title-row {
     display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;
   }
@@ -4567,6 +4619,33 @@
         <div id="sleepDurationLabel" class="sleep-track-duration"></div>
       </div>
       <textarea id="moodJournalText" class="mood-journal-textarea" data-i18n-placeholder="ph_mood_journal" placeholder="今日の気分、体調、頭に浮かんだこと。何でも自由に。" oninput="handleMoodJournalInput()" onblur="handleMoodJournalBlur()"></textarea>
+      <section class="incident-note" id="incidentNote">
+        <button type="button" class="incident-note-toggle" id="incidentNoteToggle" onclick="toggleIncidentNote()" aria-expanded="false" aria-controls="incidentNoteBody">
+          <span class="incident-note-icon" aria-hidden="true">↗</span>
+          <span>
+            <span class="incident-note-title" id="incidentNoteTitle">今後に残す</span>
+            <span class="incident-note-sub" id="incidentNoteSub">起きたことを、次の小さな改善につなげる</span>
+          </span>
+          <span class="incident-note-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="incident-note-body" id="incidentNoteBody">
+          <div class="incident-note-fields">
+            <label class="incident-field">
+              <span class="incident-field-label"><strong id="incidentObservationLabel">起きたこと</strong><span id="incidentObservationHint">評価せず、事実だけ</span></span>
+              <textarea id="incidentObservation" placeholder="例：気づくと長い時間だらだらしていた" oninput="handleIncidentInput()" onblur="handleIncidentBlur()"></textarea>
+            </label>
+            <label class="incident-field">
+              <span class="incident-field-label"><strong id="incidentHypothesisLabel">考えられる理由</strong><span id="incidentHypothesisHint">複数の仮説のままでOK</span></span>
+              <textarea id="incidentHypothesis" placeholder="例：書かなかったから流された／だらだらしていたから書けなかった" oninput="handleIncidentInput()" onblur="handleIncidentBlur()"></textarea>
+            </label>
+            <label class="incident-field">
+              <span class="incident-field-label"><strong id="incidentActionLabel">次に試すこと</strong><span id="incidentActionHint">小さく、実行できる形で</span></span>
+              <textarea id="incidentAction" placeholder="例：翌朝、最初の飲み物の前に3分だけ書く" oninput="handleIncidentInput()" onblur="handleIncidentBlur()"></textarea>
+            </label>
+            <div class="incident-note-foot" id="incidentNoteFoot">原因を今すぐ一つに決めなくて大丈夫です。試した結果は、次の日記で更新できます。</div>
+          </div>
+        </div>
+      </section>
       <div class="mood-journal-actions">
         <button class="mood-journal-btn dhist-btn" id="diaryUndoBtn" onclick="diaryUndo()" disabled aria-label="1つ戻す"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M9 14L4 9l5-5"></path><path d="M4 9h11a5 5 0 0 1 0 10h-1"></path></svg></button>
         <button class="mood-journal-btn dhist-btn" id="diaryRedoBtn" onclick="diaryRedo()" disabled aria-label="1つ進む"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M15 14l5-5-5-5"></path><path d="M20 9H9a5 5 0 0 0 0 10h1"></path></svg></button>
@@ -6124,6 +6203,7 @@
     if (typeof renderCalendar === 'function') renderCalendar(); // 週比較・EXP推移グラフの再描画
     if (typeof updateMoodTagToggleUI === 'function') updateMoodTagToggleUI();
     if (typeof updateMoodStatus === 'function') updateMoodStatus();
+    if (typeof updateIncidentNoteLanguage === 'function') updateIncidentNoteLanguage();
   }
   async function loadLanguage() {
     try {
@@ -11090,6 +11170,100 @@
   let currentMoodTag = null; // 今選んでいる気分タグ(v35で追加。great/good/neutral/low/rough または null)
   let editingMoodEntryId = null; // 既存エントリーを編集中ならそのid、新規作成中ならnull
 
+  function normalizeIncidentNote(value) {
+    const source = value && typeof value === 'object' ? value : {};
+    return {
+      observation: String(source.observation || '').slice(0, 5000),
+      hypothesis: String(source.hypothesis || '').slice(0, 5000),
+      action: String(source.action || '').slice(0, 5000),
+    };
+  }
+  function incidentNoteHasContent(value) {
+    const note = normalizeIncidentNote(value);
+    return !!(note.observation.trim() || note.hypothesis.trim() || note.action.trim());
+  }
+  function readIncidentNoteFields() {
+    return normalizeIncidentNote({
+      observation: document.getElementById('incidentObservation')?.value || '',
+      hypothesis: document.getElementById('incidentHypothesis')?.value || '',
+      action: document.getElementById('incidentAction')?.value || '',
+    });
+  }
+  function setIncidentNoteFields(value) {
+    const note = normalizeIncidentNote(value);
+    const observation = document.getElementById('incidentObservation');
+    const hypothesis = document.getElementById('incidentHypothesis');
+    const action = document.getElementById('incidentAction');
+    if (observation) observation.value = note.observation;
+    if (hypothesis) hypothesis.value = note.hypothesis;
+    if (action) action.value = note.action;
+    syncIncidentNoteUI(note);
+  }
+  function syncIncidentNoteUI(value) {
+    const shell = document.getElementById('incidentNote');
+    const title = document.getElementById('incidentNoteTitle');
+    if (!shell) return;
+    const hasContent = incidentNoteHasContent(value || readIncidentNoteFields());
+    shell.classList.toggle('has-content', hasContent);
+    if (title) title.textContent = currentLang === 'en'
+      ? (hasContent ? 'Lesson saved' : 'Save for next time')
+      : currentLang === 'ar'
+        ? (hasContent ? 'تم حفظ الملاحظة' : 'احفظ للمستقبل')
+        : (hasContent ? '改善メモあり' : '今後に残す');
+  }
+  function toggleIncidentNote(forceOpen) {
+    playUIClick();
+    const shell = document.getElementById('incidentNote');
+    const toggle = document.getElementById('incidentNoteToggle');
+    if (!shell) return;
+    const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !shell.classList.contains('open');
+    shell.classList.toggle('open', shouldOpen);
+    if (toggle) toggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    if (shouldOpen && !incidentNoteHasContent(readIncidentNoteFields())) {
+      setTimeout(() => document.getElementById('incidentObservation')?.focus({ preventScroll: true }), 180);
+    }
+  }
+  function incidentNotePlainText(value) {
+    const note = normalizeIncidentNote(value);
+    const labels = currentLang === 'en'
+      ? ['What happened', 'Possible reasons', 'What to try next']
+      : currentLang === 'ar'
+        ? ['ما حدث', 'أسباب محتملة', 'ما سأجربه لاحقًا']
+        : ['起きたこと', '考えられる理由', '次に試すこと'];
+    const lines = [];
+    if (note.observation.trim()) lines.push(`${labels[0]}：${note.observation.trim()}`);
+    if (note.hypothesis.trim()) lines.push(`${labels[1]}：${note.hypothesis.trim()}`);
+    if (note.action.trim()) lines.push(`${labels[2]}：${note.action.trim()}`);
+    return lines.join('\n');
+  }
+  function updateIncidentNoteLanguage() {
+    const copy = currentLang === 'en' ? {
+      sub: 'Turn what happened into one small improvement', observation: 'What happened', observationHint: 'Facts, without judgment',
+      hypothesis: 'Possible reasons', hypothesisHint: 'Keep more than one hypothesis', action: 'What to try next', actionHint: 'Small and actionable',
+      observationPh: 'e.g. I drifted for much longer than I intended', hypothesisPh: 'e.g. I skipped journaling / I could not journal because I was already drifting',
+      actionPh: 'e.g. Write for three minutes before my first drink tomorrow', foot: 'You do not have to decide on one cause now. Update the note after you try the next step.'
+    } : currentLang === 'ar' ? {
+      sub: 'حوّل ما حدث إلى تحسين صغير', observation: 'ما حدث', observationHint: 'الوقائع فقط، دون حكم',
+      hypothesis: 'أسباب محتملة', hypothesisHint: 'يمكن إبقاء أكثر من فرضية', action: 'ما سأجربه لاحقًا', actionHint: 'خطوة صغيرة قابلة للتنفيذ',
+      observationPh: 'مثال: قضيت وقتًا أطول مما أردت بلا تركيز', hypothesisPh: 'مثال: لم أكتب يومياتي / لم أستطع الكتابة لأنني كنت مشتتًا',
+      actionPh: 'مثال: أكتب ثلاث دقائق صباحًا', foot: 'لا يلزم حسم السبب الآن. حدّث الملاحظة بعد التجربة.'
+    } : {
+      sub: '起きたことを、次の小さな改善につなげる', observation: '起きたこと', observationHint: '評価せず、事実だけ',
+      hypothesis: '考えられる理由', hypothesisHint: '複数の仮説のままでOK', action: '次に試すこと', actionHint: '小さく、実行できる形で',
+      observationPh: '例：気づくと長い時間だらだらしていた', hypothesisPh: '例：書かなかったから流された／だらだらしていたから書けなかった',
+      actionPh: '例：翌朝、最初の飲み物の前に3分だけ書く', foot: '原因を今すぐ一つに決めなくて大丈夫です。試した結果は、次の日記で更新できます。'
+    };
+    const values = {
+      incidentNoteSub: copy.sub, incidentObservationLabel: copy.observation, incidentObservationHint: copy.observationHint,
+      incidentHypothesisLabel: copy.hypothesis, incidentHypothesisHint: copy.hypothesisHint,
+      incidentActionLabel: copy.action, incidentActionHint: copy.actionHint, incidentNoteFoot: copy.foot,
+    };
+    Object.entries(values).forEach(([id, value]) => { const el = document.getElementById(id); if (el) el.textContent = value; });
+    const placeholders = { incidentObservation: copy.observationPh, incidentHypothesis: copy.hypothesisPh, incidentAction: copy.actionPh };
+    Object.entries(placeholders).forEach(([id, value]) => { const el = document.getElementById(id); if (el) el.placeholder = value; });
+    syncIncidentNoteUI(readIncidentNoteFields());
+  }
+
   async function loadMoodJournal() {
     try {
       const saved = await window.storage.get('quest-mood-journal-v1');
@@ -11131,6 +11305,7 @@
       document.getElementById('moodJournalText').value = entry.text || '';
       currentMoodImages = entry.images ? [...entry.images] : [];
       currentMoodTag = entry.mood || null;
+      setIncidentNoteFields(entry.incident);
       moodLastSavedText = entry.text || '';
       moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
     } else {
@@ -11138,6 +11313,7 @@
       document.getElementById('moodJournalText').value = '◇今日の目標\n\n\n◇今日の振り返り\n\n\n◇その他\n\n';
       currentMoodImages = [];
       currentMoodTag = null;
+      setIncidentNoteFields(null);
       moodLastSavedText = '';
       moodLastSavedImagesJson = '[]';
     }
@@ -11146,6 +11322,9 @@
     renderMoodImageThumbs();
     document.getElementById('moodJournalSavedInfo').textContent = '';
     document.getElementById('moodResetBtn').style.display = 'none';
+    const incidentOpen = incidentNoteHasContent(readIncidentNoteFields());
+    document.getElementById('incidentNote')?.classList.toggle('open', incidentOpen);
+    document.getElementById('incidentNoteToggle')?.setAttribute('aria-expanded', incidentOpen ? 'true' : 'false');
     moodPrevText = document.getElementById('moodJournalText').value;
     resetDiaryHistory(moodPrevText);
     renderMoodEntryList();
@@ -11194,8 +11373,9 @@
       (moodJournalData[key] || []).forEach(e => {
         if (!e) return;
         const hasImg = !!(e.images && e.images.length);
-        if (!e.text && !hasImg) return;
-        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', hasImg });
+        const incidentText = incidentNotePlainText(e.incident);
+        if (!e.text && !hasImg && !incidentText) return;
+        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', incidentText, hasImg });
       });
     });
     items.sort((a, b) => (b.y - a.y) || (b.m - a.m) || (b.d - a.d) || b.time.localeCompare(a.time));
@@ -11205,15 +11385,15 @@
       return;
     }
     box.innerHTML = recent.map(i => {
-      const full = i.text || (i.hasImg ? '（写真）' : '');
+      const full = i.text || i.incidentText || (i.hasImg ? '（写真）' : '');
       const longEnough = (full.split('\n').length > 6) || (full.length > 140); // 6行を超えそうな時だけ「続きを読む」
       const more = longEnough ? `<span class="dhi-more" onclick="this.closest('.dhi-row').classList.toggle('open')"></span>` : '';
       return `<div class="dhi-row">
         <div class="dhi-date"><span class="dhi-dn">${i.d}</span><span class="dhi-wd">${i.wd}</span></div>
         <div class="dhi-body">
           <div class="dhi-pv">${escapeHtml(full)}</div>
-          <div class="dhi-full">${escapeHtml(full)}</div>
-          <div class="dhi-meta">${i.y}/${i.m}${i.time ? ' ・ ' + i.time : ''}${i.hasImg ? ' ・ 📷' : ''}</div>
+          <div class="dhi-full">${escapeHtml(i.text || (i.hasImg ? '（写真）' : ''))}${i.incidentText ? `<div class="incident-history">↗ 改善メモ\n${escapeHtml(i.incidentText)}</div>` : ''}</div>
+          <div class="dhi-meta">${i.y}/${i.m}${i.time ? ' ・ ' + i.time : ''}${i.hasImg ? ' ・ 📷' : ''}${i.incidentText ? ' ・ ↗ 改善メモ' : ''}</div>
           ${more}
         </div>
       </div>`;
@@ -11248,6 +11428,10 @@
     document.getElementById('moodJournalText').value = entry.text || '';
     currentMoodImages = entry.images ? [...entry.images] : [];
     currentMoodTag = entry.mood || null;
+    setIncidentNoteFields(entry.incident);
+    const incidentOpen = incidentNoteHasContent(entry.incident);
+    document.getElementById('incidentNote')?.classList.toggle('open', incidentOpen);
+    document.getElementById('incidentNoteToggle')?.setAttribute('aria-expanded', incidentOpen ? 'true' : 'false');
     document.querySelectorAll('.mood-tag-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mood === currentMoodTag);
     });
@@ -11269,6 +11453,9 @@
     document.getElementById('moodJournalText').value = '';
     currentMoodImages = [];
     currentMoodTag = null;
+    setIncidentNoteFields(null);
+    document.getElementById('incidentNote')?.classList.remove('open');
+    document.getElementById('incidentNoteToggle')?.setAttribute('aria-expanded', 'false');
     document.querySelectorAll('.mood-tag-btn').forEach(btn => btn.classList.remove('active'));
     updateMoodTagToggleUI();
     renderMoodImageThumbs();
@@ -11411,7 +11598,8 @@
 
   async function copyForAIConsult() {
     const text = document.getElementById('moodJournalText').value.trim();
-    if (!text) {
+    const incidentText = incidentNotePlainText(readIncidentNoteFields());
+    if (!text && !incidentText) {
       showToast(currentLang === 'en' ? 'Write something first' : '先に何か書いてみてください');
       return;
     }
@@ -11424,8 +11612,8 @@
     if (bedtime && waketime) sleepLine = `\n睡眠: ${bedtime} 〜 ${waketime}`;
 
     const prompt = (currentLang === 'en')
-      ? `Here is my journal from ${dateLabel}. First note one thing I did well, then point out anything worth improving — honestly, but kindly and constructively. End with one small step I could take next. Keep it brief.\n\n[${dateLabel}] (streak ${streak})${sleepLine}\n${text}`
-      : `以下は${dateLabel}の自分の記録です。まず良かった点にふれ、その上で気づいた課題を率直に、でも前向きに指摘してください。最後に、次に活かせそうな小さな一歩を一つ添えてください。簡潔にお願いします。\n\n【${dateLabel}の記録】(連続記録${streak}日目)${sleepLine}\n${text}`;
+      ? `Here is my journal from ${dateLabel}. First note one thing I did well, then point out anything worth improving — honestly, but kindly and constructively. Treat the lesson note as hypotheses rather than proven causes. End with one small experiment I could try next. Keep it brief.\n\n[${dateLabel}] (streak ${streak})${sleepLine}\n${text || '(No diary text)'}${incidentText ? `\n\n[Lesson note]\n${incidentText}` : ''}`
+      : `以下は${dateLabel}の自分の記録です。まず良かった点にふれ、その上で気づいた課題を率直に、でも前向きに指摘してください。改善メモの原因候補は断定せず仮説として扱い、最後に次回試せる小さな実験を一つ提案してください。簡潔にお願いします。\n\n【${dateLabel}の記録】(連続記録${streak}日目)${sleepLine}\n${text || '（日記本文なし）'}${incidentText ? `\n\n【改善メモ】\n${incidentText}` : ''}`;
 
     try {
       await navigator.clipboard.writeText(prompt);
@@ -11464,14 +11652,15 @@
       (moodJournalData[key] || []).forEach(e => {
         if (!e) return;
         const hasImg = !!(e.images && e.images.length);
-        if (!e.text && !hasImg) return;
-        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', mood: e.mood || '', hasImg });
+        const incidentText = incidentNotePlainText(e.incident);
+        if (!e.text && !hasImg && !incidentText) return;
+        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', incidentText, mood: e.mood || '', hasImg });
       });
     });
     items.sort((a, b) => (b.y - a.y) || (b.m - a.m) || (b.d - a.d) || b.time.localeCompare(a.time));
     let filtered = diaryHistoryFilter === 'all' ? items : items.filter(i => i.mood === diaryHistoryFilter);
     const dhq = (document.getElementById('dhSearch') ? document.getElementById('dhSearch').value : '').trim().toLowerCase();
-    if (dhq) filtered = filtered.filter(i => (i.text || '').toLowerCase().includes(dhq));
+    if (dhq) filtered = filtered.filter(i => `${i.text || ''}\n${i.incidentText || ''}`.toLowerCase().includes(dhq));
     if (filtered.length === 0) {
       box.innerHTML = `<div class="dh-empty">${dhq ? (currentLang === 'en' ? 'No matches' : '見つかりませんでした') : (currentLang === 'en' ? 'No entries yet' : 'まだ日記がありません')}</div>`;
       return;
@@ -11482,14 +11671,14 @@
       if (ym !== dhCurYM) { dhCurYM = ym; dhHtml += `<div class="dh-month">${ym}</div>`; }
       const emoji = i.mood && MOOD_TAG_EMOJI[i.mood] ? MOOD_TAG_EMOJI[i.mood] : '';
       const dot = `<span class="dh-dot" style="background:${i.mood ? (DOT[i.mood] || '#C3BDB0') : 'transparent'}"></span>`;
-      const preview = escapeHtml((i.text || '').replace(/\s+/g, ' ').trim()) || (i.hasImg ? '（写真）' : '');
+      const preview = escapeHtml((i.text || i.incidentText || '').replace(/\s+/g, ' ').trim()) || (i.hasImg ? '（写真）' : '');
       dhHtml += `<div class="dh-row" onclick="this.classList.toggle('open')">
         <div class="dh-date"><span class="dh-dn">${i.d}</span><span class="dh-wd">${i.wd}</span></div>
         ${dot}
         <div class="dh-body">
           <div class="dh-pv">${preview}</div>
-          <div class="dh-full">${escapeHtml(i.text || '')}</div>
-          <div class="dh-meta">${i.time ? i.time : ''}${i.hasImg ? ' ・ 📷' : ''}</div>
+          <div class="dh-full">${escapeHtml(i.text || '')}${i.incidentText ? `<div class="incident-history">↗ 改善メモ\n${escapeHtml(i.incidentText)}</div>` : ''}</div>
+          <div class="dh-meta">${i.time ? i.time : ''}${i.hasImg ? ' ・ 📷' : ''}${i.incidentText ? ' ・ ↗ 改善メモ' : ''}</div>
         </div>
         <span class="dh-emoji">${emoji}</span>
       </div>`;
@@ -11514,7 +11703,7 @@
     moodJournalAutosaveTimer = setTimeout(() => {
       const text = document.getElementById('moodJournalText').value;
       // 空欄・気分タグも画像も無い状態では、自動保存しない(「内容が空です」を毎回出さないため)
-      if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag) return;
+      if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
       saveMoodJournal(true); // 自動保存扱い(ボタンの「保存しました」演出は省略)
     }, 2000);
   }
@@ -11522,13 +11711,34 @@
     // 手動保存ボタンが無いので、入力欄から離れた瞬間、2秒待たずに即座に保存する
     clearTimeout(moodJournalAutosaveTimer);
     const text = document.getElementById('moodJournalText').value;
-    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag) return;
+    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
+    saveMoodJournal(true);
+  }
+  function handleIncidentInput() {
+    const incident = readIncidentNoteFields();
+    syncIncidentNoteUI(incident);
+    const info = document.getElementById('moodJournalSavedInfo');
+    if (info && incidentNoteHasContent(incident)) {
+      info.innerHTML = '<span class="saving-dots"><i></i><i></i><i></i></span>保存中…';
+    }
+    clearTimeout(moodJournalAutosaveTimer);
+    moodJournalAutosaveTimer = setTimeout(() => {
+      const text = document.getElementById('moodJournalText').value;
+      if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
+      saveMoodJournal(true);
+    }, 1200);
+  }
+  function handleIncidentBlur() {
+    clearTimeout(moodJournalAutosaveTimer);
+    const text = document.getElementById('moodJournalText').value;
+    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
     saveMoodJournal(true);
   }
   async function saveMoodJournal(isAutosave) {
     const key = logicalDateKey(trustedNow);
     const text = document.getElementById('moodJournalText').value;
-    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag) {
+    const incident = readIncidentNoteFields();
+    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(incident)) {
       showToast('内容が空です');
       return;
     }
@@ -11540,13 +11750,13 @@
       // 既存エントリーの更新
       const idx = moodJournalData[key].findIndex(e => e.id === editingMoodEntryId);
       if (idx !== -1) {
-        moodJournalData[key][idx] = { ...moodJournalData[key][idx], text, images: [...currentMoodImages], time: nowTime, mood: currentMoodTag };
+        moodJournalData[key][idx] = { ...moodJournalData[key][idx], text, images: [...currentMoodImages], time: nowTime, mood: currentMoodTag, incident };
       }
     } else {
       // 新規エントリーの追加(これが「保存したら過去データになる」の実体)
       const newEntry = {
         id: 'mood_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-        time: nowTime, text, images: [...currentMoodImages], mood: currentMoodTag,
+        time: nowTime, text, images: [...currentMoodImages], mood: currentMoodTag, incident,
       };
       moodJournalData[key].push(newEntry);
       editingMoodEntryId = newEntry.id;
@@ -13197,11 +13407,13 @@
           `<img src="${src}" style="width:56px; height:56px; object-fit:cover; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); margin-top:6px; margin-right:4px;">`
         ).join('');
         const moodEmoji = entry.mood && MOOD_TAG_EMOJI[entry.mood] ? MOOD_TAG_EMOJI[entry.mood] + ' ' : '';
+        const incidentText = incidentNotePlainText(entry.incident);
         const textId = `dayDetailMoodEntryText_${i}`;
         return `<div style="margin-bottom:10px;">
           <div style="font-family:'Orbitron',sans-serif; font-size:9.5px; color:var(--cyan); margin-bottom:2px;">${entry.time || ''}</div>
           <div id="${textId}" class="clamp-text">${moodEmoji}${escapeHtml(entry.text || '')}</div>
           <span class="clamp-expand-btn" onclick="document.getElementById('${textId}').classList.toggle('clamp-text'); this.textContent = this.textContent === '続きを読む' ? '短く表示' : '続きを読む';">続きを読む</span>
+          ${incidentText ? `<div class="incident-history">↗ 改善メモ\n${escapeHtml(incidentText)}</div>` : ''}
           <div>${imgs}</div>
         </div>`;
       }).join('');
@@ -13228,7 +13440,10 @@
 
     const moodEntries = moodJournalData[key] || [];
     const moodText = moodEntries.length
-      ? moodEntries.map(e => `[${e.time || ''}] ${escapeHtml(e.text || '')}`).join('\n')
+      ? moodEntries.map(e => {
+          const incidentText = incidentNotePlainText(e.incident);
+          return `[${e.time || ''}] ${e.text || '（本文なし）'}${incidentText ? `\n【改善メモ】\n${incidentText}` : ''}`;
+        }).join('\n')
       : 'なし';
 
     const events = eventsForDate(key);
