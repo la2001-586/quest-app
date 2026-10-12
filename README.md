@@ -1,6 +1,8 @@
 # Daily Station
 
-Daily Station is a personal routine, task, calendar, diary, alarm, and memo app. The web app and the Capacitor Android/iOS shells use the same checked web assets.
+Daily Station brings routines, tasks, plans, and journals into one personal space, connecting record, reflection, and the next action. The web app and the Capacitor Android/iOS shells use the same checked web assets.
+
+The in-app **About & Tutorial** introduces the core workflow, explains the intended role of each feature, and labels the strength and limits of its supporting evidence. It is available at any time from Options → How to Use / Support.
 
 ## Development
 
@@ -19,6 +21,10 @@ pnpm run verify:native
 ## Data and privacy
 
 User-created tasks, diary entries, photos, and settings are stored locally on the device. Weather is optional and sends the location selected by the user to the weather and reverse-geocoding providers described in the [privacy policy](privacy.html).
+
+## Evidence and limitations
+
+The [feature evidence register](evidence.html) maps every current feature to peer-reviewed research, grades how directly the research applies, and states where Daily Station makes no efficacy claim. Daily Station itself has not yet been evaluated in a randomized controlled trial.
 
 ## Support
 

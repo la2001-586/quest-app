@@ -7,6 +7,7 @@ const webAssets = [
   'index.html',
   'privacy.html',
   'terms.html',
+  'evidence.html',
   'manifest.json',
   'service-worker.js',
   'apple-touch-icon.png',

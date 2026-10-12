@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Daily Station 機能と科学的根拠</title>
+  <style>
+    :root{--ink:#1b2430;--muted:#647080;--line:#dfe6ec;--paper:#f7fafb;--card:rgba(255,255,255,.8);--cyan:#188a8f;--violet:#7651b2;--amber:#a96912;--red:#a34545}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 12% 2%,rgba(89,215,216,.13),transparent 31rem),radial-gradient(circle at 91% 12%,rgba(161,105,219,.1),transparent 28rem),var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;line-height:1.75}
+    main{max-width:1060px;margin:0 auto;padding:54px 22px 90px}a{color:#126e86;text-underline-offset:3px}.eyebrow{font-size:.73rem;letter-spacing:.16em;color:var(--cyan);font-weight:800}.hero{padding:30px;border:1px solid rgba(41,113,125,.18);border-radius:26px;background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(239,249,249,.58));box-shadow:0 18px 50px rgba(28,55,70,.08)}h1{font-size:clamp(1.75rem,4.5vw,3rem);line-height:1.25;margin:.35rem 0 .8rem;letter-spacing:-.03em}.lead{font-size:1rem;max-width:780px;color:#40505c}.stamp{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;font-size:.78rem;color:var(--muted)}.notice{margin:22px 0 36px;padding:17px 20px;border-left:4px solid var(--amber);background:rgba(255,244,217,.72);border-radius:4px 14px 14px 4px}.notice strong{color:#6e460b}h2{font-size:1.35rem;margin:42px 0 14px}h3{font-size:1rem;margin:0 0 7px}.legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.legend>div,.method-card{padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--card)}.grade{display:inline-flex;align-items:center;justify-content:center;min-width:2.1rem;height:1.55rem;border-radius:999px;font-size:.7rem;font-weight:900;color:white;margin-right:7px}.s1{background:#277d63}.s2{background:#447aa9}.mixed{background:#9a6a20}.utility{background:#68717c}.legend p,.method-card p{font-size:.8rem;color:var(--muted);margin:.4rem 0 0}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.72)}table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:15px 14px;vertical-align:top;text-align:left;border-bottom:1px solid var(--line)}th{position:sticky;top:0;background:#edf5f6;font-size:.75rem;letter-spacing:.04em;color:#41515d}td{font-size:.83rem}tr:last-child td{border-bottom:0}.feature{font-weight:800;white-space:nowrap}.claim{color:#354654}.limit{color:#69747f}.ref{font-size:.74rem;white-space:nowrap}.methods{display:grid;grid-template-columns:1fr 1fr;gap:12px}.refs{counter-reset:ref;display:grid;gap:10px}.refs li{padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:.82rem}.refs em{color:var(--muted)}.change-log{padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.change-log li{margin:.45rem 0;font-size:.85rem}.back{display:inline-flex;margin-top:34px;padding:10px 15px;border:1px solid var(--line);border-radius:999px;text-decoration:none;background:var(--card)}footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);font-size:.75rem;color:var(--muted)}
+    @media(max-width:760px){main{padding:28px 14px 70px}.hero{padding:22px}.legend,.methods{grid-template-columns:1fr}.table-wrap{margin-inline:-2px}}
+    @media(prefers-color-scheme:dark){:root{--ink:#edf4f6;--muted:#aab7c0;--line:#34414a;--paper:#101519;--card:rgba(24,31,37,.82)}body{background:radial-gradient(circle at 12% 2%,rgba(58,175,179,.15),transparent 31rem),radial-gradient(circle at 91% 12%,rgba(133,84,181,.14),transparent 28rem),var(--paper)}.hero{background:linear-gradient(145deg,rgba(33,43,50,.95),rgba(22,35,39,.78));border-color:#354c54}.lead,.claim{color:#ced9df}.notice{background:rgba(105,75,17,.25)}.notice strong{color:#ffd18a}th{background:#1d2b31;color:#c6d5da}a{color:#75d6e7}.limit{color:#aab7c0}}
+    @media print{body{background:white;color:#111}main{max-width:none;padding:15mm}.hero,.table-wrap,.method-card,.refs li{box-shadow:none;background:white}.back{display:none}th{position:static}}
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="eyebrow">DAILY STATION · EVIDENCE REGISTER</div>
+    <h1>機能と科学的根拠</h1>
+    <p class="lead">Daily Station の各機能が、どの研究知見を参考にし、どこから先は未検証なのかを公開します。都合のよい論文だけを「証明」として並べず、効果が混在する機能や単なるデザイン上の選択も区別します。</p>
+    <div class="stamp"><span>監査対象：v0.4.25 系の現行機能</span><span>最終レビュー：2026年10月11日</span><span>資料版：1.0</span></div>
+  </section>
+
+  <div class="notice"><strong>最重要の前提：</strong>Daily Station 自体の有効性を検証した臨床試験・ランダム化比較試験は、現時点ではありません。以下は「機能の背景となる一般的な研究」との対応であり、このアプリを使えば同じ効果が得られるという保証ではありません。医療、診断、治療を目的とするアプリではありません。</div>
+
+  <h2>根拠レベルの読み方</h2>
+  <section class="legend">
+    <div><h3><span class="grade s1">S1</span>比較的直接</h3><p>メタ分析や複数の実験が、機能の中心的な仕組みに近い介入を支持。</p></div>
+    <div><h3><span class="grade s2">S2</span>間接的に支持</h3><p>関連する仕組みは支持されるが、Daily Station の具体的UIは未検証。</p></div>
+    <div><h3><span class="grade mixed">M</span>限定的・混在</h3><p>効果が条件依存、研究数が少ない、または不利益も示される。</p></div>
+    <div><h3><span class="grade utility">U</span>効能を主張しない</h3><p>利便性・好み・演出の機能。科学的な行動改善効果は主張しない。</p></div>
+  </section>
+
+  <h2>全機能監査</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>機能</th><th>レベル</th><th>研究と結び付く部分</th><th>言えること／言えないこと</th><th>出典</th></tr></thead>
+      <tbody>
+        <tr><td class="feature">日課・習慣チェック</td><td><span class="grade s1">S1</span></td><td class="claim">進捗を記録する介入は、138研究・19,951人のメタ分析で目標達成を促進（平均 d=0.40）。同じ状況での反復は習慣形成と関連する。</td><td class="limit">チェックしただけで習慣になるわけではない。形成速度には大きな個人差がある。</td><td class="ref"><a href="#r1">[1]</a> <a href="#r2">[2]</a></td></tr>
+        <tr><td class="feature">進捗リング・履歴・週比較</td><td><span class="grade s1">S1</span></td><td class="claim">目標への進み具合を目に見える形で記録する「進捗モニタリング」に対応する。</td><td class="limit">可視化の形状やアニメーション自体の優位性は未検証。</td><td class="ref"><a href="#r1">[1]</a></td></tr>
+        <tr><td class="feature">連続日数（ストリーク）</td><td><span class="grade mixed">M</span></td><td class="claim">連続記録が保たれていると、その行動を続ける判断を後押しし得る。</td><td class="limit">途切れた時は逆効果になり得る。休養日の保護・修復可能性を残す設計が重要。</td><td class="ref"><a href="#r3">[3]</a></td></tr>
+        <tr><td class="feature">タスク・カレンダー・予定</td><td><span class="grade s2">S2</span></td><td class="claim">未完了目標を具体的な計画にすると認知的干渉が減る実験結果がある。時間管理は成果・ウェルビーイングと中程度に関連する。</td><td class="limit">カレンダーへ登録するだけで実行率が上がるとは限らない。多くの時間管理研究は相関研究を含む。</td><td class="ref"><a href="#r4">[4]</a> <a href="#r5">[5]</a></td></tr>
+        <tr><td class="feature">次の一歩・全集中モード</td><td><span class="grade s1">S1</span></td><td class="claim">「いつ・どこで・何をするか」を if–then 形式で具体化する実行意図は、94検定のメタ分析で目標達成に中～大の効果（d=0.65）。</td><td class="limit">現在の自由入力は厳密な if–then テンプレートではないため、効果量をそのまま当てはめられない。</td><td class="ref"><a href="#r6">[6]</a></td></tr>
+        <tr><td class="feature">ポモドーロ</td><td><span class="grade mixed">M</span></td><td class="claim">短い休憩は活力向上（d=0.36）・疲労低減（d=0.35）に小さな効果。休憩を挟む発想には根拠がある。</td><td class="limit">総合的な作業成績への効果は非有意（d=0.16）。25分＋5分が最適という根拠はなく、自己調整休憩が合う人もいる。</td><td class="ref"><a href="#r7">[7]</a> <a href="#r8">[8]</a></td></tr>
+        <tr><td class="feature">休養日・「サボる」</td><td><span class="grade s2">S2</span></td><td class="claim">心理的離脱、リラックス、自分で休み方を選べる感覚は、回復経験とウェルビーイングに関連する。</td><td class="limit">このボタン自体に回復効果があるわけではない。長期的な体調不良の評価・治療機能ではない。</td><td class="ref"><a href="#r9">[9]</a></td></tr>
+        <tr><td class="feature">アラーム・リマインダー</td><td><span class="grade s2">S2</span></td><td class="claim">予定した状況と行動を結び付ける補助として利用できる。</td><td class="limit">通知そのものの効果は内容・頻度・利用者で変わる。計算問題は覚醒度の測定ではない。</td><td class="ref"><a href="#r6">[6]</a></td></tr>
+        <tr><td class="feature">日記</td><td><span class="grade s2">S2</span></td><td class="claim">感情や意味のある経験を書く介入は、146ランダム化研究のメタ分析で小さい平均効果（r=.075）。特定集団の予備的RCTでも肯定的感情ジャーナリングが検討されている。</td><td class="limit">Daily Station の自由日記は研究プロトコルと同一ではない。効果は小さく、誰にでも有効とは限らない。</td><td class="ref"><a href="#r10">[10]</a> <a href="#r11">[11]</a></td></tr>
+        <tr><td class="feature">気分タグ</td><td><span class="grade mixed">M</span></td><td class="claim">日常の状態を反復記録するEMA（経験サンプリング）は、状態把握や研究測定に使われる。</td><td class="limit">気分を記録するだけで改善するとは証明されていない。診断・スクリーニングではない。</td><td class="ref"><a href="#r12">[12]</a></td></tr>
+        <tr><td class="feature">睡眠時刻の記録</td><td><span class="grade s2">S2</span></td><td class="claim">睡眠日誌は睡眠の前向き自己記録として標準化され、臨床・研究で広く使われる。</td><td class="limit">現機能は就寝・起床時刻の簡易版。睡眠段階、睡眠効率、疾患、最適起床時刻を判定しない。</td><td class="ref"><a href="#r13">[13]</a></td></tr>
+        <tr><td class="feature">レポート</td><td><span class="grade s1">S1</span></td><td class="claim">事後レビュー／デブリーフの46標本・2,136人のメタ分析では、適切に構造化された振り返りが対照群より平均約25%高い有効性（d=0.67）。</td><td class="limit">業務・訓練研究が中心。個人の日常記録へ同じ効果量を直接適用はできないため、「事実→仮説→次の行動」の補助として位置付ける。</td><td class="ref"><a href="#r14">[14]</a></td></tr>
+        <tr><td class="feature">EXP・レベル・バッジ・コンボ</td><td><span class="grade mixed">M</span></td><td class="claim">ゲーム要素は一部領域で参加や行動を促す可能性がある。</td><td class="limit">研究の質と結果は不均一で、Daily Station の数値設計は未検証。健康改善や生産性向上は保証しない。</td><td class="ref"><a href="#r15">[15]</a> <a href="#r16">[16]</a></td></tr>
+        <tr><td class="feature">臨時クエスト・ランダム報酬</td><td><span class="grade utility">U</span></td><td class="claim">マンネリを避けるための任意の演出。</td><td class="limit">現仕様を支持する直接研究はない。過度な誘引を避け、有料化・射幸性・損失罰は設けない。</td><td class="ref">直接根拠なし</td></tr>
+        <tr><td class="feature">植物・しずく・コレクション</td><td><span class="grade utility">U</span></td><td class="claim">達成を視覚化し、アプリを使う楽しさを作るデザイン。</td><td class="limit">植物演出そのものが習慣形成を改善するという直接根拠はない。報酬を目的化しすぎない設計が必要。</td><td class="ref"><a href="#r15">[15]</a></td></tr>
+        <tr><td class="feature">BGM</td><td><span class="grade mixed">M</span></td><td class="claim">気分や好みへの影響はあり得るが、認知課題の成績への研究結果は一貫しない。</td><td class="limit">集中力向上をうたわない。課題・音量・歌詞・個人差により妨げにもなり得るため、オフにできる。</td><td class="ref"><a href="#r17">[17]</a></td></tr>
+        <tr><td class="feature">備忘録・クイックメモ・写真</td><td><span class="grade utility">U</span></td><td class="claim">情報を外部化して後から参照するための保存機能。</td><td class="limit">記憶力・学習効果を高めるとは主張しない。写真による実績確認は自己記録であり第三者認証ではない。</td><td class="ref">効能の主張なし</td></tr>
+        <tr><td class="feature">AI相談用コピー</td><td><span class="grade utility">U</span></td><td class="claim">日記とレポートを、利用者が選んだ外部サービスへ貼り付けやすくする機能。</td><td class="limit">AIへ自動送信しない。回答の正確性・安全性を保証せず、医療判断には使えない。</td><td class="ref">効能の主張なし</td></tr>
+        <tr><td class="feature">天気・テーマ・言語・バックアップ</td><td><span class="grade utility">U</span></td><td class="claim">状況表示、アクセシビリティ、好み、データ保全のための基盤機能。</td><td class="limit">行動変容効果を主張しない。天気以外の主要データは原則端末内保存。</td><td class="ref">効能の主張なし</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>監査方法と限界</h2>
+  <section class="methods">
+    <div class="method-card"><h3>対象</h3><p>現行画面に存在する日課、タスク、カレンダー、日記、レポート、睡眠、集中、休養、通知、ゲーム要素、植物、音、メモ、データ機能を対象にした。見た目だけの差分はまとめて評価。</p></div>
+    <div class="method-card"><h3>優先した資料</h3><p>査読済みメタ分析、システマティックレビュー、ランダム化・実験研究、標準化論文を優先。ブログやアプリ事業者の宣伝は根拠に採用していない。</p></div>
+    <div class="method-card"><h3>因果関係</h3><p>相関研究は因果効果として扱わない。別領域の研究をUIへ応用した場合は「間接」と明示した。</p></div>
+    <div class="method-card"><h3>更新</h3><p>機能または主要研究が変わった時に表とレビュー日を更新する。論文の撤回・訂正が確認された場合も評価を改める。</p></div>
+  </section>
+
+  <h2>設計へ反映する原則</h2>
+  <div class="change-log">
+    <ul>
+      <li>ポモドーロの25分＋5分を「医学的に最適」と表現しない。</li>
+      <li>連続記録が途切れた利用者を罰しない。休養日・再開を許容する。</li>
+      <li>EXP、植物、臨時クエストは娯楽的な補助とし、有料ガチャや損失罰へ結び付けない。</li>
+      <li>気分・睡眠・日記は診断として扱わず、必要時は専門家への相談を妨げない。</li>
+      <li>レポートは原因を断定させず、観察・複数仮説・次の小さな試行を分ける。</li>
+      <li>将来「効果がある」と製品固有に主張する場合は、事前登録した評価計画と実測データを公開する。</li>
+    </ul>
+  </div>
+
+  <h2>参照文献</h2>
+  <ol class="refs">
+    <li id="r1">Harkin B, et al. (2016). Does monitoring goal progress promote goal attainment? <em>Psychological Bulletin, 142(2), 198–229.</em> <a href="https://doi.org/10.1037/bul0000025">doi:10.1037/bul0000025</a></li>
+    <li id="r2">Lally P, et al. (2010). How are habits formed: Modelling habit formation in the real world. <em>European Journal of Social Psychology, 40, 998–1009.</em> <a href="https://doi.org/10.1002/ejsp.674">doi:10.1002/ejsp.674</a></li>
+    <li id="r3">Silverman J, Barasch A. (2023). On or Off Track: How (Broken) Streaks Affect Consumer Decisions. <em>Journal of Consumer Research, 49(6), 1095–1117.</em> <a href="https://doi.org/10.1093/jcr/ucac029">doi:10.1093/jcr/ucac029</a></li>
+    <li id="r4">Masicampo EJ, Baumeister RF. (2011). Consider it done! Plan making can eliminate the cognitive effects of unfulfilled goals. <em>JPSP, 101(4), 667–683.</em> <a href="https://doi.org/10.1037/a0024192">doi:10.1037/a0024192</a></li>
+    <li id="r5">Aeon B, Faber A, Panaccio A. (2021). Does time management work? A meta-analysis. <em>PLOS ONE, 16(1), e0245066.</em> <a href="https://doi.org/10.1371/journal.pone.0245066">doi:10.1371/journal.pone.0245066</a></li>
+    <li id="r6">Gollwitzer PM, Sheeran P. (2006). Implementation Intentions and Goal Achievement: A Meta-analysis. <em>Advances in Experimental Social Psychology, 38, 69–119.</em> <a href="https://doi.org/10.1016/S0065-2601(06)38002-1">doi:10.1016/S0065-2601(06)38002-1</a></li>
+    <li id="r7">Albulescu P, et al. (2022). “Give me a break!” A systematic review and meta-analysis on micro-breaks. <em>PLOS ONE, 17(8), e0272460.</em> <a href="https://doi.org/10.1371/journal.pone.0272460">doi:10.1371/journal.pone.0272460</a></li>
+    <li id="r8">Biwer F, et al. (2023). Understanding effort regulation: Comparing Pomodoro and self-regulated breaks. <em>British Journal of Educational Psychology.</em> <a href="https://doi.org/10.1111/bjep.12593">doi:10.1111/bjep.12593</a></li>
+    <li id="r9">Sonnentag S, Fritz C. (2007). The Recovery Experience Questionnaire. <em>Journal of Occupational Health Psychology, 12(3), 204–221.</em> <a href="https://doi.org/10.1037/1076-8998.12.3.204">doi:10.1037/1076-8998.12.3.204</a></li>
+    <li id="r10">Frattaroli J. (2006). Experimental disclosure and its moderators: a meta-analysis. <em>Psychological Bulletin, 132(6), 823–865.</em> <a href="https://doi.org/10.1037/0033-2909.132.6.823">doi:10.1037/0033-2909.132.6.823</a></li>
+    <li id="r11">Smyth JM, et al. (2018). Online Positive Affect Journaling: A Preliminary Randomized Controlled Trial. <em>JMIR Mental Health, 5(4), e11290.</em> <a href="https://doi.org/10.2196/11290">doi:10.2196/11290</a></li>
+    <li id="r12">Colombo D, et al. (2019). Technology-Based Ecological Momentary Assessment and Intervention for Major Depressive Disorder: A Systematic Review. <em>Journal of Clinical Medicine, 8(4), 465.</em> <a href="https://doi.org/10.3390/jcm8040465">doi:10.3390/jcm8040465</a></li>
+    <li id="r13">Carney CE, et al. (2012). The Consensus Sleep Diary: Standardizing Prospective Sleep Self-Monitoring. <em>Sleep, 35(2), 287–302.</em> <a href="https://doi.org/10.5665/sleep.1642">doi:10.5665/sleep.1642</a></li>
+    <li id="r14">Tannenbaum SI, Cerasoli CP. (2013). Do Team and Individual Debriefs Enhance Performance? <em>Human Factors, 55(1), 231–245.</em> <a href="https://doi.org/10.1177/0018720812448394">doi:10.1177/0018720812448394</a></li>
+    <li id="r15">Johnson D, et al. (2016). Gamification for health and wellbeing: A systematic review. <em>Internet Interventions, 6, 89–106.</em> <a href="https://doi.org/10.1016/j.invent.2016.10.002">doi:10.1016/j.invent.2016.10.002</a></li>
+    <li id="r16">Mazeas A, et al. (2022). Evaluating the Effectiveness of Gamification on Physical Activity: Systematic Review and Meta-analysis of RCTs. <em>JMIR, 24(1), e26779.</em> <a href="https://doi.org/10.2196/26779">doi:10.2196/26779</a></li>
+    <li id="r17">Cheah Y, et al. (2022). Background Music and Cognitive Task Performance: A Systematic Review. <em>Music &amp; Science, 5.</em> <a href="https://doi.org/10.1177/20592043221134392">doi:10.1177/20592043221134392</a></li>
+  </ol>
+
+  <a class="back" href="index.html">← Daily Stationへ戻る</a>
+  <footer>この資料は機能設計の透明性を高めるためのもので、医療上の助言ではありません。誤り・撤回論文・より新しい統合研究が見つかった場合は、出典と評価を更新します。</footer>
+</main>
+</body>
+</html>

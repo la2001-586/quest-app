@@ -7,6 +7,7 @@ const html = await readFile(htmlPath, 'utf8');
 const requiredFiles = [
   'privacy.html',
   'terms.html',
+  'evidence.html',
   'manifest.json',
   'service-worker.js',
   'apple-touch-icon.png',
@@ -50,6 +51,7 @@ for (const marker of [
   'Content-Security-Policy',
   'privacy.html',
   'terms.html',
+  'evidence.html',
   'https://github.com/la2001-586/quest-app/issues/new',
   'version: 6',
   "mementoDraft: 'quest-memento-draft-v1'",
@@ -57,6 +59,26 @@ for (const marker of [
   "textScale: 'quest-textscale-v1'"
 ]) {
   if (!html.includes(marker)) failures.push(`release marker is missing: ${marker}`);
+}
+
+for (const marker of [
+  'アプリ説明・チュートリアル',
+  'Daily Stationへようこそ',
+  '根拠も限界も、いつでも確認',
+  'id="tutorialProgressFill"',
+  'TUTORIAL_STEPS_JA',
+  'View references and sources'
+]) {
+  if (!html.includes(marker)) failures.push(`about/tutorial marker is missing: ${marker}`);
+}
+
+for (const marker of [
+  'V427: ONE-SURFACE LAYOUT',
+  '--single-surface-line',
+  'body.multipage-mode #page-settings > .settings-group + .settings-group',
+  'body.prism-motion-ui.multipage-mode #appGroupWrap_group_task::after { content:none'
+]) {
+  if (!html.includes(marker)) failures.push(`one-surface layout marker is missing: ${marker}`);
 }
 
 const forbiddenMarkers = [
