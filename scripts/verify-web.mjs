@@ -108,6 +108,16 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`exclusive gesture marker is missing: ${marker}`);
 }
 
+for (const marker of [
+  'V430: 猫はカードの overflow に切られない',
+  'id="peekCatLayer" class="peek-cat-layer"',
+  'positionPeekCatLayer',
+  'requestPeekCatPosition',
+  'z-index: 10040'
+]) {
+  if (!html.includes(marker)) failures.push(`top-layer cat marker is missing: ${marker}`);
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',
