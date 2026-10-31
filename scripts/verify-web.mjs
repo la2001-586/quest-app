@@ -96,6 +96,18 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`reorder/calendar layout marker is missing: ${marker}`);
 }
 
+for (const marker of [
+  'V429: EXCLUSIVE LIFT-TO-REORDER',
+  'const gestureArbiter = (() =>',
+  "gestureArbiter.claim('routine-reorder'",
+  "gestureArbiter.claim('swipe-delete'",
+  'routine-drop-placeholder',
+  'routine-dragging-wrap',
+  'setPointerCapture(e.pointerId)'
+]) {
+  if (!html.includes(marker)) failures.push(`exclusive gesture marker is missing: ${marker}`);
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',

@@ -4174,6 +4174,63 @@
     }
   }
 
+  /* ================= V429: EXCLUSIVE LIFT-TO-REORDER =================
+     並べ替え中はカードそのものを持ち上げ、空いた挿入位置を1つだけ示す。
+     同じ指で削除・ページ移動・スクロールを同時起動させない。 */
+  body[data-gesture-owner="routine-reorder"] {
+    overscroll-behavior: none;
+  }
+  body[data-gesture-owner="routine-reorder"] .swipe-del-trash,
+  body[data-gesture-owner="routine-reorder"] .swipe-fav-bg {
+    pointer-events: none !important;
+    opacity: 0 !important;
+  }
+  #dragGhost { display: none !important; }
+  .routine-drop-placeholder {
+    box-sizing: border-box;
+    margin: 3px 8px;
+    border: 1.5px dashed rgba(70, 157, 128, .42);
+    border-radius: 16px;
+    background: linear-gradient(90deg, rgba(124,220,188,.12), rgba(131,190,226,.09));
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,.22);
+  }
+  .swipe-del-wrap.routine-dragging-wrap {
+    position: fixed !important;
+    z-index: 10020 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    pointer-events: none !important;
+    transform: scale(1.025) rotate(.25deg);
+    transform-origin: center;
+    filter: drop-shadow(0 20px 22px rgba(31,57,48,.25));
+    will-change: top, left, transform;
+  }
+  .swipe-del-wrap.routine-dragging-wrap .item {
+    min-height: 64px;
+    padding: 14px 18px 14px 52px !important;
+    opacity: 1 !important;
+    transform: none !important;
+    border-radius: 17px !important;
+    border-color: rgba(82,170,140,.34) !important;
+    box-shadow: 0 18px 42px rgba(38,73,61,.22), inset 0 1px 0 rgba(255,255,255,.86) !important;
+  }
+  body.theme-simple:not(.theme-dark) .swipe-del-wrap.routine-dragging-wrap .item,
+  body.theme-fancy .swipe-del-wrap.routine-dragging-wrap .item {
+    background: #fff !important;
+  }
+  .swipe-del-wrap.routine-dragging-wrap .check-box { margin-left: -36px; }
+  .swipe-del-wrap.routine-dragging-wrap .item-label { font-size: 13.5px; letter-spacing: .01em; }
+  .swipe-del-wrap.routine-drop-animating {
+    transition: top .18s cubic-bezier(.2,.8,.25,1), left .18s cubic-bezier(.2,.8,.25,1), transform .18s ease;
+    transform: scale(1);
+  }
+  #list-routine > .swipe-del-wrap:not(.routine-dragging-wrap) {
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .swipe-del-wrap.routine-drop-animating { transition: none; }
+  }
+
 </style>
 </head>
 <body class="theme-simple">
@@ -4551,7 +4608,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.26</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.27</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -7048,7 +7105,43 @@
       ${innerHtml}
     </div>`;
   }
-  // 1つの外枠(wrap)に対して、指の動きに追従するスワイプ削除を取り付ける
+
+  // 1本の指を複数機能が同時に奪わないための、アプリ共通ジェスチャー所有権。
+  // pointer/touchの別系統をまたいでも、確定した1操作だけが終了まで所有する。
+  const gestureArbiter = (() => {
+    let session = null;
+    function syncBody() {
+      if (session) document.body.dataset.gestureOwner = session.owner;
+      else delete document.body.dataset.gestureOwner;
+    }
+    return {
+      claim(owner, pointerId = null) {
+        if (session && session.owner !== owner) return false;
+        session = { owner, pointerId };
+        syncBody();
+        return true;
+      },
+      release(owner, pointerId = null) {
+        if (!session || session.owner !== owner) return;
+        if (pointerId !== null && session.pointerId !== null && session.pointerId !== pointerId) return;
+        session = null;
+        syncBody();
+      },
+      isBusy(exceptOwner = '') { return !!session && session.owner !== exceptOwner; },
+      isOwnedBy(owner) { return !!session && session.owner === owner; },
+      owner() { return session ? session.owner : ''; },
+    };
+  })();
+
+  function closeOpenSwipeRows(exceptWrap = null) {
+    document.querySelectorAll('.swipe-del-wrap.swipe-open').forEach(wrap => {
+      if (wrap === exceptWrap) return;
+      if (typeof wrap.__cancelSwipe === 'function') wrap.__cancelSwipe(true);
+    });
+  }
+
+  // 削除スワイプはPointer Eventsに統一。横方向と確定した時だけ所有権を取り、
+  // 縦方向はブラウザの通常スクロールへ譲る。
   function initSwipeDelete(wrapEl) {
     if (!wrapEl || wrapEl.dataset.swipeInit) return;
     wrapEl.dataset.swipeInit = '1';
@@ -7057,34 +7150,25 @@
     const TRASH_WIDTH = 76;
     const FAV_WIDTH = 76;
     const hasFav = !!wrapEl.getAttribute('data-fav');
-    let startX = 0, startY = 0, currentX = 0, dragging = false, axisLocked = null;
+    let startX = 0, startY = 0, currentX = 0, activePointer = null, axisLocked = null, claimed = false;
 
     function setX(x, animate) {
       contentEl.style.transition = animate ? 'transform 0.2s ease' : 'none';
       contentEl.style.transform = `translateX(${x}px)`;
     }
-    setX(0, false); // 初期表示時、一度も操作していなくても、位置を明示的に確定させておく(初回だけ透けて見える不具合の対策)
-    contentEl.addEventListener('touchstart', (e) => {
-      if (e.touches.length !== 1) return;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      currentX = wrapEl.classList.contains('swipe-open') ? -TRASH_WIDTH : 0;
-      dragging = true; axisLocked = null;
-    }, { passive: true });
-    contentEl.addEventListener('touchmove', (e) => {
-      if (!dragging) return;
-      const dx = e.touches[0].clientX - startX;
-      const dy = e.touches[0].clientY - startY;
-      if (axisLocked === null) axisLocked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
-      if (axisLocked === 'y') return; // 縦方向の動きは、通常のスクロールに譲る
-      let x = currentX + dx;
-      x = Math.max(-TRASH_WIDTH - 10, Math.min(hasFav ? FAV_WIDTH + 10 : 0, x));
-      setX(x, false);
-    }, { passive: true });
-    contentEl.addEventListener('touchend', () => {
-      if (!dragging) return;
-      dragging = false;
-      if (axisLocked !== 'x') return;
+    function releasePointer(pointerId) {
+      try {
+        if (contentEl.hasPointerCapture && contentEl.hasPointerCapture(pointerId)) contentEl.releasePointerCapture(pointerId);
+      } catch (_) {}
+    }
+    function resetTracking(pointerId = activePointer) {
+      if (claimed) gestureArbiter.release('swipe-delete', pointerId);
+      if (pointerId !== null) releasePointer(pointerId);
+      activePointer = null;
+      axisLocked = null;
+      claimed = false;
+    }
+    function settle() {
       const finalX = parseFloat((contentEl.style.transform.match(/-?\d+\.?\d*/) || [0])[0]) || 0;
       if (finalX < -TRASH_WIDTH / 2) {
         setX(-TRASH_WIDTH, true);
@@ -7092,11 +7176,64 @@
       } else if (finalX > FAV_WIDTH / 2 && hasFav) {
         setX(0, true);
         wrapEl.classList.remove('swipe-open');
-        try { new Function(wrapEl.getAttribute('data-fav'))(); } catch (e) {}
+        try { new Function(wrapEl.getAttribute('data-fav'))(); } catch (_) {}
       } else {
         setX(0, true);
         wrapEl.classList.remove('swipe-open');
       }
+    }
+    wrapEl.__cancelSwipe = (animate = false) => {
+      setX(0, animate);
+      wrapEl.classList.remove('swipe-open');
+      resetTracking();
+    };
+    setX(0, false); // 初期表示時、一度も操作していなくても、位置を明示的に確定させておく(初回だけ透けて見える不具合の対策)
+    contentEl.addEventListener('pointerdown', (e) => {
+      if (!e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      if (e.target.closest('.routine-drag-handle')) return;
+      if (gestureArbiter.isBusy()) return;
+      closeOpenSwipeRows(wrapEl);
+      startX = e.clientX;
+      startY = e.clientY;
+      currentX = wrapEl.classList.contains('swipe-open') ? -TRASH_WIDTH : 0;
+      activePointer = e.pointerId;
+      axisLocked = null;
+      claimed = false;
+    });
+    contentEl.addEventListener('pointermove', (e) => {
+      if (activePointer !== e.pointerId) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const ax = Math.abs(dx), ay = Math.abs(dy);
+      if (axisLocked === null) {
+        if (ax < 9 && ay < 9) return;
+        if (ax > ay * 1.2) axisLocked = 'x';
+        else if (ay > ax * 1.2) {
+          axisLocked = 'y';
+          resetTracking(e.pointerId);
+          return;
+        } else return;
+      }
+      if (axisLocked !== 'x') return;
+      if (!claimed) {
+        if (!gestureArbiter.claim('swipe-delete', e.pointerId)) { resetTracking(e.pointerId); return; }
+        claimed = true;
+        try { contentEl.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+      e.preventDefault();
+      let x = currentX + dx;
+      x = Math.max(-TRASH_WIDTH - 10, Math.min(hasFav ? FAV_WIDTH + 10 : 0, x));
+      setX(x, false);
+    }, { passive: false });
+    contentEl.addEventListener('pointerup', (e) => {
+      if (activePointer !== e.pointerId) return;
+      if (axisLocked === 'x') settle();
+      resetTracking(e.pointerId);
+    });
+    contentEl.addEventListener('pointercancel', (e) => {
+      if (activePointer !== e.pointerId) return;
+      setX(wrapEl.classList.contains('swipe-open') ? -TRASH_WIDTH : 0, true);
+      resetTracking(e.pointerId);
     });
   }
   function initAllSwipeDelete(containerEl) {
@@ -7130,6 +7267,7 @@
 
     wrap.addEventListener('touchstart', (e) => {
       if (e.touches.length !== 1) return;
+      if (gestureArbiter.isBusy()) { swiping = false; return; }
       // 日スライダー上で始まったスワイプは、日送り専用。月/週/日のビュー切替とは被らせない
       if (e.target.closest && e.target.closest('#calRail')) { swiping = false; return; }
       touchStartX = e.touches[0].clientX;
@@ -7140,6 +7278,7 @@
     wrap.addEventListener('touchend', (e) => {
       if (!swiping) return;
       swiping = false;
+      if (gestureArbiter.isBusy()) return;
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
       // 横方向にはっきり動いた時だけスワイプとみなす(縦スクロールとの誤反応を避ける)
@@ -8348,128 +8487,177 @@
   }
 
   // ---- 専用ハンドルの長押しドラッグ&ドロップ(日課の並び替え) ----
-  let dragState = null; // { taskId, div, startX, startY, longPressTimer, dragging }
+  let dragState = null;
 
-  function attachDragHandlers(handle, div, task) {
-    if (!handle) return;
-    handle.addEventListener('click', e => e.stopPropagation());
-    handle.addEventListener('contextmenu', e => e.preventDefault());
-    handle.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      e.stopPropagation();
-      const startX = e.clientX, startY = e.clientY;
-      const timer = setTimeout(() => {
-        window.removeEventListener('pointermove', cancelIfMoved);
-        window.removeEventListener('pointerup', clearOnUp);
-        window.removeEventListener('pointercancel', clearOnUp);
-        beginDrag(div, task, startX, startY);
-      }, 460);
-      dragState = { taskId: task.id, div, startX, startY, longPressTimer: timer, dragging: false };
+  function releaseRoutinePointer(state) {
+    if (!state || !state.handle) return;
+    try {
+      if (state.handle.hasPointerCapture && state.handle.hasPointerCapture(state.pointerId)) {
+        state.handle.releasePointerCapture(state.pointerId);
+      }
+    } catch (_) {}
+  }
 
-      const cancelIfMoved = (moveEvent) => {
-        if (!dragState || dragState.dragging) return;
-        const dx = Math.abs(moveEvent.clientX - startX);
-        const dy = Math.abs(moveEvent.clientY - startY);
-        if (dx > 12 || dy > 12) {
-          clearTimeout(dragState.longPressTimer);
-          window.removeEventListener('pointermove', cancelIfMoved);
-          window.removeEventListener('pointerup', clearOnUp);
-          window.removeEventListener('pointercancel', clearOnUp);
-          dragState = null;
-        }
-      };
-      const clearOnUp = () => {
-        if (dragState && !dragState.dragging) {
-          clearTimeout(dragState.longPressTimer);
-          dragState = null;
-        }
-        window.removeEventListener('pointermove', cancelIfMoved);
-        window.removeEventListener('pointerup', clearOnUp);
-        window.removeEventListener('pointercancel', clearOnUp);
-      };
-      window.addEventListener('pointermove', cancelIfMoved);
-      window.addEventListener('pointerup', clearOnUp);
-      window.addEventListener('pointercancel', clearOnUp);
+  function clearRoutineDragSurface(state) {
+    document.body.style.userSelect = '';
+    document.body.style.webkitUserSelect = '';
+    document.body.style.overscrollBehavior = '';
+    gestureArbiter.release('routine-reorder', state.pointerId);
+    releaseRoutinePointer(state);
+    state.handle.classList.remove('drag-armed');
+  }
+
+  function cancelPendingRoutineDrag(state) {
+    if (!state || dragState !== state || state.dragging) return;
+    clearTimeout(state.longPressTimer);
+    clearRoutineDragSurface(state);
+    dragState = null;
+  }
+
+  function animateRoutineReflow(beforePositions, list) {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    requestAnimationFrame(() => {
+      list.querySelectorAll(':scope > .swipe-del-wrap:not(.routine-dragging-wrap)').forEach(row => {
+        const oldTop = beforePositions.get(row);
+        if (oldTop === undefined) return;
+        const delta = oldTop - row.getBoundingClientRect().top;
+        if (Math.abs(delta) < 1) return;
+        row.animate([
+          { transform: `translateY(${delta}px)` },
+          { transform: 'translateY(0)' },
+        ], { duration: 190, easing: 'cubic-bezier(.2,.8,.25,1)' });
+      });
     });
   }
 
-  function beginDrag(div, task, startX, startY) {
-    if (!dragState) return;
-    dragState.dragging = true;
-    div.classList.add('dragging');
-    if (navigator.vibrate) navigator.vibrate(20);
+  function moveRoutinePlaceholder(state, clientY) {
+    const list = state.list;
+    const rows = Array.from(list.querySelectorAll(':scope > .swipe-del-wrap:not(.routine-dragging-wrap)'));
+    const beforePositions = new Map(rows.map(row => [row, row.getBoundingClientRect().top]));
+    const beforeRow = rows.find(row => {
+      const rect = row.getBoundingClientRect();
+      return clientY < rect.top + rect.height / 2;
+    }) || null;
+    if (state.placeholder.nextElementSibling === beforeRow) return;
+    if (!beforeRow && state.placeholder === list.lastElementChild) return;
+    list.insertBefore(state.placeholder, beforeRow);
+    animateRoutineReflow(beforePositions, list);
+  }
+
+  function beginRoutineDrag(state) {
+    if (!state || dragState !== state || !gestureArbiter.isOwnedBy('routine-reorder')) return;
+    state.dragging = true;
+    state.div.classList.add('dragging');
+    state.handle.classList.remove('drag-armed');
+    if (navigator.vibrate) { try { navigator.vibrate(18); } catch (_) {} }
     document.body.style.userSelect = 'none';
     document.body.style.webkitUserSelect = 'none';
-    document.body.style.overscrollBehavior = 'contain';
+    document.body.style.overscrollBehavior = 'none';
 
-    const ghost = document.getElementById('dragGhost');
-    ghost.textContent = `${routineEmojiText(task)} ${task.label}`;
-    ghost.style.display = 'block';
-    ghost.style.left = startX + 'px';
-    ghost.style.top = startY + 'px';
+    const rect = state.wrap.getBoundingClientRect();
+    state.originalIndex = Array.from(state.list.children).indexOf(state.wrap);
+    state.grabOffsetY = state.lastY - rect.top;
+    state.placeholder = document.createElement('div');
+    state.placeholder.className = 'routine-drop-placeholder';
+    state.placeholder.style.height = `${rect.height}px`;
+    state.list.insertBefore(state.placeholder, state.wrap);
+    state.list.removeChild(state.wrap);
+    document.body.appendChild(state.wrap);
+    try { state.handle.setPointerCapture(state.pointerId); } catch (_) {}
+    state.wrap.classList.add('routine-dragging-wrap');
+    Object.assign(state.wrap.style, {
+      left: `${rect.left}px`,
+      top: `${rect.top}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`,
+    });
+  }
 
-    const bar = document.getElementById('dropZoneBar');
+  function updateRoutineDrag(state, event) {
+    event.preventDefault();
+    state.lastX = event.clientX;
+    state.lastY = event.clientY;
+    const maxTop = Math.max(8, window.innerHeight - state.wrap.offsetHeight - 8);
+    const top = Math.max(8, Math.min(maxTop, event.clientY - state.grabOffsetY));
+    state.wrap.style.top = `${top}px`;
+    if (event.clientY < 92) window.scrollBy(0, -14);
+    else if (event.clientY > window.innerHeight - 118) window.scrollBy(0, 14);
+    moveRoutinePlaceholder(state, event.clientY);
+  }
 
-    function findDropZoneAt(x, y) {
-      // 第一段階: ブラウザに直接「その座標に何があるか」を聞く確実な方式
-      const el = document.elementFromPoint(x, y);
-      if (el) {
-        const zoneEl = el.closest('.drop-zone');
-        if (zoneEl) return zoneEl.dataset.zone;
-      }
-      // 第二段階のフォールバック: 座標がバー全体の範囲内にあれば、X座標の比率からゾーンを算出
-      const barRect = bar.getBoundingClientRect();
-      if (y >= barRect.top && y <= barRect.bottom && x >= barRect.left && x <= barRect.right) {
-        const zones = Array.from(document.querySelectorAll('.drop-zone'));
-        for (const zone of zones) {
-          const r = zone.getBoundingClientRect();
-          if (x >= r.left && x <= r.right) return zone.dataset.zone;
-        }
-      }
-      return null;
+  function finishRoutineDrag(state, cancelled) {
+    if (!state || dragState !== state || !state.dragging) return;
+    if (cancelled) {
+      const rows = Array.from(state.list.querySelectorAll(':scope > .swipe-del-wrap:not(.routine-dragging-wrap)'));
+      state.list.insertBefore(state.placeholder, rows[state.originalIndex] || null);
     }
-
-    function onMove(e) {
-      e.preventDefault();
-      ghost.style.left = e.clientX + 'px';
-      ghost.style.top = e.clientY + 'px';
-      if (e.clientY < 84) window.scrollBy(0, -12);
-      else if (e.clientY > window.innerHeight - 112) window.scrollBy(0, 12);
-      // ghost自体がelementFromPointに引っかからないよう、判定の瞬間だけ一時的に隠す
-      ghost.style.display = 'none';
-      const el = document.elementFromPoint(e.clientX, e.clientY);
-      const candidate = el ? el.closest('.item') : null;
-      const hoverItemEl = (candidate && candidate !== div) ? candidate : null;
-      ghost.style.display = 'block';
-      if (hoverItemEl && hoverItemEl.dataset.taskId) {
-        const rect = hoverItemEl.getBoundingClientRect();
-        const isAfter = e.clientY > rect.top + rect.height / 2;
-        hoverItemEl.parentNode.insertBefore(div.parentNode, isAfter ? hoverItemEl.parentNode.nextSibling : hoverItemEl.parentNode);
+    const targetRect = state.placeholder.getBoundingClientRect();
+    state.wrap.classList.add('routine-drop-animating');
+    state.wrap.style.left = `${targetRect.left}px`;
+    state.wrap.style.top = `${targetRect.top}px`;
+    state.wrap.style.width = `${targetRect.width}px`;
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => {
+      state.placeholder.replaceWith(state.wrap);
+      state.wrap.classList.remove('routine-dragging-wrap', 'routine-drop-animating');
+      state.div.classList.remove('dragging');
+      ['left','top','width','height'].forEach(prop => { state.wrap.style[prop] = ''; });
+      clearRoutineDragSurface(state);
+      if (!cancelled) {
+        logDebug(`日課の並び順を更新: ${state.task.label}`);
+        syncTaskOrderFromDOM();
+        showToast(currentLang === 'en' ? 'Order saved' : '並び順を保存しました');
       }
-    }
-    function finishDrag(e, hasPosition) {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onCancel);
-
-      ghost.style.display = 'none';
-      if (bar) bar.classList.remove('show');
-      div.classList.remove('dragging');
-      document.body.style.userSelect = '';
-      document.body.style.webkitUserSelect = '';
-      document.body.style.overscrollBehavior = '';
-
-      logDebug(`日課の並び順を更新: ${task.label}`);
-      syncTaskOrderFromDOM();
-      if (hasPosition) showToast(currentLang === 'en' ? 'Order saved' : '並び順を保存しました');
       dragState = null;
-    }
-    function onUp(e) { finishDrag(e, true); }
-    function onCancel(e) { finishDrag(e, false); }
+    }, reduced ? 0 : 185);
+  }
 
-    window.addEventListener('pointermove', onMove, { passive: false });
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onCancel);
+  function attachDragHandlers(handle, div, task) {
+    if (!handle) return;
+    handle.addEventListener('click', e => { e.stopPropagation(); e.preventDefault(); });
+    handle.addEventListener('contextmenu', e => e.preventDefault());
+    handle.addEventListener('pointerdown', (e) => {
+      if (!e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0) || dragState) return;
+      if (!gestureArbiter.claim('routine-reorder', e.pointerId)) return;
+      e.stopPropagation();
+      e.preventDefault();
+      const wrap = div.closest('.swipe-del-wrap');
+      const list = document.getElementById('list-routine');
+      if (!wrap || !list) { gestureArbiter.release('routine-reorder', e.pointerId); return; }
+      closeOpenSwipeRows();
+      if (typeof wrap.__cancelSwipe === 'function') wrap.__cancelSwipe(false);
+      try { handle.setPointerCapture(e.pointerId); } catch (_) {}
+      const state = {
+        task, div, wrap, list, handle, pointerId: e.pointerId,
+        startX: e.clientX, startY: e.clientY, lastX: e.clientX, lastY: e.clientY,
+        dragging: false, longPressTimer: null,
+      };
+      handle.classList.add('drag-armed');
+      state.longPressTimer = setTimeout(() => beginRoutineDrag(state), 330);
+      dragState = state;
+    });
+    handle.addEventListener('pointermove', (e) => {
+      const state = dragState;
+      if (!state || state.handle !== handle || state.pointerId !== e.pointerId) return;
+      state.lastX = e.clientX; state.lastY = e.clientY;
+      if (!state.dragging) {
+        if (Math.hypot(e.clientX - state.startX, e.clientY - state.startY) > 18) cancelPendingRoutineDrag(state);
+        return;
+      }
+      updateRoutineDrag(state, e);
+    }, { passive: false });
+    handle.addEventListener('pointerup', (e) => {
+      const state = dragState;
+      if (!state || state.handle !== handle || state.pointerId !== e.pointerId) return;
+      if (state.dragging) finishRoutineDrag(state, false);
+      else cancelPendingRoutineDrag(state);
+    });
+    handle.addEventListener('pointercancel', (e) => {
+      const state = dragState;
+      if (!state || state.handle !== handle || state.pointerId !== e.pointerId) return;
+      if (state.dragging) finishRoutineDrag(state, true);
+      else cancelPendingRoutineDrag(state);
+    });
   }
 
   function syncTaskOrderFromDOM() {
@@ -9799,16 +9987,18 @@
   // 巻き込んで無効化してしまっていたため、2本指になった瞬間だけ一時的に解除する
   document.addEventListener('touchstart', (e) => {
     if (e.touches.length >= 2) {
-      document.body.classList.add('pinch-zoom-active');
+      if (gestureArbiter.claim('pinch-zoom')) document.body.classList.add('pinch-zoom-active');
     }
   }, { passive: true, capture: true });
   document.addEventListener('touchend', (e) => {
     if (e.touches.length < 2) {
       document.body.classList.remove('pinch-zoom-active');
+      gestureArbiter.release('pinch-zoom');
     }
   }, { passive: true, capture: true });
   document.addEventListener('touchcancel', () => {
     document.body.classList.remove('pinch-zoom-active');
+    gestureArbiter.release('pinch-zoom');
   }, { passive: true, capture: true });
 
   async function loadRestDayLog() {
@@ -11355,8 +11545,10 @@
 
     document.addEventListener('touchstart', (e) => {
       if (e.touches.length !== 1) return;
+      if (gestureArbiter.isBusy()) { swiping = false; return; }
       if (e.target.closest('#calSectionWrap')) return; // カレンダー内は、別のスワイプ(月/週/日)が担当するので対象外
       if (e.target.closest('.swipe-del-wrap')) return; // タスク・日課・予定の削除スワイプと、ページ切り替えスワイプが競合しないよう、カードの上から始まった場合は対象外
+      if (e.target.closest('#quickMemoTab, #quickMemoPanel, .routine-drag-handle')) return;
       // ページ左右移動は「人が見て空白と分かる場所」から始めた時だけ。カード内・テキスト・操作要素の上から始まった横操作は、粗いページ移動で奪わない(例:日記のテキスト範囲選択、カード内の横操作)
       if (e.target.closest('input, textarea, select, button, a, [contenteditable], .item, .alarm-row, .memento-card, .card, .dh-row, .dh-card, .modal, .grand-modal')) return;
       touchStartX = e.touches[0].clientX;
@@ -11367,6 +11559,7 @@
     document.addEventListener('touchend', (e) => {
       if (!swiping) return;
       swiping = false;
+      if (gestureArbiter.isBusy()) return;
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
       if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
@@ -12684,13 +12877,19 @@
   function attachLongPress(el, handler, ms) {
     ms = ms || 450;
     let timer = null, sx = 0, sy = 0, longFired = false;
-    const clear = () => { if (timer) { clearTimeout(timer); timer = null; } };
+    const clear = () => {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (longFired) setTimeout(() => gestureArbiter.release('calendar-longpress'), 0);
+    };
     el.addEventListener('touchstart', (e) => {
       if (e.touches.length !== 1) return;
+      if (gestureArbiter.isBusy()) return;
       longFired = false;
       sx = e.touches[0].clientX; sy = e.touches[0].clientY;
       timer = setTimeout(() => {
-        timer = null; longFired = true;
+        timer = null;
+        if (!gestureArbiter.claim('calendar-longpress')) return;
+        longFired = true;
         if (navigator.vibrate) { try { navigator.vibrate(12); } catch (_) {} }
         handler({ clientX: sx, clientY: sy });
       }, ms);
@@ -12705,8 +12904,14 @@
     el.addEventListener('click', (e) => { if (longFired) { e.stopPropagation(); e.preventDefault(); longFired = false; } }, true);
     // PC(マウス)対応
     el.addEventListener('mousedown', (e) => {
+      if (gestureArbiter.isBusy()) return;
       longFired = false; sx = e.clientX; sy = e.clientY;
-      timer = setTimeout(() => { timer = null; longFired = true; handler({ clientX: sx, clientY: sy }); }, ms);
+      timer = setTimeout(() => {
+        timer = null;
+        if (!gestureArbiter.claim('calendar-longpress')) return;
+        longFired = true;
+        handler({ clientX: sx, clientY: sy });
+      }, ms);
     });
     el.addEventListener('mouseup', clear);
     el.addEventListener('mouseleave', clear);
@@ -12990,7 +13195,7 @@
   (function setupQuickMemoTabDrag() {
     const tab = document.getElementById('quickMemoTab');
     if (!tab) return;
-    let startX = 0, startY = 0, startTop = 0, dragging = false, moved = false;
+    let startX = 0, startY = 0, startTop = 0, dragging = false, moved = false, activePointer = null;
 
     async function loadTabPosition() {
       try {
@@ -13012,13 +13217,17 @@
     loadTabPosition();
 
     function onPointerDown(e) {
+      if (!e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      if (!gestureArbiter.claim('quick-memo', e.pointerId)) return;
       dragging = true; moved = false;
+      activePointer = e.pointerId;
       startX = e.clientX; startY = e.clientY;
       startTop = tab.getBoundingClientRect().top;
       tab.classList.add('dragging');
+      try { tab.setPointerCapture(e.pointerId); } catch (_) {}
     }
     function onPointerMove(e) {
-      if (!dragging) return;
+      if (!dragging || e.pointerId !== activePointer) return;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
       if (Math.abs(dx) > 6 || Math.abs(dy) > 6) moved = true;
@@ -13035,10 +13244,13 @@
         tab.style.left = 'auto'; tab.style.right = '0';
       }
     }
-    async function onPointerUp() {
-      if (!dragging) return;
+    async function onPointerUp(e) {
+      if (!dragging || e.pointerId !== activePointer) return;
       dragging = false;
+      activePointer = null;
       tab.classList.remove('dragging');
+      gestureArbiter.release('quick-memo', e.pointerId);
+      try { if (tab.hasPointerCapture(e.pointerId)) tab.releasePointerCapture(e.pointerId); } catch (_) {}
       if (!moved) {
         // 動いていなければ、ただのタップとして扱う
         toggleQuickMemo();
@@ -13068,6 +13280,13 @@
     tab.addEventListener('pointerdown', onPointerDown);
     document.addEventListener('pointermove', onPointerMove);
     document.addEventListener('pointerup', onPointerUp);
+    document.addEventListener('pointercancel', (e) => {
+      if (!dragging || e.pointerId !== activePointer) return;
+      dragging = false; moved = false;
+      activePointer = null;
+      tab.classList.remove('dragging');
+      gestureArbiter.release('quick-memo', e.pointerId);
+    });
   })();
 
   // ---- 備忘録カード: メモと違い、保存すると新しいカードとして積み上がっていく長期記録 ----
