@@ -4093,6 +4093,87 @@
     }
   }
 
+  /* ================= V428: VISIBLE REORDER + WIDE CALENDAR =================
+     日課の並べ替えは専用ハンドルから行い、カレンダーは一枚の面を
+     端まで使う。入力・セル以外の入れ子カードは増やさない。 */
+  .item-actions {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 0;
+    margin-left: 2px;
+  }
+  .routine-drag-handle {
+    width: 30px;
+    height: 34px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink-dim);
+    opacity: .54;
+    cursor: grab;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .routine-drag-handle svg { width: 18px; height: 18px; pointer-events: none; }
+  .routine-drag-handle:active,
+  .item.dragging .routine-drag-handle { opacity: 1; color: var(--cyan); cursor: grabbing; }
+  #list-routine .item { touch-action: pan-y; }
+  #list-routine .item.dragging { z-index: 10; }
+
+  body.multipage-mode #page-task {
+    padding-inline: 8px !important;
+  }
+  body.prism-motion-ui.multipage-mode #appGroupWrap_group_calendar {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px !important;
+  }
+  body.multipage-mode #appGroupWrap_group_calendar > .cal-section {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  body.multipage-mode #appGroupWrap_group_calendar #calSectionWrap,
+  body.multipage-mode #appGroupWrap_group_calendar #calMonthSection,
+  body.multipage-mode #appGroupWrap_group_calendar .cal-grid-shell {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  body.multipage-mode #appGroupWrap_group_calendar .cal-linked {
+    margin: 14px 0 0 !important;
+    padding: 16px 0 0 !important;
+    border: 0 !important;
+    border-top: 1px solid var(--single-surface-line) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  @media (max-width: 620px) {
+    body.multipage-mode #page-task { padding-inline: 5px !important; }
+    body.prism-motion-ui.multipage-mode #appGroupWrap_group_calendar {
+      padding: 7px !important;
+      border-radius: 22px !important;
+    }
+    body.multipage-mode #appGroupWrap_group_calendar .cal-day {
+      border-radius: 8px !important;
+    }
+  }
+
 </style>
 </head>
 <body class="theme-simple">
@@ -8148,7 +8229,10 @@
           </div>
           ${noteHtml}
         </div>
-        <button class="item-note-btn" data-task-id="${task.id}"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg></button>
+        <div class="item-actions">
+          <button class="item-note-btn" data-task-id="${task.id}" aria-label="編集"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg></button>
+          <button class="routine-drag-handle" type="button" aria-label="長押しして並べ替え" title="長押しして並べ替え"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h12"></path><path d="M6 12h12"></path><path d="M6 16h12"></path></svg></button>
+        </div>
       `;
       div.querySelector('.item-main').onclick = () => toggleItem(div, key);
       div.querySelector('.check-box').onclick = () => toggleItem(div, key);
@@ -8156,7 +8240,7 @@
         e.stopPropagation();
         openRoutineEdit(task.id);
       };
-      attachDragHandlers(div, task);
+      attachDragHandlers(div.querySelector('.routine-drag-handle'), div, task);
       wrap.appendChild(div);
       list.appendChild(wrap);
       initSwipeDelete(wrap);
@@ -8263,39 +8347,49 @@
       && /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/i.test(value);
   }
 
-  // ---- 長押しドラッグ&ドロップ(タスクの段位移動・削除) ----
+  // ---- 専用ハンドルの長押しドラッグ&ドロップ(日課の並び替え) ----
   let dragState = null; // { taskId, div, startX, startY, longPressTimer, dragging }
 
-  function attachDragHandlers(div, task) {
-    div.addEventListener('pointerdown', (e) => {
+  function attachDragHandlers(handle, div, task) {
+    if (!handle) return;
+    handle.addEventListener('click', e => e.stopPropagation());
+    handle.addEventListener('contextmenu', e => e.preventDefault());
+    handle.addEventListener('pointerdown', (e) => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+      e.stopPropagation();
       const startX = e.clientX, startY = e.clientY;
       const timer = setTimeout(() => {
         window.removeEventListener('pointermove', cancelIfMoved);
         window.removeEventListener('pointerup', clearOnUp);
+        window.removeEventListener('pointercancel', clearOnUp);
         beginDrag(div, task, startX, startY);
-      }, 700);
+      }, 460);
       dragState = { taskId: task.id, div, startX, startY, longPressTimer: timer, dragging: false };
 
       const cancelIfMoved = (moveEvent) => {
         if (!dragState || dragState.dragging) return;
         const dx = Math.abs(moveEvent.clientX - startX);
         const dy = Math.abs(moveEvent.clientY - startY);
-        if (dx > 16 || dy > 16) {
+        if (dx > 12 || dy > 12) {
           clearTimeout(dragState.longPressTimer);
           window.removeEventListener('pointermove', cancelIfMoved);
           window.removeEventListener('pointerup', clearOnUp);
+          window.removeEventListener('pointercancel', clearOnUp);
+          dragState = null;
         }
       };
       const clearOnUp = () => {
         if (dragState && !dragState.dragging) {
           clearTimeout(dragState.longPressTimer);
+          dragState = null;
         }
         window.removeEventListener('pointermove', cancelIfMoved);
         window.removeEventListener('pointerup', clearOnUp);
+        window.removeEventListener('pointercancel', clearOnUp);
       };
       window.addEventListener('pointermove', cancelIfMoved);
       window.addEventListener('pointerup', clearOnUp);
+      window.addEventListener('pointercancel', clearOnUp);
     });
   }
 
@@ -8339,6 +8433,8 @@
       e.preventDefault();
       ghost.style.left = e.clientX + 'px';
       ghost.style.top = e.clientY + 'px';
+      if (e.clientY < 84) window.scrollBy(0, -12);
+      else if (e.clientY > window.innerHeight - 112) window.scrollBy(0, 12);
       // ghost自体がelementFromPointに引っかからないよう、判定の瞬間だけ一時的に隠す
       ghost.style.display = 'none';
       const el = document.elementFromPoint(e.clientX, e.clientY);
@@ -8353,7 +8449,7 @@
     }
     function finishDrag(e, hasPosition) {
       window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', finishDrag);
+      window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
 
       ghost.style.display = 'none';
@@ -8365,6 +8461,7 @@
 
       logDebug(`日課の並び順を更新: ${task.label}`);
       syncTaskOrderFromDOM();
+      if (hasPosition) showToast(currentLang === 'en' ? 'Order saved' : '並び順を保存しました');
       dragState = null;
     }
     function onUp(e) { finishDrag(e, true); }

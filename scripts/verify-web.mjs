@@ -81,6 +81,16 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`one-surface layout marker is missing: ${marker}`);
 }
 
+for (const marker of [
+  'V428: VISIBLE REORDER + WIDE CALENDAR',
+  'class="routine-drag-handle"',
+  "attachDragHandlers(div.querySelector('.routine-drag-handle'), div, task)",
+  'body.prism-motion-ui.multipage-mode #appGroupWrap_group_calendar',
+  '並び順を保存しました'
+]) {
+  if (!html.includes(marker)) failures.push(`reorder/calendar layout marker is missing: ${marker}`);
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',
