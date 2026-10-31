@@ -7,7 +7,7 @@ Ship the web edition first. Android and iOS use the same checked web bundle, but
 ## Before every release candidate
 
 - [ ] Freeze the selected UI and confirm the version with the owner.
-- [ ] Update `package.json`, Android `versionName` / `versionCode`, the visible build label, and legal update dates together.
+- [ ] Update `package.json`, then run `pnpm run version:sync`; confirm Android, iOS, the visible build label, and evidence scope were synchronized. Update legal dates only when those documents change.
 - [ ] Run `pnpm install --frozen-lockfile`.
 - [ ] Run `pnpm run release:check`.
 - [ ] Open the generated `www/index.html` through a local HTTP server and test Home, Calendar, Task, Routine, Diary, Options, backup export, and backup import.

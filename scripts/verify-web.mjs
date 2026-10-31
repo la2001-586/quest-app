@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const htmlPath = resolve(root, 'www', 'index.html');
 const html = await readFile(htmlPath, 'utf8');
+const pkg = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'));
 const requiredFiles = [
   'privacy.html',
   'terms.html',
@@ -18,8 +19,12 @@ const requiredFiles = [
 
 const failures = [];
 
-if (!html.includes('BUILD 0917_SUPPORT_PRIVACY_V425')) {
-  failures.push('support privacy build tag V425 is missing');
+const escapedVersion = pkg.version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+if (!new RegExp(`BUILD v${escapedVersion} · [A-F0-9]{7}`).test(html)) {
+  failures.push(`generated build label for v${pkg.version} with a Git revision is missing`);
+}
+if (html.includes('BUILD 0917_SUPPORT_PRIVACY_V425')) {
+  failures.push('legacy hard-coded build label remains');
 }
 
 for (const marker of ['quest-task-time-log-v1', 'beginTodayTaskTimer', 'finishScheduledTaskTiming', 'task-time-summary']) {

@@ -26,7 +26,7 @@ iOS builds require macOS and Xcode 26 or newer. On a Mac, install dependencies, 
 
 ## Prototype acceptance scope
 
-- The root PWA and native shells show build `BUILD 0917_SUPPORT_PRIVACY_V425`.
+- The root PWA and native shells show the version sourced from `package.json`; generated web bundles also append the Git commit.
 - Web assets copy without omissions and Capacitor sync completes.
 - Android debug compilation completes in CI or a configured Android workstation.
 - Existing local PWA data does not automatically migrate to the native app origin. Use the app's data export/import flow before switching devices or install types.

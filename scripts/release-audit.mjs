@@ -4,11 +4,12 @@ import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const read = (file) => readFile(resolve(root, file), 'utf8');
 
-const [pkgRaw, manifestRaw, capacitorRaw, androidGradle, index, privacy, terms, worker] = await Promise.all([
+const [pkgRaw, manifestRaw, capacitorRaw, androidGradle, iosProject, index, privacy, terms, worker] = await Promise.all([
   read('package.json'),
   read('manifest.json'),
   read('capacitor.config.json'),
   read('android/app/build.gradle'),
+  read('ios/App/App.xcodeproj/project.pbxproj'),
   read('index.html'),
   read('privacy.html'),
   read('terms.html'),
@@ -28,6 +29,8 @@ const warn = (message) => warnings.push(message);
 
 const androidVersionName = androidGradle.match(/versionName\s+"([^"]+)"/)?.[1];
 const androidVersionCode = Number(androidGradle.match(/versionCode\s+(\d+)/)?.[1]);
+const iosMarketingVersions = [...iosProject.matchAll(/MARKETING_VERSION = ([^;]+);/g)].map(match => match[1]);
+const iosBuildNumbers = [...iosProject.matchAll(/CURRENT_PROJECT_VERSION = (\d+);/g)].map(match => Number(match[1]));
 const expectedVersionCode = Number(pkg.version.replace(/\D/g, ''));
 
 if (androidVersionName === pkg.version) pass(`package and Android version agree (${pkg.version})`);
@@ -35,6 +38,20 @@ else error(`package version ${pkg.version} does not match Android versionName ${
 
 if (androidVersionCode === expectedVersionCode) pass(`Android versionCode agrees (${androidVersionCode})`);
 else error(`Android versionCode ${androidVersionCode || 'missing'} does not match ${expectedVersionCode}`);
+
+if (iosMarketingVersions.length > 0 && iosMarketingVersions.every(version => version === pkg.version)) {
+  pass(`package and iOS marketing version agree (${pkg.version})`);
+} else {
+  error(`iOS MARKETING_VERSION does not consistently match ${pkg.version}`);
+}
+if (iosBuildNumbers.length > 0 && iosBuildNumbers.every(code => code === expectedVersionCode)) {
+  pass(`iOS build number agrees (${expectedVersionCode})`);
+} else {
+  error(`iOS CURRENT_PROJECT_VERSION does not consistently match ${expectedVersionCode}`);
+}
+
+if (index.includes(`BUILD v${pkg.version}`)) pass(`visible build label agrees (${pkg.version})`);
+else error(`visible build label does not match package version ${pkg.version}`);
 
 if (capacitor.appId === 'com.dailystation.app' && capacitor.appName === 'Daily Station') {
   pass('Capacitor application identity is fixed');
