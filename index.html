@@ -4241,6 +4241,100 @@
     .swipe-del-wrap.routine-drop-animating { transition: none; }
   }
 
+  /* ================= V431: ROUTINE ZONE DIVIDERS =================
+     2枚の薄い区切りを通常の日課と同じ並べ替え面に置き、朝・日中・夜を
+     1枚のリスト内で分ける。チェックや削除操作は持たせない。 */
+  .routine-zone-start {
+    min-height: 30px;
+    padding: 7px 18px 5px;
+    display: flex;
+    align-items: center;
+    color: color-mix(in srgb, var(--ink) 52%, transparent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .13em;
+  }
+  .routine-zone-start::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    margin-left: 10px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 15%, transparent), transparent);
+  }
+  .routine-divider-wrap {
+    box-sizing: border-box;
+    padding: 6px 10px;
+  }
+  .routine-divider-card {
+    min-height: 42px;
+    padding: 0 7px 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+    border-radius: 13px;
+    background: color-mix(in srgb, #9da4a6 12%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.54);
+    touch-action: pan-y;
+  }
+  .routine-divider-card::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ink) 30%, transparent);
+  }
+  .routine-divider-label {
+    min-width: 0;
+    flex: 1;
+    padding: 8px 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: color-mix(in srgb, var(--ink) 66%, transparent);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: .05em;
+  }
+  .routine-divider-label:focus {
+    color: var(--ink);
+  }
+  .routine-divider-card .routine-drag-handle {
+    opacity: .42;
+  }
+  .routine-divider-card.dragging .routine-drag-handle {
+    opacity: 1;
+    color: var(--cyan);
+  }
+  .routine-list-row.routine-dragging-wrap {
+    position: fixed !important;
+    z-index: 10020 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    pointer-events: none !important;
+    transform: scale(1.025) rotate(.25deg);
+    transform-origin: center;
+    filter: drop-shadow(0 20px 22px rgba(31,57,48,.25));
+    will-change: top, left, transform;
+  }
+  .routine-divider-wrap.routine-dragging-wrap { padding: 0 !important; }
+  .routine-divider-wrap.routine-dragging-wrap .routine-divider-card {
+    height: 100%;
+    border-color: rgba(82,170,140,.34);
+    background: color-mix(in srgb, #eef3f2 92%, transparent);
+    box-shadow: 0 18px 42px rgba(38,73,61,.22), inset 0 1px 0 rgba(255,255,255,.86);
+  }
+  .routine-list-row.routine-drop-animating {
+    transition: top .18s cubic-bezier(.2,.8,.25,1), left .18s cubic-bezier(.2,.8,.25,1), transform .18s ease;
+    transform: scale(1);
+  }
+  #list-routine > .routine-list-row:not(.routine-dragging-wrap) { will-change: transform; }
+  @media (prefers-reduced-motion: reduce) {
+    .routine-list-row.routine-drop-animating { transition: none; }
+  }
+
 </style>
 </head>
 <body class="theme-simple">
@@ -4621,7 +4715,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.29</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.30</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -6563,6 +6657,12 @@
   let taskList = []; // 実際に画面に表示・編集される、現在のタスク一覧
 
   const ROUTINE_LEVEL = 'routine';
+  const ROUTINE_DIVIDERS = [
+    { id: 'daytime', label: '日中のルーティン' },
+    { id: 'night', label: '夜のルーティン' },
+  ];
+  let routineLayoutOrder = [];
+  let routineDividerLabels = Object.fromEntries(ROUTINE_DIVIDERS.map(divider => [divider.id, divider.label]));
   const EXP_BASE = { routine: 8 };
   const COMBO_TIERS = {
     routine: [ { need: 3, name: 'コンボ', exp: 18 }, { need: 6, name: 'ビッグコンボ', exp: 42 }, { need: 9, name: 'メガコンボ', exp: 75 } ],
@@ -6578,6 +6678,47 @@
   }
   function normalizeRoutineKey(key) {
     return routineKey(routineLabelFromKey(key));
+  }
+  function routineTaskToken(id) { return `task:${id}`; }
+  function routineDividerToken(id) { return `divider:${id}`; }
+  function createDefaultRoutineLayout(activeTaskIds) {
+    const firstBreak = Math.max(1, Math.ceil(activeTaskIds.length / 3));
+    const secondBreak = Math.max(firstBreak, Math.ceil(activeTaskIds.length * 2 / 3));
+    const order = [];
+    activeTaskIds.forEach((id, index) => {
+      if (index === firstBreak) order.push(routineDividerToken('daytime'));
+      if (index === secondBreak) order.push(routineDividerToken('night'));
+      order.push(routineTaskToken(id));
+    });
+    if (!order.includes(routineDividerToken('daytime'))) order.push(routineDividerToken('daytime'));
+    if (!order.includes(routineDividerToken('night'))) order.push(routineDividerToken('night'));
+    return order;
+  }
+  function normalizeRoutineLayout() {
+    const before = JSON.stringify({ order: routineLayoutOrder, labels: routineDividerLabels });
+    const activeTaskIds = taskList.filter(task => task.active !== false).map(task => task.id);
+    const activeTokens = new Set(activeTaskIds.map(routineTaskToken));
+    const dividerTokens = new Set(ROUTINE_DIVIDERS.map(divider => routineDividerToken(divider.id)));
+    if (!Array.isArray(routineLayoutOrder) || routineLayoutOrder.length === 0) {
+      routineLayoutOrder = createDefaultRoutineLayout(activeTaskIds);
+      return before !== JSON.stringify({ order: routineLayoutOrder, labels: routineDividerLabels });
+    }
+    const seen = new Set();
+    routineLayoutOrder = routineLayoutOrder.filter(token => {
+      if ((!activeTokens.has(token) && !dividerTokens.has(token)) || seen.has(token)) return false;
+      seen.add(token);
+      return true;
+    });
+    activeTaskIds.forEach(id => {
+      const token = routineTaskToken(id);
+      if (!seen.has(token)) { routineLayoutOrder.push(token); seen.add(token); }
+    });
+    ROUTINE_DIVIDERS.forEach(divider => {
+      const token = routineDividerToken(divider.id);
+      if (!seen.has(token)) { routineLayoutOrder.push(token); seen.add(token); }
+      if (!String(routineDividerLabels[divider.id] || '').trim()) routineDividerLabels[divider.id] = divider.label;
+    });
+    return before !== JSON.stringify({ order: routineLayoutOrder, labels: routineDividerLabels });
   }
 
   // ---- 音声システム(効果音合成 + BGM) ----
@@ -8337,15 +8478,57 @@
     if (!list) return;
     list.innerHTML = '';
     totalItemCount = 0;
+    if (normalizeRoutineLayout() && !isInitializing) saveRoutineLayout();
     const activeTasks = taskList.filter(task => task.active !== false);
-    activeTasks.forEach((task, index) => {
+    const activeTaskMap = new Map(activeTasks.map(task => [task.id, task]));
+    const morningLabel = document.createElement('div');
+    morningLabel.className = 'routine-zone-start';
+    morningLabel.textContent = currentLang === 'en' ? 'MORNING ROUTINE' : '朝のルーティン';
+    list.appendChild(morningLabel);
+    routineLayoutOrder.forEach((token, index) => {
+      if (token.startsWith('divider:')) {
+        const dividerId = token.slice('divider:'.length);
+        const divider = ROUTINE_DIVIDERS.find(item => item.id === dividerId);
+        if (!divider) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'routine-list-row routine-divider-wrap';
+        wrap.dataset.routineToken = token;
+        const card = document.createElement('div');
+        card.className = 'routine-divider-card';
+        card.innerHTML = `
+          <input class="routine-divider-label" type="text" maxlength="40" aria-label="区切り名" value="${escapeHtml(routineDividerLabels[dividerId] || divider.label)}">
+          <button class="routine-drag-handle" type="button" aria-label="長押しして区切りを並べ替え" title="長押しして並べ替え"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h12"></path><path d="M6 12h12"></path><path d="M6 16h12"></path></svg></button>
+        `;
+        const input = card.querySelector('.routine-divider-label');
+        const originalLabel = routineDividerLabels[dividerId] || divider.label;
+        input.addEventListener('pointerdown', event => event.stopPropagation());
+        input.addEventListener('keydown', event => {
+          if (event.key === 'Enter') { event.preventDefault(); input.blur(); }
+          if (event.key === 'Escape') { input.value = originalLabel; input.blur(); }
+        });
+        input.addEventListener('blur', () => {
+          const nextLabel = input.value.trim() || divider.label;
+          input.value = nextLabel;
+          routineDividerLabels[dividerId] = nextLabel;
+          saveRoutineLayout();
+        });
+        attachDragHandlers(card.querySelector('.routine-drag-handle'), card, { label: divider.label, type: 'divider' });
+        wrap.appendChild(card);
+        list.appendChild(wrap);
+        return;
+      }
+      const taskId = token.startsWith('task:') ? token.slice('task:'.length) : '';
+      const task = activeTaskMap.get(taskId);
+      if (!task) return;
       totalItemCount++;
       const key = routineKey(task.label);
       const isComplete = picked.has(key);
-      const nextTask = activeTasks[index + 1];
+      const nextToken = routineLayoutOrder[index + 1] || '';
+      const nextTask = nextToken.startsWith('task:') ? activeTaskMap.get(nextToken.slice('task:'.length)) : null;
       const nextIsComplete = nextTask ? picked.has(routineKey(nextTask.label)) : false;
       const wrap = document.createElement('div');
-      wrap.className = 'swipe-del-wrap';
+      wrap.className = 'routine-list-row swipe-del-wrap';
+      wrap.dataset.routineToken = token;
       if (isComplete) wrap.classList.add('is-complete');
       if (isComplete && nextIsComplete) wrap.classList.add('connector-active');
       const trash = document.createElement('div');
@@ -8529,7 +8712,7 @@
   function animateRoutineReflow(beforePositions, list) {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     requestAnimationFrame(() => {
-      list.querySelectorAll(':scope > .swipe-del-wrap:not(.routine-dragging-wrap)').forEach(row => {
+      list.querySelectorAll(':scope > .routine-list-row:not(.routine-dragging-wrap)').forEach(row => {
         const oldTop = beforePositions.get(row);
         if (oldTop === undefined) return;
         const delta = oldTop - row.getBoundingClientRect().top;
@@ -8544,7 +8727,7 @@
 
   function moveRoutinePlaceholder(state, clientY) {
     const list = state.list;
-    const rows = Array.from(list.querySelectorAll(':scope > .swipe-del-wrap:not(.routine-dragging-wrap)'));
+    const rows = Array.from(list.querySelectorAll(':scope > .routine-list-row:not(.routine-dragging-wrap)'));
     const beforePositions = new Map(rows.map(row => [row, row.getBoundingClientRect().top]));
     const beforeRow = rows.find(row => {
       const rect = row.getBoundingClientRect();
@@ -8567,7 +8750,7 @@
     document.body.style.overscrollBehavior = 'none';
 
     const rect = state.wrap.getBoundingClientRect();
-    state.originalIndex = Array.from(state.list.children).indexOf(state.wrap);
+    state.originalIndex = Array.from(state.list.querySelectorAll(':scope > .routine-list-row')).indexOf(state.wrap);
     state.grabOffsetY = state.lastY - rect.top;
     state.placeholder = document.createElement('div');
     state.placeholder.className = 'routine-drop-placeholder';
@@ -8600,7 +8783,7 @@
   function finishRoutineDrag(state, cancelled) {
     if (!state || dragState !== state || !state.dragging) return;
     if (cancelled) {
-      const rows = Array.from(state.list.querySelectorAll(':scope > .swipe-del-wrap:not(.routine-dragging-wrap)'));
+      const rows = Array.from(state.list.querySelectorAll(':scope > .routine-list-row:not(.routine-dragging-wrap)'));
       state.list.insertBefore(state.placeholder, rows[state.originalIndex] || null);
     }
     const targetRect = state.placeholder.getBoundingClientRect();
@@ -8617,7 +8800,7 @@
       clearRoutineDragSurface(state);
       if (!cancelled) {
         logDebug(`日課の並び順を更新: ${state.task.label}`);
-        syncTaskOrderFromDOM();
+        syncRoutineLayoutFromDOM();
         showToast(currentLang === 'en' ? 'Order saved' : '並び順を保存しました');
       }
       dragState = null;
@@ -8633,7 +8816,7 @@
       if (!gestureArbiter.claim('routine-reorder', e.pointerId)) return;
       e.stopPropagation();
       e.preventDefault();
-      const wrap = div.closest('.swipe-del-wrap');
+      const wrap = div.closest('.routine-list-row');
       const list = document.getElementById('list-routine');
       if (!wrap || !list) { gestureArbiter.release('routine-reorder', e.pointerId); return; }
       closeOpenSwipeRows();
@@ -8672,10 +8855,15 @@
     });
   }
 
-  function syncTaskOrderFromDOM() {
+  function syncRoutineLayoutFromDOM() {
     const listEl = document.getElementById('list-routine');
     if (!listEl) return;
-    const orderedIds = Array.from(listEl.children).map(el => el.querySelector('.item')?.dataset.taskId).filter(Boolean);
+    routineLayoutOrder = Array.from(listEl.querySelectorAll(':scope > .routine-list-row'))
+      .map(row => row.dataset.routineToken)
+      .filter(Boolean);
+    const orderedIds = routineLayoutOrder
+      .filter(token => token.startsWith('task:'))
+      .map(token => token.slice('task:'.length));
     const reordered = orderedIds
       .map(id => taskList.find(t => t.id === id))
       .filter(Boolean);
@@ -8683,6 +8871,7 @@
     const inactive = taskList.filter(t => t.active === false);
     taskList = reordered.concat(inactive);
     saveTasks();
+    saveRoutineLayout();
   }
 
   function deleteTask(taskId) {
@@ -9143,6 +9332,7 @@
   const BACKUP_KEYS = {
     progress: 'quest-progress-v2',
     tasks: 'quest-tasklist-v1',
+    routineLayout: 'quest-routine-layout-v1',
     moodJournal: 'quest-mood-journal-v1',
     badges: 'quest-badges-v1',
     restDayLog: 'quest-restday-v1',
@@ -9328,6 +9518,38 @@
       await window.storage.set('quest-tasklist-v1', JSON.stringify(taskList));
     } catch (e) {
       // 保存失敗時も画面表示は継続させる
+    }
+  }
+  async function loadRoutineLayout() {
+    const fallbackLabels = Object.fromEntries(ROUTINE_DIVIDERS.map(divider => [divider.id, divider.label]));
+    try {
+      const saved = await window.storage.get('quest-routine-layout-v1');
+      const parsed = saved && saved.value
+        ? (sanitizeBackupField('routineLayout', JSON.parse(saved.value)) || {})
+        : {};
+      routineLayoutOrder = Array.isArray(parsed.order) ? parsed.order.map(String) : [];
+      routineDividerLabels = { ...fallbackLabels };
+      if (parsed.labels && typeof parsed.labels === 'object') {
+        ROUTINE_DIVIDERS.forEach(divider => {
+          const label = String(parsed.labels[divider.id] || '').trim().slice(0, 40);
+          if (label) routineDividerLabels[divider.id] = label;
+        });
+      }
+    } catch (e) {
+      routineLayoutOrder = [];
+      routineDividerLabels = { ...fallbackLabels };
+    }
+    normalizeRoutineLayout();
+    await saveRoutineLayout();
+  }
+  async function saveRoutineLayout() {
+    try {
+      await window.storage.set('quest-routine-layout-v1', JSON.stringify({
+        order: routineLayoutOrder,
+        labels: routineDividerLabels,
+      }));
+    } catch (e) {
+      // 保存失敗時も日課一覧の操作は継続させる
     }
   }
 
@@ -9536,6 +9758,7 @@
     if (volSliderInit) volSliderInit.value = Math.round(masterVolume * 100);
     if (volLabelInit) volLabelInit.textContent = Math.round(masterVolume * 100) + '%';
     await loadTasks();
+    await loadRoutineLayout();
     renderAllTasks();
     syncBoundaryHourUI();
     await loadStreakMilestone();

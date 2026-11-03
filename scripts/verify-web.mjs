@@ -130,6 +130,19 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`diary template marker is missing: ${marker}`);
 }
 
+for (const marker of [
+  'V431: ROUTINE ZONE DIVIDERS',
+  'quest-routine-layout-v1',
+  'ROUTINE_DIVIDERS',
+  'routine-zone-start',
+  'routine-divider-wrap',
+  'routine-divider-label',
+  'syncRoutineLayoutFromDOM',
+  "gestureArbiter.claim('routine-reorder'"
+]) {
+  if (!html.includes(marker)) failures.push(`routine divider marker is missing: ${marker}`);
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',
