@@ -118,6 +118,18 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`top-layer cat marker is missing: ${marker}`);
 }
 
+for (const marker of [
+  'MOOD_JOURNAL_TEMPLATE_JA',
+  '◆今日の目標┈┈┈┈┈┈┈┈┈┈',
+  '◆今日の内容┈┈┈┈┈┈┈┈┈┈',
+  '・一番の学び',
+  '・一番の反省',
+  '・次の目標',
+  '◆その他┈┈┈┈┈┈┈┈┈┈'
+]) {
+  if (!html.includes(marker)) failures.push(`diary template marker is missing: ${marker}`);
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',

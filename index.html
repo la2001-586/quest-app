@@ -4621,7 +4621,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.28</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.29</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -11815,6 +11815,13 @@
 
   let moodLastSavedText = '';
   let moodLastSavedImagesJson = '[]';
+  const MOOD_JOURNAL_TEMPLATE_JA =
+    '◆今日の目標┈┈┈┈┈┈┈┈┈┈\n\n\n' +
+    '◆今日の内容┈┈┈┈┈┈┈┈┈┈\n' +
+    '・一番の学び\n\n' +
+    '・一番の反省\n\n' +
+    '・次の目標\n\n' +
+    '◆その他┈┈┈┈┈┈┈┈┈┈\n\n';
 
   function renderMoodJournalUI() {
     // 1日1本運用: 今日すでに書いたものがあれば、開いた時にそのまま続きから書ける状態にする。
@@ -11832,7 +11839,7 @@
       moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
     } else {
       editingMoodEntryId = null;
-      document.getElementById('moodJournalText').value = '◇今日の目標\n\n\n◇今日の振り返り\n\n\n◇その他\n\n';
+      document.getElementById('moodJournalText').value = MOOD_JOURNAL_TEMPLATE_JA;
       currentMoodImages = [];
       currentMoodTag = null;
       setIncidentNoteFields(null);
