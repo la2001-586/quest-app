@@ -131,16 +131,19 @@ for (const marker of [
 }
 
 for (const marker of [
-  'V431: ROUTINE ZONE DIVIDERS',
+  'V432: NAMELESS ROUTINE DIVIDERS',
   'quest-routine-layout-v1',
   'ROUTINE_DIVIDERS',
-  'routine-zone-start',
   'routine-divider-wrap',
-  'routine-divider-label',
+  'routine-divider-card',
+  '長押しして区切りを並べ替え',
   'syncRoutineLayoutFromDOM',
   "gestureArbiter.claim('routine-reorder'"
 ]) {
   if (!html.includes(marker)) failures.push(`routine divider marker is missing: ${marker}`);
+}
+for (const marker of ['routine-zone-start', 'routine-divider-label', '朝のルーティン', '日中のルーティン', '夜のルーティン']) {
+  if (html.includes(marker)) failures.push(`named routine divider content remains: ${marker}`);
 }
 
 const forbiddenMarkers = [

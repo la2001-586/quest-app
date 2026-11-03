@@ -4241,69 +4241,34 @@
     .swipe-del-wrap.routine-drop-animating { transition: none; }
   }
 
-  /* ================= V431: ROUTINE ZONE DIVIDERS =================
-     2枚の薄い区切りを通常の日課と同じ並べ替え面に置き、朝・日中・夜を
-     1枚のリスト内で分ける。チェックや削除操作は持たせない。 */
-  .routine-zone-start {
-    min-height: 30px;
-    padding: 7px 18px 5px;
-    display: flex;
-    align-items: center;
-    color: color-mix(in srgb, var(--ink) 52%, transparent);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .13em;
-  }
-  .routine-zone-start::after {
-    content: '';
-    height: 1px;
-    flex: 1;
-    margin-left: 10px;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 15%, transparent), transparent);
-  }
+  /* ================= V432: NAMELESS ROUTINE DIVIDERS =================
+     用途を決めつけない無記名のグレーカード。通常の日課と同じ寸法で、
+     操作は右端の並べ替えハンドルだけに限定する。 */
   .routine-divider-wrap {
     box-sizing: border-box;
-    padding: 6px 10px;
+    padding: 5px 0;
   }
   .routine-divider-card {
-    min-height: 42px;
-    padding: 0 7px 0 15px;
+    width: 100%;
+    min-height: 64px;
+    padding: 0 8px 0 18px;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
-    gap: 8px;
-    border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-    border-radius: 13px;
-    background: color-mix(in srgb, #9da4a6 12%, transparent);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.54);
+    justify-content: flex-end;
+    border: 0;
+    border-radius: 14px;
+    background: rgba(137, 143, 145, .16);
+    box-shadow: none;
     touch-action: pan-y;
   }
-  .routine-divider-card::before {
-    content: '';
-    width: 5px;
-    height: 5px;
-    flex: 0 0 auto;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--ink) 30%, transparent);
-  }
-  .routine-divider-label {
-    min-width: 0;
-    flex: 1;
-    padding: 8px 0;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: color-mix(in srgb, var(--ink) 66%, transparent);
-    font: inherit;
-    font-size: 11px;
-    font-weight: 650;
-    letter-spacing: .05em;
-  }
-  .routine-divider-label:focus {
-    color: var(--ink);
-  }
   .routine-divider-card .routine-drag-handle {
-    opacity: .42;
+    width: 42px;
+    height: 64px;
+    opacity: .48;
   }
+  body.theme-dark .routine-divider-card,
+  body.theme-mono.theme-dark .routine-divider-card { background: rgba(150, 154, 158, .18); }
   .routine-divider-card.dragging .routine-drag-handle {
     opacity: 1;
     color: var(--cyan);
@@ -4322,9 +4287,8 @@
   .routine-divider-wrap.routine-dragging-wrap { padding: 0 !important; }
   .routine-divider-wrap.routine-dragging-wrap .routine-divider-card {
     height: 100%;
-    border-color: rgba(82,170,140,.34);
-    background: color-mix(in srgb, #eef3f2 92%, transparent);
-    box-shadow: 0 18px 42px rgba(38,73,61,.22), inset 0 1px 0 rgba(255,255,255,.86);
+    background: rgba(137, 143, 145, .24);
+    box-shadow: 0 18px 42px rgba(38,73,61,.22);
   }
   .routine-list-row.routine-drop-animating {
     transition: top .18s cubic-bezier(.2,.8,.25,1), left .18s cubic-bezier(.2,.8,.25,1), transform .18s ease;
@@ -4715,7 +4679,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.30</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.31</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -6657,12 +6621,8 @@
   let taskList = []; // 実際に画面に表示・編集される、現在のタスク一覧
 
   const ROUTINE_LEVEL = 'routine';
-  const ROUTINE_DIVIDERS = [
-    { id: 'daytime', label: '日中のルーティン' },
-    { id: 'night', label: '夜のルーティン' },
-  ];
+  const ROUTINE_DIVIDERS = ['daytime', 'night'];
   let routineLayoutOrder = [];
-  let routineDividerLabels = Object.fromEntries(ROUTINE_DIVIDERS.map(divider => [divider.id, divider.label]));
   const EXP_BASE = { routine: 8 };
   const COMBO_TIERS = {
     routine: [ { need: 3, name: 'コンボ', exp: 18 }, { need: 6, name: 'ビッグコンボ', exp: 42 }, { need: 9, name: 'メガコンボ', exp: 75 } ],
@@ -6695,13 +6655,13 @@
     return order;
   }
   function normalizeRoutineLayout() {
-    const before = JSON.stringify({ order: routineLayoutOrder, labels: routineDividerLabels });
+    const before = JSON.stringify(routineLayoutOrder);
     const activeTaskIds = taskList.filter(task => task.active !== false).map(task => task.id);
     const activeTokens = new Set(activeTaskIds.map(routineTaskToken));
-    const dividerTokens = new Set(ROUTINE_DIVIDERS.map(divider => routineDividerToken(divider.id)));
+    const dividerTokens = new Set(ROUTINE_DIVIDERS.map(routineDividerToken));
     if (!Array.isArray(routineLayoutOrder) || routineLayoutOrder.length === 0) {
       routineLayoutOrder = createDefaultRoutineLayout(activeTaskIds);
-      return before !== JSON.stringify({ order: routineLayoutOrder, labels: routineDividerLabels });
+      return before !== JSON.stringify(routineLayoutOrder);
     }
     const seen = new Set();
     routineLayoutOrder = routineLayoutOrder.filter(token => {
@@ -6713,12 +6673,11 @@
       const token = routineTaskToken(id);
       if (!seen.has(token)) { routineLayoutOrder.push(token); seen.add(token); }
     });
-    ROUTINE_DIVIDERS.forEach(divider => {
-      const token = routineDividerToken(divider.id);
+    ROUTINE_DIVIDERS.forEach(dividerId => {
+      const token = routineDividerToken(dividerId);
       if (!seen.has(token)) { routineLayoutOrder.push(token); seen.add(token); }
-      if (!String(routineDividerLabels[divider.id] || '').trim()) routineDividerLabels[divider.id] = divider.label;
     });
-    return before !== JSON.stringify({ order: routineLayoutOrder, labels: routineDividerLabels });
+    return before !== JSON.stringify(routineLayoutOrder);
   }
 
   // ---- 音声システム(効果音合成 + BGM) ----
@@ -8481,38 +8440,19 @@
     if (normalizeRoutineLayout() && !isInitializing) saveRoutineLayout();
     const activeTasks = taskList.filter(task => task.active !== false);
     const activeTaskMap = new Map(activeTasks.map(task => [task.id, task]));
-    const morningLabel = document.createElement('div');
-    morningLabel.className = 'routine-zone-start';
-    morningLabel.textContent = currentLang === 'en' ? 'MORNING ROUTINE' : '朝のルーティン';
-    list.appendChild(morningLabel);
     routineLayoutOrder.forEach((token, index) => {
       if (token.startsWith('divider:')) {
         const dividerId = token.slice('divider:'.length);
-        const divider = ROUTINE_DIVIDERS.find(item => item.id === dividerId);
-        if (!divider) return;
+        if (!ROUTINE_DIVIDERS.includes(dividerId)) return;
         const wrap = document.createElement('div');
         wrap.className = 'routine-list-row routine-divider-wrap';
         wrap.dataset.routineToken = token;
         const card = document.createElement('div');
         card.className = 'routine-divider-card';
         card.innerHTML = `
-          <input class="routine-divider-label" type="text" maxlength="40" aria-label="区切り名" value="${escapeHtml(routineDividerLabels[dividerId] || divider.label)}">
           <button class="routine-drag-handle" type="button" aria-label="長押しして区切りを並べ替え" title="長押しして並べ替え"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8h12"></path><path d="M6 12h12"></path><path d="M6 16h12"></path></svg></button>
         `;
-        const input = card.querySelector('.routine-divider-label');
-        const originalLabel = routineDividerLabels[dividerId] || divider.label;
-        input.addEventListener('pointerdown', event => event.stopPropagation());
-        input.addEventListener('keydown', event => {
-          if (event.key === 'Enter') { event.preventDefault(); input.blur(); }
-          if (event.key === 'Escape') { input.value = originalLabel; input.blur(); }
-        });
-        input.addEventListener('blur', () => {
-          const nextLabel = input.value.trim() || divider.label;
-          input.value = nextLabel;
-          routineDividerLabels[dividerId] = nextLabel;
-          saveRoutineLayout();
-        });
-        attachDragHandlers(card.querySelector('.routine-drag-handle'), card, { label: divider.label, type: 'divider' });
+        attachDragHandlers(card.querySelector('.routine-drag-handle'), card, { label: '区切り', type: 'divider' });
         wrap.appendChild(card);
         list.appendChild(wrap);
         return;
@@ -9521,23 +9461,14 @@
     }
   }
   async function loadRoutineLayout() {
-    const fallbackLabels = Object.fromEntries(ROUTINE_DIVIDERS.map(divider => [divider.id, divider.label]));
     try {
       const saved = await window.storage.get('quest-routine-layout-v1');
       const parsed = saved && saved.value
         ? (sanitizeBackupField('routineLayout', JSON.parse(saved.value)) || {})
         : {};
       routineLayoutOrder = Array.isArray(parsed.order) ? parsed.order.map(String) : [];
-      routineDividerLabels = { ...fallbackLabels };
-      if (parsed.labels && typeof parsed.labels === 'object') {
-        ROUTINE_DIVIDERS.forEach(divider => {
-          const label = String(parsed.labels[divider.id] || '').trim().slice(0, 40);
-          if (label) routineDividerLabels[divider.id] = label;
-        });
-      }
     } catch (e) {
       routineLayoutOrder = [];
-      routineDividerLabels = { ...fallbackLabels };
     }
     normalizeRoutineLayout();
     await saveRoutineLayout();
@@ -9546,7 +9477,6 @@
     try {
       await window.storage.set('quest-routine-layout-v1', JSON.stringify({
         order: routineLayoutOrder,
-        labels: routineDividerLabels,
       }));
     } catch (e) {
       // 保存失敗時も日課一覧の操作は継続させる
