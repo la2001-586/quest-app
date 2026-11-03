@@ -4299,6 +4299,35 @@
     .routine-list-row.routine-drop-animating { transition: none; }
   }
 
+  /* ================= V433: IMMUTABLE BOTTOM NAV =================
+     下ナビをスクロール面から分離した専用ビューポートレイヤーへ固定する。 */
+  #persistentBottomNav {
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 130;
+    pointer-events: none;
+    overflow: visible;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    contain: layout style;
+    isolation: isolate;
+  }
+  #persistentBottomNav > .home-bar {
+    position: absolute !important;
+    top: auto !important;
+    bottom: 0 !important;
+    pointer-events: auto;
+    transition: none !important;
+    animation: none !important;
+  }
+  body.prism-motion-ui #persistentBottomNav > .home-bar {
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  }
+
 </style>
 </head>
 <body class="theme-simple">
@@ -4679,7 +4708,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.32</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.33</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5819,6 +5848,7 @@
 <div class="drag-ghost" id="dragGhost"></div>
 
 <!-- ================= ホームバー（下部固定タブ） ================= -->
+<div id="persistentBottomNav" aria-label="メインナビゲーション">
 <div class="home-bar">
   <div class="home-tab multipage-only" data-page="task" data-group="group_other">
     <div class="home-tab-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M10 20v-6h4v6"></path></svg></div>
@@ -5843,6 +5873,7 @@
     <div class="home-tab-label" data-i18n="hometab_settings">オプション</div>
   </div>
 </div>
+</div>
 
 <div id="tapGlow"></div>
 
@@ -5852,6 +5883,42 @@
 </div>
 
 <script>
+  // 下ナビはページ内容と別レイヤーで、常にiOSを含む可視領域の最下部へ固定する。
+  (function initPersistentBottomNav() {
+    const layer = document.getElementById('persistentBottomNav');
+    const nav = document.querySelector('.home-bar');
+    if (!layer || !nav) return;
+    if (nav.parentElement !== layer) layer.appendChild(nav);
+    let frame = 0;
+    const sync = () => {
+      frame = 0;
+      const viewport = window.visualViewport;
+      const width = Math.min(window.innerWidth, viewport ? viewport.width : window.innerWidth);
+      const height = Math.min(window.innerHeight, viewport ? viewport.height : window.innerHeight);
+      const maxLeft = Math.max(0, window.innerWidth - width);
+      const maxTop = Math.max(0, window.innerHeight - height);
+      const left = Math.max(0, Math.min(maxLeft, viewport ? viewport.offsetLeft : 0));
+      const top = Math.max(0, Math.min(maxTop, viewport ? viewport.offsetTop : 0));
+      const bodyZoom = Math.max(.5, Number.parseFloat(getComputedStyle(document.body).zoom) || 1);
+      layer.style.left = `${left / bodyZoom}px`;
+      layer.style.top = `${top / bodyZoom}px`;
+      layer.style.width = `${width / bodyZoom}px`;
+      layer.style.height = `${height / bodyZoom}px`;
+    };
+    const requestSync = () => {
+      if (!frame) frame = requestAnimationFrame(sync);
+    };
+    window.requestPersistentBottomNavSync = requestSync;
+    sync();
+    window.addEventListener('resize', requestSync, { passive: true });
+    window.addEventListener('orientationchange', requestSync, { passive: true });
+    window.addEventListener('scroll', requestSync, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', requestSync, { passive: true });
+      window.visualViewport.addEventListener('scroll', requestSync, { passive: true });
+    }
+  })();
+
   // ==================================================================
   // 起動時の演出(v90で追加)。メイン画面の表示自体は一切遅らせない
   // (pointer-events:noneなので操作もブロックしない)。純粋に上から
@@ -6554,6 +6621,7 @@
     currentTextScale = level;
     // アプリ全体を一律に拡大(zoomは可変幅レイアウトなので横崩れしないことを検証済み)
     document.body.style.zoom = TEXT_SCALE_MAP[level];
+    if (typeof window.requestPersistentBottomNavSync === 'function') window.requestPersistentBottomNavSync();
     document.querySelectorAll('.textscale-btn').forEach(b => b.classList.toggle('active', b.dataset.scale === level));
     if (!skipSave) {
       try { window.storage.set('quest-textscale-v1', level); } catch (e) {}

@@ -152,6 +152,18 @@ for (const marker of ['routine-zone-start', 'routine-divider-label', '朝のル�
   if (html.includes(marker)) failures.push(`named routine divider content remains: ${marker}`);
 }
 
+for (const marker of [
+  'V433: IMMUTABLE BOTTOM NAV',
+  'id="persistentBottomNav"',
+  'initPersistentBottomNav',
+  'const bodyZoom =',
+  'requestPersistentBottomNavSync',
+  'window.visualViewport.addEventListener',
+  '#persistentBottomNav > .home-bar'
+]) {
+  if (!html.includes(marker)) failures.push(`persistent bottom navigation marker is missing: ${marker}`);
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',
