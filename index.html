@@ -4242,7 +4242,7 @@
   }
 
   /* ================= V432: NAMELESS ROUTINE DIVIDERS =================
-     用途を決めつけない無記名のグレーカード。通常の日課と同じ寸法で、
+     用途を決めつけない無記名のグレーカード。通常の日課より縦を25%抑え、
      操作は右端の並べ替えハンドルだけに限定する。 */
   .routine-divider-wrap {
     box-sizing: border-box;
@@ -4250,7 +4250,7 @@
   }
   .routine-divider-card {
     width: 100%;
-    min-height: 64px;
+    min-height: 48px;
     padding: 0 8px 0 18px;
     box-sizing: border-box;
     display: flex;
@@ -4258,17 +4258,17 @@
     justify-content: flex-end;
     border: 0;
     border-radius: 14px;
-    background: rgba(137, 143, 145, .16);
+    background: rgba(95, 100, 102, .22);
     box-shadow: none;
     touch-action: pan-y;
   }
   .routine-divider-card .routine-drag-handle {
     width: 42px;
-    height: 64px;
+    height: 48px;
     opacity: .48;
   }
   body.theme-dark .routine-divider-card,
-  body.theme-mono.theme-dark .routine-divider-card { background: rgba(150, 154, 158, .18); }
+  body.theme-mono.theme-dark .routine-divider-card { background: rgba(150, 154, 158, .26); }
   .routine-divider-card.dragging .routine-drag-handle {
     opacity: 1;
     color: var(--cyan);
@@ -4287,7 +4287,7 @@
   .routine-divider-wrap.routine-dragging-wrap { padding: 0 !important; }
   .routine-divider-wrap.routine-dragging-wrap .routine-divider-card {
     height: 100%;
-    background: rgba(137, 143, 145, .24);
+    background: rgba(95, 100, 102, .30);
     box-shadow: 0 18px 42px rgba(38,73,61,.22);
   }
   .routine-list-row.routine-drop-animating {
@@ -4679,7 +4679,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.31</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.32</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -11971,6 +11971,7 @@
   const MOOD_JOURNAL_TEMPLATE_JA =
     '◆今日の目標┈┈┈┈┈┈┈┈┈┈\n\n\n' +
     '◆今日の内容┈┈┈┈┈┈┈┈┈┈\n' +
+    '・今日のスケジュール\n\n' +
     '・一番の学び\n\n' +
     '・一番の反省\n\n' +
     '・次の目標\n\n' +

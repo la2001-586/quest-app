@@ -122,12 +122,18 @@ for (const marker of [
   'MOOD_JOURNAL_TEMPLATE_JA',
   '◆今日の目標┈┈┈┈┈┈┈┈┈┈',
   '◆今日の内容┈┈┈┈┈┈┈┈┈┈',
+  '・今日のスケジュール',
   '・一番の学び',
   '・一番の反省',
   '・次の目標',
   '◆その他┈┈┈┈┈┈┈┈┈┈'
 ]) {
   if (!html.includes(marker)) failures.push(`diary template marker is missing: ${marker}`);
+}
+const diaryScheduleIndex = html.indexOf('・今日のスケジュール');
+const diaryLearningIndex = html.indexOf('・一番の学び');
+if (diaryScheduleIndex < 0 || diaryLearningIndex < 0 || diaryScheduleIndex > diaryLearningIndex) {
+  failures.push('diary schedule prompt must appear immediately before the learning prompt');
 }
 
 for (const marker of [
