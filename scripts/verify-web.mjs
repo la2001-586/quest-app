@@ -164,6 +164,22 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`persistent bottom navigation marker is missing: ${marker}`);
 }
 
+for (const marker of [
+  'V438: 日課の本文を先に読み',
+  'class="routine-tools-lower"',
+  '.routine-tools-lower #comboHint-routine'
+]) {
+  if (!html.includes(marker)) failures.push(`routine content-first layout marker is missing: ${marker}`);
+}
+
+const routineListPos = html.indexOf('id="list-routine"');
+const routineProgressPos = html.indexOf('id="routineProgressGlass"');
+const routineStockPos = html.indexOf('class="routine-stock-link"');
+const routineComboPos = html.indexOf('id="comboHint-routine"');
+if (!(routineListPos >= 0 && routineListPos < routineProgressPos && routineListPos < routineStockPos && routineListPos < routineComboPos)) {
+  failures.push('routine list must precede progress, stock, and combo UI');
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',

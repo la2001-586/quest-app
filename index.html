@@ -1671,6 +1671,15 @@
     display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 10px;
     margin-bottom: 12px;
   }
+  /* V438: 日課の本文を先に読み、進捗・ストック・コンボは補助情報として一覧の後へ置く */
+  .routine-tools-lower {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid rgba(55,105,87,.1);
+  }
+  .routine-tools-lower .routine-overview { margin-bottom: 8px; }
+  .routine-tools-lower #comboHint-routine {
+    margin-top: 8px; border: 1px solid rgba(55,105,87,.1); border-radius: 14px;
+  }
   body.multipage-mode #page-task .routine-progress-glass {
     min-height: 76px; margin: 0; padding: 13px 15px; border-radius: 18px;
     box-shadow: none;
@@ -4708,7 +4717,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.33</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.37</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -4957,6 +4966,11 @@
   </div>
 
   <div id="folderPanelRoutine" class="folder-panel">
+  <div class="panel show" id="panel-routine">
+    <div id="list-routine"></div>
+    <button class="add-task-btn" onclick="openAddTask()"><span class="routine-add-plus">＋</span><span class="routine-add-label">日課を追加</span></button>
+  </div>
+  <div class="routine-tools-lower">
   <div class="routine-overview">
   <div class="routine-progress-glass" id="routineProgressGlass" aria-live="polite">
     <div class="routine-progress-ring" id="routineProgressRing">
@@ -4981,10 +4995,7 @@
     <span class="routine-stock-link" onclick="openRoutineStock()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M3 8l9-5 9 5-9 5-9-5z"></path><path d="M3 8v9l9 5 9-5V8"></path><path d="M12 13v9"></path></svg> 日課ストック</span>
   </div>
   </div>
-  <div class="panel show" id="panel-routine">
-    <div class="combo-hint" id="comboHint-routine"></div>
-    <div id="list-routine"></div>
-    <button class="add-task-btn" onclick="openAddTask()"><span class="routine-add-plus">＋</span><span class="routine-add-label">日課を追加</span></button>
+  <div class="combo-hint" id="comboHint-routine"></div>
   </div>
   </div>
   </div>
