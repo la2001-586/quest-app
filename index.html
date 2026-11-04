@@ -3094,6 +3094,17 @@
   }
   .settings-btn:last-child { margin-bottom: 0; }
   .settings-btn:active { background: rgba(43,201,204,0.1); transform: scale(0.98); }
+  .settings-btn.settings-evidence-link {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    text-decoration: none; color: var(--ink); padding-block: 12px;
+  }
+  .settings-evidence-copy { min-width: 0; }
+  .settings-evidence-copy strong { display: block; font: inherit; }
+  .settings-evidence-copy small {
+    display: block; margin-top: 3px; color: var(--ink-dim);
+    font-size: 10px; font-weight: 500; line-height: 1.55;
+  }
+  .settings-evidence-arrow { flex: 0 0 auto; color: var(--ink-dim); font-size: 20px; font-weight: 400; }
 
   /* ================= V410 UI SYSTEM: typography / spacing / controls ================= */
   :root {
@@ -4765,7 +4776,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.39</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.40</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5337,7 +5348,13 @@
     <button class="settings-btn" data-i18n="opt_contact_btn" onclick="contactSupport()">運営に連絡する</button>
     <button class="settings-btn" data-i18n="opt_policy_btn" onclick="showPolicy()">利用規約・プライバシー</button>
     <button class="settings-btn" data-i18n="opt_credits_label" onclick="showCredits()">クレジット</button>
-    <button class="settings-btn" data-i18n="opt_sources_label" onclick="showSources()">引用・参考文献</button>
+    <a class="settings-btn settings-evidence-link" href="evidence.html">
+      <span class="settings-evidence-copy">
+        <strong data-i18n="opt_sources_label">科学的根拠・参考文献</strong>
+        <small data-i18n="opt_sources_desc">各機能と研究の対応、言えること・言えないことを確認できます。</small>
+      </span>
+      <span class="settings-evidence-arrow" aria-hidden="true">›</span>
+    </a>
   </div>
   <div id="settingsVersionFooter" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.25); margin-top:24px; margin-bottom:8px; letter-spacing:0.05em;"></div>
 </div>
@@ -6360,8 +6377,8 @@
       opt_clearcache_desc: 'アプリ本体の中身(機能・見た目)を最新版に更新します。※ホーム画面のアイコン画像は、これでは変わりません(削除して再追加が必要)',
       opt_support_label: 'サポート', opt_contact_btn: '運営に連絡する', opt_policy_btn: '利用規約・プライバシー',
       opt_credits_label: 'クレジット', opt_credits_desc: 'このアプリで使用している、外部素材の制作者の方々です。',
-      opt_sources_label: '引用・参考文献',
-      opt_sources_desc: 'チュートリアルで触れた科学的根拠の出典と、適用できる範囲・限界をまとめています。医療上の助言や効果を保証するものではありません。',
+      opt_sources_label: '科学的根拠・参考文献',
+      opt_sources_desc: '各機能と研究の対応、言えること・言えないことを確認できます。',
       sources_full_audit_btn: '引用・参考文献の一覧を開く',
       src_pomo_title: '⏱️ ポモドーロ(25分集中+5分休憩)',
       src_pomo_body: '一定時間ごとに休憩を挟むための一般的な時間管理法です。25分・5分は固定された医学的基準ではなく、利用者が作業しやすい区切りとして採用しています。',
@@ -6500,8 +6517,8 @@
       opt_clearcache_desc: "Refreshes the app's files (features & appearance) to the latest version. Note: this does NOT change the home screen icon image (delete & re-add is still required for that).",
       opt_support_label: 'Support', opt_contact_btn: 'Contact Support', opt_policy_btn: 'Terms & Privacy',
       opt_credits_label: 'Credits', opt_credits_desc: 'External assets used in this app, and their creators.',
-      opt_sources_label: 'Citations & References',
-      opt_sources_desc: 'Sources for the scientific evidence mentioned in the tutorial, including scope and limitations. This is not medical advice.',
+      opt_sources_label: 'Evidence & References',
+      opt_sources_desc: 'See how each feature relates to research, including what the evidence can and cannot support.',
       sources_full_audit_btn: 'Open citations and references',
       src_pomo_title: '⏱️ Pomodoro (25 min focus + 5 min break)',
       src_pomo_body: 'A general time-management pattern with regular breaks. The 25/5-minute split is a practical default, not a medical standard.',

@@ -78,6 +78,15 @@ for (const marker of [
 }
 
 for (const marker of [
+  'class="settings-btn settings-evidence-link" href="evidence.html"',
+  '科学的根拠・参考文献',
+  '各機能と研究の対応、言えること・言えないことを確認できます。',
+  'Evidence & References'
+]) {
+  if (!html.includes(marker)) failures.push(`evidence access marker is missing: ${marker}`);
+}
+
+for (const marker of [
   'V427: ONE-SURFACE LAYOUT',
   '--single-surface-line',
   'body.multipage-mode #page-settings > .settings-group + .settings-group',
