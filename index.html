@@ -2544,7 +2544,7 @@
   }
   .sleep-track-duration { font-size: 11px; color: var(--cyan); font-family: 'Orbitron', sans-serif; margin-left: auto; }
   .mood-journal-textarea {
-    width: 100%; min-height: 35vh; resize: vertical; box-sizing: border-box;
+    width: 100%; min-height: 35vh; height: auto; max-height: none; resize: none; overflow-y: hidden; box-sizing: border-box;
     background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.12);
     border-radius: 10px; padding: 12px; color: #fff; font-size: 13.5px; line-height: 1.7;
     font-family: inherit; margin-bottom: 10px; transition: border-color 0.2s ease;
@@ -4717,7 +4717,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.37</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.38</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -6632,6 +6632,7 @@
     currentTextScale = level;
     // アプリ全体を一律に拡大(zoomは可変幅レイアウトなので横崩れしないことを検証済み)
     document.body.style.zoom = TEXT_SCALE_MAP[level];
+    if (typeof resizeMoodJournalTextarea === 'function') setTimeout(resizeMoodJournalTextarea, 0);
     if (typeof window.requestPersistentBottomNavSync === 'function') window.requestPersistentBottomNavSync();
     document.querySelectorAll('.textscale-btn').forEach(b => b.classList.toggle('active', b.dataset.scale === level));
     if (!skipSave) {
@@ -10877,6 +10878,7 @@
     }
     // カレンダーを開いた時、日スライダーを今の実寸で中央合わせし直す(非表示時はclientWidth=0で中央化できないため)
     if (groupKey === 'group_calendar' && typeof renderCalRail === 'function') requestAnimationFrame(() => renderCalRail());
+    if (groupKey === 'group_diary' && typeof resizeMoodJournalTextarea === 'function') requestAnimationFrame(resizeMoodJournalTextarea);
     requestPeekCatPosition();
   }
   async function toggleMultiPageMode(on) {
@@ -12056,6 +12058,23 @@
     '・次の目標\n\n' +
     '◆その他┈┈┈┈┈┈┈┈┈┈\n\n';
 
+  // V439: 日記本文は内側でスクロールさせず、内容の全行が見える高さまで枠そのものを伸ばす。
+  let moodJournalResizeFrame = 0;
+  function resizeMoodJournalTextarea() {
+    const el = document.getElementById('moodJournalText');
+    if (!el) return;
+    cancelAnimationFrame(moodJournalResizeFrame);
+    moodJournalResizeFrame = requestAnimationFrame(() => {
+      if (!el.isConnected || el.offsetParent === null) return;
+      el.style.height = 'auto';
+      const borderHeight = Math.max(0, el.offsetHeight - el.clientHeight);
+      el.style.height = `${Math.ceil(el.scrollHeight + borderHeight)}px`;
+      el.scrollTop = 0;
+    });
+  }
+  window.addEventListener('resize', resizeMoodJournalTextarea, { passive: true });
+  if (document.fonts?.ready) document.fonts.ready.then(resizeMoodJournalTextarea).catch(() => {});
+
   function renderMoodJournalUI() {
     // 1日1本運用: 今日すでに書いたものがあれば、開いた時にそのまま続きから書ける状態にする。
     // 無ければテンプレで新規。日付が変われば自動的に新しい日の日記になる。
@@ -12088,6 +12107,7 @@
     document.getElementById('incidentNote')?.classList.toggle('open', incidentOpen);
     document.getElementById('incidentNoteToggle')?.setAttribute('aria-expanded', incidentOpen ? 'true' : 'false');
     moodPrevText = document.getElementById('moodJournalText').value;
+    resizeMoodJournalTextarea();
     resetDiaryHistory(moodPrevText);
     renderMoodEntryList();
     renderDiaryHistoryInline();
@@ -12202,6 +12222,7 @@
     moodLastSavedText = entry.text || '';
     moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
     moodPrevText = entry.text || '';
+    resizeMoodJournalTextarea();
     resetDiaryHistory(moodPrevText);
     document.getElementById('moodResetBtn').style.display = 'block';
     playUIClick();
@@ -12226,6 +12247,7 @@
     document.getElementById('moodResetBtn').style.display = 'none';
     document.getElementById('moodJournalSavedInfo').textContent = '';
     moodPrevText = '';
+    resizeMoodJournalTextarea();
     resetDiaryHistory('');
     showToast('新しい記録として書けます');
   }
@@ -12266,6 +12288,7 @@
     const el = document.getElementById('moodJournalText');
     diaryHistoryApplying = true;
     el.value = diaryHistory[diaryHistoryIdx];
+    resizeMoodJournalTextarea();
     moodPrevText = el.value;
     diaryHistoryApplying = false;
     updateDiaryHistoryButtons();
@@ -12451,6 +12474,7 @@
   function handleMoodJournalInput() {
     const el = document.getElementById('moodJournalText');
     const cur = el.value;
+    resizeMoodJournalTextarea();
 
     // --- 取り消し/やり直し用の履歴を積む(プログラムからの復元中は積まない) ---
     if (!diaryHistoryApplying) scheduleDiaryHistory();

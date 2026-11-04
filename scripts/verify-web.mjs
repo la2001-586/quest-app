@@ -180,6 +180,17 @@ if (!(routineListPos >= 0 && routineListPos < routineProgressPos && routineListP
   failures.push('routine list must precede progress, stock, and combo UI');
 }
 
+for (const marker of [
+  'V439: 日記本文は内側でスクロールさせず',
+  'function resizeMoodJournalTextarea()',
+  "el.style.height = 'auto'",
+  'el.scrollHeight + borderHeight',
+  "groupKey === 'group_diary'",
+  'overflow-y: hidden'
+]) {
+  if (!html.includes(marker)) failures.push(`auto-growing diary marker is missing: ${marker}`);
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',
