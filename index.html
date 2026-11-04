@@ -4437,6 +4437,14 @@
     bottom: max(8px, env(safe-area-inset-bottom)) !important;
   }
 
+  /* ================= V444: KEYBOARD NEVER LIFTS THE BOTTOM NAV =================
+     ソフトキーボードで visual viewport が縮んでも、下ナビはその上端へ追従させない。
+     画面本来の下端へ補正してキーボードの背後に留め、本文入力を塞がない。 */
+  #persistentBottomNav[data-keyboard-open="true"] > .home-bar {
+    transform: translate3d(0, var(--bottom-nav-keyboard-inset, 0px), 0) !important;
+    pointer-events: none !important;
+  }
+
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
   .task-date-group { position: relative; }
   .task-date-group + .task-date-group { margin-top: 0; }
@@ -4865,7 +4873,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.43</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.44</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -6048,13 +6056,23 @@
 </div>
 
 <script>
-  // 下ナビはページ内容と別レイヤーで、常にiOSを含む可視領域の最下部へ固定する。
+  // 下ナビはページ内容と別レイヤーで、常に端末画面そのものの最下部へ固定する。
+  // ソフトキーボード表示時は縮んだ visual viewport の下端へ持ち上げず、
+  // キーボードに隠れる本来の画面下端へ補正する。
   (function initPersistentBottomNav() {
     const layer = document.getElementById('persistentBottomNav');
     const nav = document.querySelector('.home-bar');
     if (!layer || !nav) return;
     if (nav.parentElement !== layer) layer.appendChild(nav);
+    if (navigator.virtualKeyboard) {
+      try { navigator.virtualKeyboard.overlaysContent = true; } catch (_) {}
+    }
     let frame = 0;
+    let stableWidth = Math.max(window.innerWidth, document.documentElement.clientWidth);
+    let stableHeight = Math.max(window.innerHeight, document.documentElement.clientHeight);
+    const isEditable = (el) => !!el && (
+      el.matches?.('input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]), textarea, select, [contenteditable="true"]')
+    );
     const sync = () => {
       frame = 0;
       const viewport = window.visualViewport;
@@ -6065,10 +6083,29 @@
       const left = Math.max(0, Math.min(maxLeft, viewport ? viewport.offsetLeft : 0));
       const top = Math.max(0, Math.min(maxTop, viewport ? viewport.offsetTop : 0));
       const bodyZoom = Math.max(.5, Number.parseFloat(getComputedStyle(document.body).zoom) || 1);
+      const currentWidth = Math.max(window.innerWidth, document.documentElement.clientWidth);
+      const currentHeight = Math.max(window.innerHeight, document.documentElement.clientHeight);
+      const focusedEditable = isEditable(document.activeElement);
+
+      // 横幅が大きく変わった場合だけ回転・ウインドウ変更として基準を作り直す。
+      if (Math.abs(currentWidth - stableWidth) > 60) {
+        stableWidth = currentWidth;
+        stableHeight = currentHeight;
+      } else if (!focusedEditable) {
+        stableWidth = currentWidth;
+        stableHeight = Math.max(stableHeight, currentHeight, top + height);
+      }
+
+      const visibleBottom = top + height;
+      const keyboardInset = focusedEditable && stableHeight - visibleBottom > 100
+        ? Math.max(0, stableHeight - visibleBottom)
+        : 0;
       layer.style.left = `${left / bodyZoom}px`;
       layer.style.top = `${top / bodyZoom}px`;
       layer.style.width = `${width / bodyZoom}px`;
       layer.style.height = `${height / bodyZoom}px`;
+      layer.style.setProperty('--bottom-nav-keyboard-inset', `${keyboardInset / bodyZoom}px`);
+      layer.dataset.keyboardOpen = keyboardInset > 0 ? 'true' : 'false';
     };
     const requestSync = () => {
       if (!frame) frame = requestAnimationFrame(sync);
@@ -6078,6 +6115,8 @@
     window.addEventListener('resize', requestSync, { passive: true });
     window.addEventListener('orientationchange', requestSync, { passive: true });
     window.addEventListener('scroll', requestSync, { passive: true });
+    document.addEventListener('focusin', requestSync, { passive: true });
+    document.addEventListener('focusout', requestSync, { passive: true });
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', requestSync, { passive: true });
       window.visualViewport.addEventListener('scroll', requestSync, { passive: true });

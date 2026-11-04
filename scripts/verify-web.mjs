@@ -233,6 +233,17 @@ for (const marker of [
 }
 
 for (const marker of [
+  'V444: KEYBOARD NEVER LIFTS THE BOTTOM NAV',
+  'data-keyboard-open="true"',
+  '--bottom-nav-keyboard-inset',
+  'navigator.virtualKeyboard.overlaysContent = true',
+  'stableHeight - visibleBottom > 100',
+  "layer.dataset.keyboardOpen = keyboardInset > 0 ? 'true' : 'false'"
+]) {
+  if (!html.includes(marker)) failures.push(`keyboard-stable bottom navigation marker is missing: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',
