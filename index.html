@@ -2899,6 +2899,80 @@
     box-shadow: var(--elev-1); transition: transform var(--motion-fast) var(--ease-out);
   }
   .evt-add:active { transform: scale(0.98); }
+
+  /* ================= V442: DAY DETAIL IS VERTICALLY FIXED, NEVER HORIZONTALLY SCROLLABLE ================= */
+  #dayDetailModal {
+    padding: 12px max(16px, env(safe-area-inset-right)) calc(92px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+  #dayDetailModal .day-detail-card {
+    width: min(340px, 100%);
+    max-width: 100%;
+    max-height: min(82dvh, calc(100dvh - 126px));
+    margin: 0 auto;
+    padding: 26px 22px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    scrollbar-gutter: stable;
+  }
+  #dayDetailModal .day-detail-card,
+  #dayDetailModal .day-detail-card * { box-sizing: border-box; min-width: 0; }
+  #dayDetailModal .day-detail-card input,
+  #dayDetailModal .day-detail-card select,
+  #dayDetailModal .day-detail-card textarea,
+  #dayDetailModal .day-detail-card button { max-width: 100%; }
+  #dayDetailDate,
+  #dayDetailItems,
+  #dayDetailEventsList,
+  #dayDetailMoodText { overflow-wrap: anywhere; word-break: break-word; }
+  #dayDetailModal .day-detail-summary { width: 100%; }
+  #dayDetailModal .day-detail-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #dayDetailShareBtn {
+    flex: 0 1 auto;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+  }
+  #dayDetailModal .evt-form,
+  #dayDetailModal .evt-row,
+  #dayDetailModal .evt-ctrl { width: 100%; }
+  #dayDetailModal .evt-in,
+  #dayDetailModal .evt-title { max-width: 100%; }
+  #dayDetailModal .evt-time-row .evt-ctrl {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 6px;
+  }
+  #dayDetailModal .evt-time-row .evt-time { width: 100%; min-width: 0; }
+  #dayDetailModal .evt-time-row .evt-allday {
+    grid-column: 1 / -1;
+    justify-self: start;
+    white-space: normal;
+  }
+  #dayDetailModal .evt-rmd-custom { flex: 0 1 62px; }
+  @media (max-width: 360px) {
+    #dayDetailModal { padding-inline: 10px; }
+    #dayDetailModal .day-detail-card { width: 100%; padding: 22px 17px; }
+    #dayDetailModal .evt-row { display: block; }
+    #dayDetailModal .evt-label {
+      display: block;
+      width: auto;
+      margin: 0 0 5px;
+      text-align: left;
+      line-height: 1.45;
+      white-space: normal;
+    }
+    #dayDetailModal .evt-row.top .evt-label { margin-top: 0; }
+  }
   .cal-primary-toggle { display: flex; gap: 6px; margin: 14px 0 4px; }
   .cal-view-btn {
     flex: 1; min-width: 0; padding: 10px 4px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.15);
@@ -4776,7 +4850,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.41</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.42</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5417,9 +5491,9 @@
 </div>
 
 <div class="grand-modal" id="dayDetailModal" onclick="closeDayDetail()">
-  <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:28px 24px; max-width:min(320px,86vw); max-height:82vh; overflow-y:auto; text-align:center;" onclick="event.stopPropagation()">
+  <div class="modal-card day-detail-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; text-align:center;" onclick="event.stopPropagation()">
     <div id="dayDetailDate" style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--cyan); font-weight:800; margin-bottom:14px;">7月16日の記録</div>
-    <div style="display:flex; gap:10px; margin-bottom:16px;">
+    <div class="day-detail-summary" style="display:flex; gap:10px; margin-bottom:16px;">
       <div style="flex:1; background:rgba(255,255,255,0.04); border-radius:10px; padding:10px;">
         <div id="dayDetailCount" style="font-family:'Orbitron',sans-serif; font-size:20px; font-weight:800; color:#fff;">0</div>
         <div style="font-size:9.5px; color:var(--ink-dim); margin-top:2px;" data-i18n="stat_selected_count">選択件数</div>
@@ -5431,7 +5505,7 @@
     </div>
     <div id="dayDetailItems" style="font-size:12px; color:var(--ink-dim); line-height:1.7; text-align:left; background:rgba(255,255,255,0.03); border-radius:10px; padding:12px;"></div>
     <div style="margin-top:14px; text-align:left;">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+      <div class="day-detail-section-head" style="margin-bottom:6px;">
         <span style="font-size:10px; color:var(--magenta); font-family:'Orbitron',sans-serif;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> 予定</span>
         <button id="dayDetailShareBtn" onclick="shareDayEvents()" style="appearance:none; cursor:pointer; display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; color:var(--cyan); background:rgba(43,201,204,0.08); border:1px solid rgba(43,201,204,0.4); border-radius:8px; padding:4px 10px;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.12em;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg> <span data-i18n="share_day_btn">この日を共有</span></button>
       </div>
@@ -5444,7 +5518,7 @@
             <input type="date" id="dayDetailEventDate" class="evt-in evt-grow">
           </div>
         </div>
-        <div class="evt-row">
+        <div class="evt-row evt-time-row">
           <span class="evt-label">日時</span>
           <div class="evt-ctrl">
             <input type="time" id="dayDetailEventTime" class="evt-in evt-time" onchange="autofillEventEndTime()">

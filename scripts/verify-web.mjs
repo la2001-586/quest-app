@@ -212,6 +212,17 @@ for (const marker of [
 }
 
 for (const marker of [
+  'V442: DAY DETAIL IS VERTICALLY FIXED, NEVER HORIZONTALLY SCROLLABLE',
+  'class="modal-card day-detail-card"',
+  'class="day-detail-section-head"',
+  'class="evt-row evt-time-row"',
+  '#dayDetailModal .evt-time-row .evt-allday',
+  'overflow-x: hidden'
+]) {
+  if (!html.includes(marker)) failures.push(`fixed day detail marker is missing: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',
