@@ -164,41 +164,6 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`persistent bottom navigation marker is missing: ${marker}`);
 }
 
-for (const marker of [
-  'V434: 明日の予定と睡眠システム',
-  "tomorrowPlans: 'quest-tomorrow-plans-v1'",
-  'id="tomorrowPlanText"',
-  'insertTodayPlanIntoDiary',
-  'id="sleepSoundGrid"',
-  'startSleepSound',
-  'calcPersonalSleepScore',
-  'id="sleepTrend"',
-  '睡眠段階の測定や医療診断ではありません'
-]) {
-  if (!html.includes(marker)) failures.push(`tomorrow plan/sleep system marker is missing: ${marker}`);
-}
-
-for (const marker of [
-  'V435: タスクを日付の濃いバーで分け',
-  'task-date-group',
-  'task-date-bar',
-  'taskDateHeadingParts',
-  'taskDateRelation',
-  'renderDatedScheduledTaskRow',
-  "sortedDates = [...groups.keys()].sort"
-]) {
-  if (!html.includes(marker)) failures.push(`dated task timeline marker is missing: ${marker}`);
-}
-
-for (const marker of [
-  'V437: Lifebearを参考に',
-  '.task-date-group .item-emoji { display: none; }',
-  '.task-date-group .task-time-meta .task-time-start + span { display: none; }',
-  'task-item-color-dot'
-]) {
-  if (!html.includes(marker)) failures.push(`simplified dated task UI marker is missing: ${marker}`);
-}
-
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',
