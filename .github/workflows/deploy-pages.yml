@@ -10,7 +10,8 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  # 公開済みの旧ジョブが状態反映待ちで残っても、最新版の公開を止めない。
+  cancel-in-progress: true
 
 jobs:
   build:
