@@ -4852,7 +4852,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.35</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.34</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -9356,12 +9356,8 @@
         const regs = await navigator.serviceWorker.getRegistrations();
         await Promise.all(regs.map(reg => reg.unregister()));
       }
-      showToast('キャッシュを削除しました。最新版を読み込みます…');
-      setTimeout(() => {
-        const nextUrl = new URL(location.href);
-        nextUrl.searchParams.set('app_update', String(Date.now()));
-        location.replace(nextUrl.toString());
-      }, 1200);
+      showToast('キャッシュを削除しました。再読み込みします…');
+      setTimeout(() => location.reload(true), 1200);
     } catch (e) {
       showToast('キャッシュの削除に失敗しました');
     }
@@ -15383,51 +15379,6 @@
   initParticleField();
 
   initFromStorage();
-
-  // V436: AUTOMATIC WEB APP UPDATE
-  // GitHub Pages のHTMLキャッシュや、iOSのホーム画面Webアプリに旧版が残っても、
-  // 起動・復帰時に軽量なversion.jsonだけを必ず再確認し、同一オリジンのまま最新版へ移る。
-  // URLだけを更新するため、localStorageに保存された予定・日記等は消えない。
-  (function initAutomaticAppUpdates() {
-    if (location.protocol === 'file:' || location.hostname === '127.0.0.1' || location.hostname === 'localhost') return;
-    const buildText = document.getElementById('buildTag')?.textContent || '';
-    const currentVersion = buildText.match(/BUILD v([0-9]+\.[0-9]+\.[0-9]+)/)?.[1] || '';
-    let checking = false;
-
-    async function checkForAppUpdate() {
-      if (checking || !currentVersion) return;
-      checking = true;
-      try {
-        const response = await fetch(`version.json?update_check=${Date.now()}`, { cache: 'no-store' });
-        if (!response.ok) return;
-        const payload = await response.json();
-        const remoteVersion = String(payload?.version || '').trim();
-        if (!/^\d+\.\d+\.\d+$/.test(remoteVersion) || remoteVersion === currentVersion) return;
-
-        const guardKey = `daily-station-update-${remoteVersion}`;
-        try {
-          const lastAttempt = Number(sessionStorage.getItem(guardKey) || 0);
-          if (Date.now() - lastAttempt < 60000) return;
-          sessionStorage.setItem(guardKey, String(Date.now()));
-        } catch (e) {}
-
-        const nextUrl = new URL(location.href);
-        nextUrl.searchParams.set('app_version', remoteVersion);
-        nextUrl.searchParams.set('updated_at', String(Date.now()));
-        location.replace(nextUrl.toString());
-      } catch (e) {
-        // オフライン時は現在の版をそのまま使い、次の起動・復帰で再確認する。
-      } finally {
-        checking = false;
-      }
-    }
-
-    const scheduleCheck = () => setTimeout(checkForAppUpdate, 350);
-    window.addEventListener('load', scheduleCheck, { once: true });
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') scheduleCheck();
-    });
-  })();
 
   // 旧ベータ版の外部プッシュ通知は廃止済み。既存購読があれば、予定を空にしてから
   // 購読とService Workerを解除する。以後、予定・日記等を通知サーバーへ送信しない。

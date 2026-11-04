@@ -10,7 +10,6 @@ const requiredFiles = [
   'terms.html',
   'evidence.html',
   'manifest.json',
-  'version.json',
   'service-worker.js',
   'apple-touch-icon.png',
   'icon-512.png',
@@ -189,16 +188,6 @@ for (const marker of [
   "sortedDates = [...groups.keys()].sort"
 ]) {
   if (!html.includes(marker)) failures.push(`dated task timeline marker is missing: ${marker}`);
-}
-
-for (const marker of [
-  'V436: AUTOMATIC WEB APP UPDATE',
-  'initAutomaticAppUpdates',
-  'version.json?update_check=',
-  "searchParams.set('app_version', remoteVersion)",
-  "window.addEventListener('load', scheduleCheck"
-]) {
-  if (!html.includes(marker)) failures.push(`automatic app update marker is missing: ${marker}`);
 }
 
 const forbiddenMarkers = [

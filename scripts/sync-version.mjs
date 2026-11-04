@@ -23,12 +23,6 @@ async function replaceChecked(file, replacements) {
 await replaceChecked('index.html', [
   [/(<div id="buildTag" class="stb-version">)BUILD v[^<]+(<\/div>)/, `$1BUILD v${version}$2`, 'visible build label'],
 ]);
-await replaceChecked('manifest.json', [
-  [/"start_url"\s*:\s*"\.\/index\.html(?:\?app_version=[^"]+)?"/, `"start_url": "./index.html?app_version=${version}"`, 'versioned start URL'],
-]);
-await replaceChecked('version.json', [
-  [/"version"\s*:\s*"[^"]+"/, `"version": "${version}"`, 'web update version'],
-]);
 await replaceChecked('android/app/build.gradle', [
   [/versionCode\s+\d+/, `versionCode ${versionCode}`, 'Android versionCode'],
   [/versionName\s+"[^"]+"/, `versionName "${version}"`, 'Android versionName'],
