@@ -850,6 +850,21 @@
     padding: 34px 18px;
     position: relative;
   }
+  /* ================= V443: 時計とアラームを包んでいた中間の巨大カードを廃止 ================= */
+  #hudHeaderBlock .hud-clock-hero {
+    margin: 0 8px 16px;
+    padding: 15px 10px 0;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  #hudHeaderBlock .hud-clock-hero::before,
+  #hudHeaderBlock .hud-clock-hero::after { content: none !important; }
+  #hudHeaderBlock #otherWrapAlarm {
+    margin-top: 14px !important;
+    padding-top: 12px !important;
+  }
   /* V430: 猫はカードの overflow に切られない、画面最上位の独立レイヤーに置く */
   .peek-cat-layer {
     position: fixed;
@@ -4850,7 +4865,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.42</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.43</div>
 </div>
 
 <div class="wrap page show" id="page-task">

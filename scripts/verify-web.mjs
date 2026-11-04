@@ -223,6 +223,16 @@ for (const marker of [
 }
 
 for (const marker of [
+  'V443: 時計とアラームを包んでいた中間の巨大カードを廃止',
+  '#hudHeaderBlock .hud-clock-hero',
+  'background: transparent !important',
+  'box-shadow: none !important',
+  '#hudHeaderBlock #otherWrapAlarm'
+]) {
+  if (!html.includes(marker)) failures.push(`flat home clock marker is missing: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',
