@@ -244,6 +244,21 @@ for (const marker of [
 }
 
 for (const marker of [
+  'V445: LIGHT, DIRECT PAGE SWITCHING',
+  'prismPageEnterQuick .21s',
+  'animation: none !important',
+  'touch-action: manipulation',
+  'ページ移動時に全カードの再アニメーションは行わない',
+  "document.querySelectorAll('.home-tab').forEach(t => t.classList.toggle('active', t.dataset.group === groupKey))",
+  "if (!rail.children.length && typeof renderCalRail === 'function')",
+  "restartClass(surface, 'prism-page-enter', 260)",
+  'グループタブ同士の移動では外側の task ページを毎回閉じ直さず',
+  'animatePrismPage();'
+]) {
+  if (!html.includes(marker)) failures.push(`light page switching marker is missing: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',

@@ -4445,6 +4445,39 @@
     pointer-events: none !important;
   }
 
+  /* ================= V445: LIGHT, DIRECT PAGE SWITCHING =================
+     大きな面に blur・3D回転・子要素の段階表示を重ねず、短い一枚の移動だけで切り替える。
+     押下中は即座に沈み、離した後だけ小さく着地させる。 */
+  body.prism-motion-ui .home-tab {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .16s cubic-bezier(.2,.8,.25,1), color .12s linear, background .16s ease !important;
+  }
+  body.prism-motion-ui .home-tab::before {
+    transition: transform .18s cubic-bezier(.2,.8,.25,1), opacity .12s linear !important;
+  }
+  body.prism-motion-ui .home-tab.active { transform: translateY(-4px); }
+  body.prism-motion-ui .home-tab:active {
+    transform: translateY(-1px) scale(.94) !important;
+    transition-duration: .055s !important;
+  }
+  body.prism-motion-ui .home-tab.active .home-tab-icon {
+    animation: navGlyphQuick .19s cubic-bezier(.2,.8,.25,1.15) !important;
+  }
+  body.prism-motion-ui .prism-page-enter {
+    animation: prismPageEnterQuick .21s cubic-bezier(.2,.78,.25,1) both !important;
+    will-change: transform, opacity;
+  }
+  body.prism-motion-ui .prism-layer-enter > * { animation: none !important; }
+  @keyframes navGlyphQuick {
+    0% { transform: translateY(2px) scale(.92); }
+    100% { transform: none; }
+  }
+  @keyframes prismPageEnterQuick {
+    0% { opacity: .72; transform: translate3d(0, 7px, 0) scale(.995); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  }
+
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
   .task-date-group { position: relative; }
   .task-date-group + .task-date-group { margin-top: 0; }
@@ -4873,7 +4906,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.44</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.45</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -11162,18 +11195,21 @@
       if (label) label.style.display = show ? '' : 'none';
       if (wrap) wrap.style.display = show ? '' : 'none';
     });
-    document.querySelectorAll('.home-tab[data-group]').forEach(t => t.classList.toggle('active', t.dataset.group === groupKey));
+    document.querySelectorAll('.home-tab').forEach(t => t.classList.toggle('active', t.dataset.group === groupKey));
     const stbEl = document.getElementById('stickyTopBar'); if (stbEl) stbEl.setAttribute('data-g', groupKey);
     window.scrollTo(0, 0);
-    // タスク管理を開いた時、今表示中のフォルダ(タスク or 日課)を起き上がりアニメで見せる(案5)
-    if (groupKey === 'group_task') {
-      requestAnimationFrame(() => {
-        const routineOpen = document.getElementById('folderPanelRoutine').classList.contains('show');
-        staggerRise(routineOpen ? document.querySelector('#folderPanelRoutine .panel.show') : document.getElementById('folderPanelTask'));
-      });
-    }
-    // カレンダーを開いた時、日スライダーを今の実寸で中央合わせし直す(非表示時はclientWidth=0で中央化できないため)
-    if (groupKey === 'group_calendar' && typeof renderCalRail === 'function') requestAnimationFrame(() => renderCalRail());
+    // ページ移動時に全カードの再アニメーションは行わない。フォルダ自体を切り替えた時だけ staggerRise を使う。
+    // カレンダーも29日分を再生成せず、既存レールの選択日を実寸で中央へ戻すだけにする。
+    if (groupKey === 'group_calendar') requestAnimationFrame(() => {
+      const rail = document.getElementById('calRail');
+      if (!rail) return;
+      if (!rail.children.length && typeof renderCalRail === 'function') { renderCalRail(); return; }
+      const selected = rail.querySelector('.cal-chip.on');
+      if (selected && rail.clientWidth > 0) {
+        rail.scrollLeft = selected.offsetLeft + selected.offsetWidth / 2 - rail.clientWidth / 2;
+        if (typeof _calScale === 'function') _calScale();
+      }
+    });
     if (groupKey === 'group_diary' && typeof resizeMoodJournalTextarea === 'function') requestAnimationFrame(resizeMoodJournalTextarea);
     requestPeekCatPosition();
   }
@@ -12114,8 +12150,17 @@
   }
   document.querySelectorAll('.home-tab').forEach(tab => {
     tab.onclick = () => {
-      goToPage(tab.dataset.page);
-      if (multiPageModeOn && tab.dataset.group) switchAppGroup(tab.dataset.group);
+      if (multiPageModeOn && tab.dataset.group) {
+        // グループタブ同士の移動では外側の task ページを毎回閉じ直さず、表示面だけを直接交換する。
+        const taskPage = document.getElementById('page-task');
+        if (!taskPage.classList.contains('show')) {
+          document.querySelectorAll('.page').forEach(page => page.classList.remove('show'));
+          taskPage.classList.add('show');
+        }
+        switchAppGroup(tab.dataset.group);
+      } else {
+        goToPage(tab.dataset.page);
+      }
     };
   });
 
@@ -15253,9 +15298,8 @@
       if (!document.body.classList.contains('prism-motion-ui')) return;
       const surface = visiblePrismSurface();
       if (!surface) return;
-      decoratePrismCards(surface);
-      restartClass(surface, 'prism-page-enter', 820);
-      restartClass(surface, 'prism-layer-enter', 780);
+      surface.classList.remove('prism-layer-enter');
+      restartClass(surface, 'prism-page-enter', 260);
     }
 
     function makeRipple(x, y) {
@@ -15325,7 +15369,7 @@
       if (sheenTarget) restartClass(sheenTarget, 'prism-sheen', 720);
 
       if (action.classList.contains('home-tab')) {
-        window.setTimeout(animatePrismPage, 40);
+        animatePrismPage();
       }
 
       if (action.classList.contains('check-box')) {
