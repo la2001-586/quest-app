@@ -4,9 +4,10 @@ import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const read = (file) => readFile(resolve(root, file), 'utf8');
 
-const [pkgRaw, manifestRaw, capacitorRaw, androidGradle, iosProject, index, privacy, terms, worker] = await Promise.all([
+const [pkgRaw, manifestRaw, webVersionRaw, capacitorRaw, androidGradle, iosProject, index, privacy, terms, worker] = await Promise.all([
   read('package.json'),
   read('manifest.json'),
+  read('version.json'),
   read('capacitor.config.json'),
   read('android/app/build.gradle'),
   read('ios/App/App.xcodeproj/project.pbxproj'),
@@ -18,6 +19,7 @@ const [pkgRaw, manifestRaw, capacitorRaw, androidGradle, iosProject, index, priv
 
 const pkg = JSON.parse(pkgRaw);
 const manifest = JSON.parse(manifestRaw);
+const webVersion = JSON.parse(webVersionRaw);
 const capacitor = JSON.parse(capacitorRaw);
 const errors = [];
 const warnings = [];
@@ -53,6 +55,11 @@ if (iosBuildNumbers.length > 0 && iosBuildNumbers.every(code => code === expecte
 if (index.includes(`BUILD v${pkg.version}`)) pass(`visible build label agrees (${pkg.version})`);
 else error(`visible build label does not match package version ${pkg.version}`);
 
+if (webVersion.version === pkg.version) pass(`web update version agrees (${pkg.version})`);
+else error(`version.json ${webVersion.version ?? 'missing'} does not match package version ${pkg.version}`);
+if (manifest.start_url === `./index.html?app_version=${pkg.version}`) pass('installed web app start URL is versioned');
+else error(`manifest start_url is not versioned for ${pkg.version}`);
+
 if (capacitor.appId === 'com.dailystation.app' && capacitor.appName === 'Daily Station') {
   pass('Capacitor application identity is fixed');
 } else {
@@ -71,7 +78,7 @@ const icon512 = manifest.icons?.find((icon) => String(icon.sizes).split(/\s+/).i
 if (icon512) pass('512px install icon is declared');
 else error('manifest has no 512x512 install icon');
 
-for (const file of ['privacy.html', 'terms.html', 'manifest.json', 'apple-touch-icon.png', 'icon-512.png']) {
+for (const file of ['privacy.html', 'terms.html', 'manifest.json', 'version.json', 'apple-touch-icon.png', 'icon-512.png']) {
   try {
     const info = await stat(resolve(root, file));
     if (!info.isFile() || info.size === 0) error(`${file} is missing or empty`);
