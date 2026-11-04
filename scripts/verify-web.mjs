@@ -191,6 +191,19 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`auto-growing diary marker is missing: ${marker}`);
 }
 
+for (const marker of [
+  'V435: タスクを日付の濃いバーで分け',
+  'task-date-group',
+  'task-date-bar',
+  'taskDateHeadingParts',
+  'taskDateRelation',
+  'renderDatedScheduledTaskRow',
+  "sortedDates = [...groups.keys()].sort",
+  'task-item-color-dot'
+]) {
+  if (!html.includes(marker)) failures.push(`dated task timeline marker is missing: ${marker}`);
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',
@@ -206,7 +219,10 @@ const forbiddenMarkers = [
   'id="routineEditLevel"',
   'id="panel-low"',
   'id="panel-mid"',
-  'id="panel-high"'
+  'id="panel-high"',
+  'V434: 明日の予定と睡眠システム',
+  'id="tomorrowPlanText"',
+  'id="sleepSoundGrid"'
 ];
 for (const marker of forbiddenMarkers) {
   if (html.includes(marker)) failures.push(`release-only content remains: ${marker}`);
