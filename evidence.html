@@ -4,28 +4,244 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f8fbfb">
   <title>Daily Station 機能と科学的根拠</title>
   <style>
-    :root{--ink:#1b2430;--muted:#647080;--line:#dfe6ec;--paper:#f7fafb;--card:rgba(255,255,255,.8);--cyan:#188a8f;--violet:#7651b2;--amber:#a96912;--red:#a34545}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 12% 2%,rgba(89,215,216,.13),transparent 31rem),radial-gradient(circle at 91% 12%,rgba(161,105,219,.1),transparent 28rem),var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;line-height:1.75}
-    main{max-width:1060px;margin:0 auto;padding:54px 22px 90px}a{color:#126e86;text-underline-offset:3px}.eyebrow{font-size:.73rem;letter-spacing:.16em;color:var(--cyan);font-weight:800}.hero{padding:30px;border:1px solid rgba(41,113,125,.18);border-radius:26px;background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(239,249,249,.58));box-shadow:0 18px 50px rgba(28,55,70,.08)}h1{font-size:clamp(1.75rem,4.5vw,3rem);line-height:1.25;margin:.35rem 0 .8rem;letter-spacing:-.03em}.lead{font-size:1rem;max-width:780px;color:#40505c}.stamp{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;font-size:.78rem;color:var(--muted)}.notice{margin:22px 0 36px;padding:17px 20px;border-left:4px solid var(--amber);background:rgba(255,244,217,.72);border-radius:4px 14px 14px 4px}.notice strong{color:#6e460b}h2{font-size:1.35rem;margin:42px 0 14px}h3{font-size:1rem;margin:0 0 7px}.legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.legend>div,.method-card{padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--card)}.grade{display:inline-flex;align-items:center;justify-content:center;min-width:2.1rem;height:1.55rem;border-radius:999px;font-size:.7rem;font-weight:900;color:white;margin-right:7px}.s1{background:#277d63}.s2{background:#447aa9}.mixed{background:#9a6a20}.utility{background:#68717c}.legend p,.method-card p{font-size:.8rem;color:var(--muted);margin:.4rem 0 0}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.72)}table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:15px 14px;vertical-align:top;text-align:left;border-bottom:1px solid var(--line)}th{position:sticky;top:0;background:#edf5f6;font-size:.75rem;letter-spacing:.04em;color:#41515d}td{font-size:.83rem}tr:last-child td{border-bottom:0}.feature{font-weight:800;white-space:nowrap}.claim{color:#354654}.limit{color:#69747f}.ref{font-size:.74rem;white-space:nowrap}.methods{display:grid;grid-template-columns:1fr 1fr;gap:12px}.refs{counter-reset:ref;display:grid;gap:10px}.refs li{padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:.82rem}.refs em{color:var(--muted)}.change-log{padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.change-log li{margin:.45rem 0;font-size:.85rem}.back{display:inline-flex;margin-top:34px;padding:10px 15px;border:1px solid var(--line);border-radius:999px;text-decoration:none;background:var(--card)}footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);font-size:.75rem;color:var(--muted)}
-    @media(max-width:760px){main{padding:28px 14px 70px}.hero{padding:22px}.legend,.methods{grid-template-columns:1fr}.table-wrap{margin-inline:-2px}}
-    @media(prefers-color-scheme:dark){:root{--ink:#edf4f6;--muted:#aab7c0;--line:#34414a;--paper:#101519;--card:rgba(24,31,37,.82)}body{background:radial-gradient(circle at 12% 2%,rgba(58,175,179,.15),transparent 31rem),radial-gradient(circle at 91% 12%,rgba(133,84,181,.14),transparent 28rem),var(--paper)}.hero{background:linear-gradient(145deg,rgba(33,43,50,.95),rgba(22,35,39,.78));border-color:#354c54}.lead,.claim{color:#ced9df}.notice{background:rgba(105,75,17,.25)}.notice strong{color:#ffd18a}th{background:#1d2b31;color:#c6d5da}a{color:#75d6e7}.limit{color:#aab7c0}}
-    @media print{body{background:white;color:#111}main{max-width:none;padding:15mm}.hero,.table-wrap,.method-card,.refs li{box-shadow:none;background:white}.back{display:none}th{position:static}}
+    :root {
+      --ink:#20242a; --ink-soft:#596168; --ink-dim:#858c92;
+      --line:rgba(64,93,91,.14); --line-strong:rgba(63,143,132,.24);
+      --paper:#f8fbfb; --glass:rgba(255,255,255,.72); --glass-strong:rgba(255,255,255,.9);
+      --cyan:#35b9ad; --violet:#9677dc; --amber:#d29b43; --red:#c36d75;
+      --shadow:0 18px 55px rgba(47,79,84,.1); --radius:25px;
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      margin:0; min-height:100vh; color:var(--ink); line-height:1.75;
+      font-family:"Zen Maru Gothic",-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+      background:
+        linear-gradient(rgba(102,143,147,.055) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(102,143,147,.055) 1px,transparent 1px),
+        radial-gradient(circle at 8% 8%,rgba(91,211,204,.16),transparent 24rem),
+        radial-gradient(circle at 92% 24%,rgba(170,133,230,.14),transparent 25rem),
+        radial-gradient(circle at 55% 94%,rgba(246,179,130,.11),transparent 25rem),
+        var(--paper);
+      background-size:42px 42px,42px 42px,auto,auto,auto,auto;
+    }
+    body::before {
+      content:""; position:fixed; inset:0; pointer-events:none; z-index:-1;
+      background:linear-gradient(118deg,transparent 20%,rgba(255,255,255,.62) 47%,transparent 73%);
+      opacity:.58;
+    }
+    a { color:#217c78; text-underline-offset:3px; }
+    .evidence-topbar {
+      position:sticky; top:0; z-index:20; min-height:61px; padding:9px max(14px,env(safe-area-inset-right)) 9px max(14px,env(safe-area-inset-left));
+      display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+      background:rgba(250,252,252,.78); border-bottom:1px solid rgba(70,94,98,.13);
+      backdrop-filter:blur(24px) saturate(145%); -webkit-backdrop-filter:blur(24px) saturate(145%);
+    }
+    .evidence-topbar::before {
+      content:""; position:absolute; left:0; right:0; top:0; height:2px;
+      background:linear-gradient(90deg,#65d3c7,#8bbce8,#b58ae2,#f0a59d,#e6c877,#65d3c7);
+      opacity:.8;
+    }
+    .top-back {
+      justify-self:start; display:inline-flex; align-items:center; gap:6px; min-height:40px; padding:0 12px;
+      color:var(--ink); background:rgba(255,255,255,.68); border:1px solid var(--line); border-radius:14px;
+      text-decoration:none; font-size:.8rem; font-weight:800; box-shadow:0 4px 14px rgba(37,62,67,.06);
+    }
+    .top-back svg { width:17px; height:17px; }
+    .top-title { font-size:.76rem; font-weight:900; letter-spacing:.08em; }
+    .top-version { justify-self:end; color:var(--ink-dim); font-size:.59rem; letter-spacing:.1em; }
+    .page-shell {
+      max-width:1040px; margin:28px auto 70px; padding:0 26px 34px;
+      background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(245,252,251,.5));
+      border:1px solid rgba(255,255,255,.92); border-radius:34px; box-shadow:var(--shadow);
+      backdrop-filter:blur(24px) saturate(140%); -webkit-backdrop-filter:blur(24px) saturate(140%);
+    }
+    main { max-width:940px; margin:0 auto; padding:0 0 42px; }
+    .hero { padding:42px 4px 30px; border-bottom:1px solid var(--line); }
+    .eyebrow { font-size:.7rem; letter-spacing:.17em; color:#278e88; font-weight:900; }
+    h1 { font-size:clamp(1.85rem,5vw,3.1rem); line-height:1.22; margin:.4rem 0 .8rem; letter-spacing:-.035em; }
+    .lead { margin:0; max-width:800px; color:var(--ink-soft); font-size:.97rem; }
+    .stamp { display:flex; gap:7px; flex-wrap:wrap; margin-top:19px; }
+    .stamp span {
+      padding:5px 9px; color:var(--ink-dim); background:rgba(255,255,255,.58);
+      border:1px solid var(--line); border-radius:999px; font-size:.67rem;
+    }
+    .section-nav {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:18px 0 0;
+    }
+    .section-nav a {
+      display:flex; align-items:center; justify-content:center; min-height:42px; padding:8px 10px;
+      color:var(--ink-soft); background:rgba(255,255,255,.56); border:1px solid var(--line);
+      border-radius:13px; text-decoration:none; font-size:.72rem; font-weight:800;
+    }
+    .section-nav a:active,.top-back:active,.back:active { transform:scale(.98); }
+    .notice {
+      margin:20px 0 0; padding:16px 18px; color:#654c20;
+      background:linear-gradient(135deg,rgba(255,248,225,.86),rgba(255,255,255,.58));
+      border:1px solid rgba(197,151,69,.24); border-left:4px solid var(--amber); border-radius:16px;
+      font-size:.82rem;
+    }
+    .notice strong { color:#664818; }
+    h2 {
+      display:flex; align-items:center; gap:10px; margin:38px 0 14px;
+      font-size:1.22rem; line-height:1.4; scroll-margin-top:76px;
+    }
+    h2::before {
+      content:""; width:4px; height:1.2em; border-radius:99px;
+      background:linear-gradient(180deg,var(--cyan),var(--violet)); box-shadow:0 0 14px rgba(67,190,177,.28);
+    }
+    h3 { font-size:.91rem; margin:0 0 7px; }
+    .legend { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+    .legend>div,.method-card {
+      padding:16px; border:1px solid var(--line); border-radius:17px;
+      background:rgba(255,255,255,.55); box-shadow:0 7px 20px rgba(43,70,73,.045);
+    }
+    .grade {
+      display:inline-flex; align-items:center; justify-content:center; min-width:2.1rem; height:1.55rem;
+      border-radius:999px; font-size:.68rem; font-weight:900; color:white; margin-right:7px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
+    }
+    .s1 { background:#3b9a7f; } .s2 { background:#558ab9; } .mixed { background:#b6853a; } .utility { background:#77818b; }
+    .legend p,.method-card p { margin:.4rem 0 0; color:var(--ink-soft); font-size:.78rem; }
+    .table-wrap {
+      overflow-x:auto; border:1px solid var(--line); border-radius:21px;
+      background:rgba(255,255,255,.57); box-shadow:0 12px 35px rgba(41,72,76,.055);
+    }
+    table { width:100%; border-collapse:collapse; min-width:820px; }
+    th,td { padding:15px 14px; vertical-align:top; text-align:left; border-bottom:1px solid var(--line); }
+    th {
+      position:sticky; top:61px; z-index:2; color:#4b5e60; background:rgba(237,247,246,.94);
+      backdrop-filter:blur(16px); font-size:.71rem; letter-spacing:.04em;
+    }
+    td { font-size:.8rem; }
+    tr:last-child td { border-bottom:0; }
+    .feature { font-weight:900; white-space:nowrap; }
+    .claim { color:#33494a; } .limit { color:#687579; } .ref { font-size:.72rem; white-space:nowrap; }
+    .methods { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .change-log {
+      margin:0; padding:17px 21px 17px 38px; border:1px solid var(--line); border-radius:18px;
+      background:rgba(255,255,255,.55);
+    }
+    .change-log li { margin:.48rem 0; color:var(--ink-soft); font-size:.82rem; }
+    .refs { counter-reset:ref; display:grid; grid-template-columns:1fr 1fr; gap:9px; padding:0; list-style:none; }
+    .refs li {
+      position:relative; min-width:0; padding:14px 15px 14px 48px; border:1px solid var(--line);
+      border-radius:17px; background:rgba(255,255,255,.56); font-size:.77rem; overflow-wrap:anywhere;
+    }
+    .refs li::before {
+      content:counter(list-item); position:absolute; left:14px; top:14px; width:24px; height:24px;
+      display:grid; place-items:center; color:#278e88; background:rgba(76,198,183,.12);
+      border:1px solid rgba(53,185,173,.22); border-radius:8px; font-size:.68rem; font-weight:900;
+    }
+    .refs em { color:var(--ink-soft); }
+    .back {
+      display:flex; align-items:center; justify-content:center; min-height:52px; margin-top:30px; padding:10px 16px;
+      color:var(--ink); border:1px solid var(--line-strong); border-radius:17px; text-decoration:none;
+      background:linear-gradient(145deg,rgba(255,255,255,.84),rgba(235,248,246,.68));
+      box-shadow:0 10px 26px rgba(42,74,77,.07); font-size:.85rem; font-weight:900;
+    }
+    footer { margin-top:28px; padding-top:18px; border-top:1px solid var(--line); color:var(--ink-dim); font-size:.71rem; }
+    @media(max-width:760px) {
+      .evidence-topbar { grid-template-columns:auto 1fr auto; }
+      .top-title { justify-self:center; }
+      .top-version { font-size:.53rem; }
+      .page-shell { margin:12px 9px 32px; padding:0 14px 22px; border-radius:27px; }
+      main { padding-bottom:20px; }
+      .hero { padding:29px 3px 22px; }
+      .lead { font-size:.86rem; }
+      .section-nav { grid-template-columns:1fr 1fr; }
+      .legend,.methods,.refs { grid-template-columns:1fr; }
+      h2 { margin-top:32px; font-size:1.1rem; }
+      .table-wrap { border:0; background:transparent; box-shadow:none; overflow:visible; }
+      table { min-width:0; }
+      thead { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); }
+      tbody { display:grid; gap:11px; }
+      tr {
+        display:block; overflow:hidden; border:1px solid var(--line); border-radius:18px;
+        background:rgba(255,255,255,.6); box-shadow:0 8px 24px rgba(43,72,76,.05);
+      }
+      td { display:grid; grid-template-columns:82px minmax(0,1fr); gap:10px; padding:11px 13px; border-bottom:1px solid var(--line); font-size:.78rem; }
+      td::before { color:var(--ink-dim); font-size:.65rem; font-weight:800; letter-spacing:.03em; }
+      td:nth-child(2)::before { content:"根拠レベル"; }
+      td:nth-child(3)::before { content:"研究との対応"; }
+      td:nth-child(4)::before { content:"限界"; }
+      td:nth-child(5)::before { content:"出典"; }
+      td.feature {
+        display:block; padding:14px 13px; white-space:normal; font-size:.9rem;
+        background:linear-gradient(90deg,rgba(78,202,187,.11),rgba(169,131,225,.07));
+      }
+      td.feature::before { content:none; }
+      tr:last-child td:not(:last-child) { border-bottom:1px solid var(--line); }
+      tr td:last-child { border-bottom:0; }
+      .ref { display:block; white-space:normal; }
+      .ref::before { display:block; margin-bottom:5px; }
+      .refs li { font-size:.74rem; }
+    }
+    @media(max-width:430px) {
+      .top-back { width:40px; padding:0; justify-content:center; }
+      .top-back span { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+      .top-title { font-size:.7rem; }
+      .top-version { max-width:72px; text-align:right; line-height:1.25; }
+      .stamp { gap:5px; }
+      .stamp span { font-size:.61rem; }
+    }
+    @media(prefers-color-scheme:dark) {
+      :root {
+        --ink:#f0f5f5; --ink-soft:#c0cbcc; --ink-dim:#8f9c9f;
+        --line:rgba(189,222,220,.14); --line-strong:rgba(99,211,195,.25);
+        --paper:#101516; --glass:rgba(27,35,36,.76); --glass-strong:rgba(32,40,41,.9);
+      }
+      body { background-color:var(--paper); background-blend-mode:soft-light,soft-light,normal,normal,normal,normal; }
+      body::before { opacity:.08; }
+      .evidence-topbar { background:rgba(15,21,22,.8); }
+      .top-back,.stamp span,.section-nav a,.legend>div,.method-card,.table-wrap,.change-log,.refs li { background:rgba(31,41,42,.76); }
+      .page-shell { background:linear-gradient(145deg,rgba(25,34,35,.8),rgba(18,26,27,.7)); border-color:rgba(255,255,255,.07); }
+      .notice { color:#efd9ad; background:rgba(100,77,31,.24); }
+      .notice strong { color:#ffe2a6; }
+      th { color:#c9d6d6; background:rgba(28,45,44,.95); }
+      .claim { color:#d8e2e2; } .limit { color:#aab6b7; }
+      .back { color:var(--ink); background:linear-gradient(145deg,rgba(40,54,54,.92),rgba(25,39,38,.82)); }
+      @media(max-width:760px) { tr { background:rgba(31,41,42,.78); } td.feature { background:linear-gradient(90deg,rgba(66,179,165,.15),rgba(145,111,199,.12)); } }
+    }
+    @media print {
+      body { background:white; color:#111; } .evidence-topbar,.section-nav { display:none; }
+      .page-shell { max-width:none; margin:0; padding:0; border:0; box-shadow:none; background:white; }
+      main { max-width:none; padding:10mm; } .hero,.table-wrap,.method-card,.refs li { box-shadow:none; background:white; }
+      .back { display:none; } th { position:static; }
+    }
   </style>
 </head>
 <body>
+<header class="evidence-topbar">
+  <a class="top-back" href="index.html" onclick="if (history.length > 1) { event.preventDefault(); history.back(); }" aria-label="Daily Stationへ戻る">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    <span>戻る</span>
+  </a>
+  <div class="top-title">科学的根拠</div>
+  <div class="top-version">BUILD v0.4.41</div>
+</header>
+<div class="page-shell">
 <main>
   <section class="hero">
     <div class="eyebrow">DAILY STATION · EVIDENCE REGISTER</div>
     <h1>機能と科学的根拠</h1>
     <p class="lead">Daily Station の各機能が、どの研究知見を参考にし、どこから先は未検証なのかを公開します。都合のよい論文だけを「証明」として並べず、効果が混在する機能や単なるデザイン上の選択も区別します。</p>
-    <div class="stamp"><span>監査対象：v0.4.40 系の現行機能</span><span>最終レビュー：2026年10月11日</span><span>資料版：1.0</span></div>
+    <div class="stamp"><span>監査対象：v0.4.41 系の現行機能</span><span>最終レビュー：2026年10月11日</span><span>資料版：1.0</span></div>
   </section>
+
+  <nav class="section-nav" aria-label="ページ内メニュー">
+    <a href="#levels">根拠レベル</a>
+    <a href="#features">全機能監査</a>
+    <a href="#methods">監査方法</a>
+    <a href="#references">参照文献</a>
+  </nav>
 
   <div class="notice"><strong>最重要の前提：</strong>Daily Station 自体の有効性を検証した臨床試験・ランダム化比較試験は、現時点ではありません。以下は「機能の背景となる一般的な研究」との対応であり、このアプリを使えば同じ効果が得られるという保証ではありません。医療、診断、治療を目的とするアプリではありません。</div>
 
-  <h2>根拠レベルの読み方</h2>
+  <h2 id="levels">根拠レベルの読み方</h2>
   <section class="legend">
     <div><h3><span class="grade s1">S1</span>比較的直接</h3><p>メタ分析や複数の実験が、機能の中心的な仕組みに近い介入を支持。</p></div>
     <div><h3><span class="grade s2">S2</span>間接的に支持</h3><p>関連する仕組みは支持されるが、Daily Station の具体的UIは未検証。</p></div>
@@ -33,7 +249,7 @@
     <div><h3><span class="grade utility">U</span>効能を主張しない</h3><p>利便性・好み・演出の機能。科学的な行動改善効果は主張しない。</p></div>
   </section>
 
-  <h2>全機能監査</h2>
+  <h2 id="features">全機能監査</h2>
   <div class="table-wrap">
     <table>
       <thead><tr><th>機能</th><th>レベル</th><th>研究と結び付く部分</th><th>言えること／言えないこと</th><th>出典</th></tr></thead>
@@ -61,7 +277,7 @@
     </table>
   </div>
 
-  <h2>監査方法と限界</h2>
+  <h2 id="methods">監査方法と限界</h2>
   <section class="methods">
     <div class="method-card"><h3>対象</h3><p>現行画面に存在する日課、タスク、カレンダー、日記、レポート、睡眠、集中、休養、通知、ゲーム要素、植物、音、メモ、データ機能を対象にした。見た目だけの差分はまとめて評価。</p></div>
     <div class="method-card"><h3>優先した資料</h3><p>査読済みメタ分析、システマティックレビュー、ランダム化・実験研究、標準化論文を優先。ブログやアプリ事業者の宣伝は根拠に採用していない。</p></div>
@@ -81,7 +297,7 @@
     </ul>
   </div>
 
-  <h2>参照文献</h2>
+  <h2 id="references">参照文献</h2>
   <ol class="refs">
     <li id="r1">Harkin B, et al. (2016). Does monitoring goal progress promote goal attainment? <em>Psychological Bulletin, 142(2), 198–229.</em> <a href="https://doi.org/10.1037/bul0000025">doi:10.1037/bul0000025</a></li>
     <li id="r2">Lally P, et al. (2010). How are habits formed: Modelling habit formation in the real world. <em>European Journal of Social Psychology, 40, 998–1009.</em> <a href="https://doi.org/10.1002/ejsp.674">doi:10.1002/ejsp.674</a></li>
@@ -105,5 +321,6 @@
   <a class="back" href="index.html">← Daily Stationへ戻る</a>
   <footer>この資料は機能設計の透明性を高めるためのもので、医療上の助言ではありません。誤り・撤回論文・より新しい統合研究が見つかった場合は、出典と評価を更新します。</footer>
 </main>
+</div>
 </body>
 </html>

@@ -33,6 +33,7 @@ await replaceChecked('ios/App/App.xcodeproj/project.pbxproj', [
 ]);
 await replaceChecked('evidence.html', [
   [/監査対象：v[^ ]+ 系の現行機能/, `監査対象：v${version} 系の現行機能`, 'evidence scope'],
+  [/(<div class="top-version">)BUILD v[^<]+(<\/div>)/, `$1BUILD v${version}$2`, 'evidence visible build label'],
 ]);
 
 console.log(`Synchronized Daily Station v${version} (build ${versionCode})`);

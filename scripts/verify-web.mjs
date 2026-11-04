@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const htmlPath = resolve(root, 'www', 'index.html');
 const html = await readFile(htmlPath, 'utf8');
+const evidence = await readFile(resolve(root, 'www', 'evidence.html'), 'utf8');
 const pkg = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'));
 const requiredFiles = [
   'privacy.html',
@@ -84,6 +85,16 @@ for (const marker of [
   'Evidence & References'
 ]) {
   if (!html.includes(marker)) failures.push(`evidence access marker is missing: ${marker}`);
+}
+
+for (const marker of [
+  'class="evidence-topbar"',
+  'class="page-shell"',
+  'class="section-nav"',
+  'id="features"',
+  'td:nth-child(3)::before { content:"研究との対応"; }'
+]) {
+  if (!evidence.includes(marker)) failures.push(`unified evidence UI marker is missing: ${marker}`);
 }
 
 for (const marker of [
