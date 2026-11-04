@@ -4328,6 +4328,150 @@
     bottom: max(8px, env(safe-area-inset-bottom)) !important;
   }
 
+  /* V434: 明日の予定と睡眠システムは、日記の上で各自1層の平らな面として扱う */
+  .diary-prep-section { margin-top: 0; display: grid; gap: 12px; }
+  .diary-tool-shell {
+    position: relative;
+    padding: 16px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 24%, transparent);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+    box-shadow: 0 12px 32px rgba(30, 68, 63, .08);
+    overflow: hidden;
+  }
+  .diary-tool-shell::before {
+    content: "";
+    position: absolute;
+    left: 16px; right: 16px; top: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--tool-accent, var(--cyan)), transparent);
+    opacity: .55;
+  }
+  .tomorrow-planner-shell { --tool-accent: #8f72db; }
+  .sleep-system-shell { --tool-accent: #4f83c8; }
+  .diary-tool-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .diary-tool-icon {
+    display: grid; place-items: center; width: 32px; height: 32px; flex: 0 0 auto;
+    border-radius: 11px; color: var(--ink); background: color-mix(in srgb, var(--tool-accent) 14%, transparent);
+  }
+  .diary-tool-icon svg { width: 17px; height: 17px; }
+  .diary-tool-title { font-size: 14px; font-weight: 800; letter-spacing: .02em; }
+  .diary-tool-sub { margin-top: 2px; color: var(--ink-dim); font-size: 10px; }
+  .diary-tool-date { margin-left: auto; color: var(--ink-dim); font-size: 10px; white-space: nowrap; }
+  .tomorrow-plan-textarea, .sleep-note-input {
+    display: block; width: 100%; box-sizing: border-box; resize: vertical;
+    border: 0; outline: 0; color: var(--ink); background: transparent;
+    font: inherit; line-height: 1.7;
+  }
+  .tomorrow-plan-textarea { min-height: 104px; padding: 10px 2px; font-size: 13px; border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); }
+  .tomorrow-plan-textarea::placeholder, .sleep-note-input::placeholder { color: color-mix(in srgb, var(--ink-dim) 62%, transparent); }
+  .tomorrow-plan-foot { min-height: 18px; padding-top: 7px; color: var(--ink-dim); font-size: 9.5px; text-align: right; }
+  .today-plan-carry {
+    display: flex; align-items: center; gap: 10px; margin: -2px 0 10px; padding: 9px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+  }
+  .today-plan-carry[hidden] { display: none !important; }
+  .today-plan-copy { min-width: 0; flex: 1; }
+  .today-plan-copy strong { display: block; font-size: 10px; }
+  .today-plan-preview { margin-top: 2px; color: var(--ink-dim); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .today-plan-insert {
+    flex: 0 0 auto; padding: 7px 10px; border: 1px solid color-mix(in srgb, #8f72db 36%, transparent);
+    border-radius: 10px; background: color-mix(in srgb, #8f72db 11%, transparent); color: var(--ink); font-size: 10px; font-weight: 700;
+  }
+  .sleep-sound-title { color: var(--ink-dim); font-size: 9.5px; margin-bottom: 7px; }
+  .sleep-sound-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .sleep-sound-btn {
+    min-width: 0; padding: 9px 5px; border: 1px solid color-mix(in srgb, var(--ink) 11%, transparent);
+    border-radius: 11px; background: transparent; color: var(--ink-dim); font-size: 10px; font-weight: 700;
+  }
+  .sleep-sound-btn.active { color: var(--ink); border-color: color-mix(in srgb, #4f83c8 55%, transparent); background: color-mix(in srgb, #4f83c8 13%, transparent); box-shadow: 0 0 0 2px color-mix(in srgb, #4f83c8 7%, transparent); }
+  .sleep-player-row { display: grid; grid-template-columns: auto auto minmax(72px, 1fr); gap: 8px; align-items: center; margin-top: 8px; }
+  .sleep-play-btn {
+    min-width: 74px; padding: 9px 12px; border: 0; border-radius: 11px; background: #172026; color: #fff; font-size: 11px; font-weight: 800;
+  }
+  .sleep-play-btn.playing { background: #4f83c8; }
+  .sleep-timer-select, .sleep-eval-select, .sleep-target-input {
+    min-height: 34px; border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); border-radius: 10px;
+    background: color-mix(in srgb, var(--panel) 72%, transparent); color: var(--ink); padding: 0 8px; font: inherit; font-size: 10px;
+  }
+  .sleep-volume-wrap { display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--ink-dim); font-size: 9px; }
+  .sleep-volume-wrap input { width: 100%; min-width: 54px; accent-color: #4f83c8; }
+  .sleep-player-status { min-height: 18px; padding-top: 5px; color: var(--ink-dim); font-size: 9.5px; }
+  .sleep-system-divider { height: 1px; margin: 12px 0; background: color-mix(in srgb, var(--ink) 9%, transparent); }
+  .sleep-track-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sleep-track-field { display: grid; gap: 5px; }
+  .sleep-track-label, .sleep-eval-label { color: var(--ink-dim); font-size: 9.5px; }
+  .sleep-track-field input[type="time"] {
+    min-width: 0; width: 100%; box-sizing: border-box; min-height: 38px; border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+    border-radius: 11px; background: transparent; color: var(--ink); padding: 0 10px; font: 700 13px/1 inherit;
+  }
+  .sleep-track-duration { grid-column: 1 / -1; min-height: 16px; color: var(--ink-dim); font-size: 10px; }
+  .sleep-eval-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+  .sleep-eval-field { display: grid; gap: 5px; min-width: 0; }
+  .sleep-target-wrap { position: relative; }
+  .sleep-target-input { width: 100%; padding-right: 26px; }
+  .sleep-target-unit { position: absolute; right: 8px; top: 9px; color: var(--ink-dim); font-size: 9px; pointer-events: none; }
+  .sleep-rating-group { margin-top: 11px; }
+  .sleep-rating-head { display: flex; justify-content: space-between; color: var(--ink-dim); font-size: 9.5px; margin-bottom: 6px; }
+  .sleep-rating-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+  .sleep-rating-btn { padding: 7px 0; border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); border-radius: 9px; background: transparent; color: var(--ink-dim); font-size: 10px; }
+  .sleep-rating-btn.active { background: color-mix(in srgb, #4f83c8 15%, transparent); border-color: color-mix(in srgb, #4f83c8 50%, transparent); color: var(--ink); font-weight: 800; }
+  .sleep-note-input { min-height: 52px; margin-top: 10px; padding: 8px 2px; font-size: 11px; border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); }
+  .sleep-score-line { display: flex; align-items: center; gap: 12px; padding-top: 10px; border-top: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); }
+  .sleep-score-number { min-width: 58px; font-size: 26px; font-weight: 800; letter-spacing: -.05em; color: #4f83c8; }
+  .sleep-score-number small { font-size: 9px; letter-spacing: 0; color: var(--ink-dim); }
+  .sleep-score-copy { flex: 1; min-width: 0; color: var(--ink-dim); font-size: 9.5px; line-height: 1.55; }
+  .sleep-trend { display: flex; align-items: end; gap: 4px; height: 38px; min-width: 86px; }
+  .sleep-trend-bar { flex: 1; min-width: 5px; border-radius: 5px 5px 2px 2px; background: color-mix(in srgb, #4f83c8 72%, transparent); opacity: .72; }
+  .sleep-trend-bar.empty { height: 3px !important; background: color-mix(in srgb, var(--ink-dim) 20%, transparent); }
+  .sleep-system-note { margin-top: 7px; color: var(--ink-dim); font-size: 8.5px; line-height: 1.5; }
+  body.theme-simple:not(.theme-dark) .diary-tool-shell, body.theme-fancy .diary-tool-shell { background: rgba(255,255,255,.74); }
+  body.theme-simple:not(.theme-dark) .sleep-track-field input[type="time"], body.theme-fancy .sleep-track-field input[type="time"] { color: #202428; }
+  @media (max-width: 520px) {
+    .sleep-sound-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sleep-player-row { grid-template-columns: auto 1fr; }
+    .sleep-volume-wrap { grid-column: 1 / -1; }
+    .sleep-eval-grid { grid-template-columns: 1fr 1fr; }
+    .sleep-eval-field:last-child { grid-column: 1 / -1; }
+    .sleep-score-line { flex-wrap: wrap; }
+    .sleep-trend { width: 100%; }
+  }
+
+  /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
+  .task-date-group { position: relative; }
+  .task-date-group + .task-date-group { margin-top: 8px; }
+  .task-date-bar {
+    display: flex; align-items: center; gap: 8px;
+    min-height: 38px; margin: 0; padding: 8px 14px;
+    background: color-mix(in srgb, var(--ink) 9%, var(--panel));
+    border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+    color: var(--ink); pointer-events: none; user-select: none;
+  }
+  .task-date-group.is-past .task-date-bar { background: color-mix(in srgb, #9b6d63 12%, var(--panel)); }
+  .task-date-group.is-today .task-date-bar { background: color-mix(in srgb, #4a8fb8 14%, var(--panel)); }
+  .task-date-group.is-future .task-date-bar { background: color-mix(in srgb, #7c72b8 11%, var(--panel)); }
+  .task-date-main { font-size: 12px; font-weight: 800; letter-spacing: .025em; }
+  .task-date-weekday { color: var(--ink-dim); font-size: 10px; }
+  .task-date-state {
+    margin-left: auto; padding: 3px 7px; border-radius: 999px;
+    background: color-mix(in srgb, var(--ink) 8%, transparent); color: var(--ink-dim);
+    font-size: 8.5px; font-weight: 800; letter-spacing: .04em;
+  }
+  .task-date-group.is-past .task-date-state { color: #b65a5a; background: color-mix(in srgb, #d56b6b 12%, transparent); }
+  .task-date-group.is-today .task-date-state { color: #28799d; background: color-mix(in srgb, #4a9bc0 13%, transparent); }
+  .task-date-group .swipe-del-wrap { margin: 0; border-radius: 0; }
+  .task-date-group .swipe-del-wrap > .item { z-index: 1; }
+  .task-date-group .swipe-del-trash { opacity: 0; transition: opacity .12s ease; }
+  .task-date-group .swipe-del-wrap.swipe-open .swipe-del-trash,
+  .task-date-group .swipe-del-wrap.swipe-revealing .swipe-del-trash { opacity: 1; }
+  .task-date-group .swipe-del-wrap + .swipe-del-wrap .item { border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); }
+  .task-date-group .task-time-summary { margin: 7px 12px; }
+  body.theme-simple.theme-dark .task-date-bar { background: rgba(255,255,255,.08); }
+  body.theme-simple:not(.theme-dark) .task-date-bar, body.theme-fancy .task-date-bar { color: #202428; }
+  body.theme-simple:not(.theme-dark) .task-date-group .swipe-del-wrap .item,
+  body.theme-fancy .task-date-group .swipe-del-wrap .item { background: #fff; }
+
 </style>
 </head>
 <body class="theme-simple">
@@ -4708,7 +4852,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.33</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.34</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -4991,6 +5135,66 @@
   </div>
 
   <div class="app-group-label" data-i18n="group_diary">📔 日記</div>
+  <div class="cal-section diary-prep-section">
+    <section class="diary-tool-shell tomorrow-planner-shell" aria-labelledby="tomorrowPlanTitle">
+      <div class="diary-tool-head">
+        <span class="diary-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M8 3v4M16 3v4M3 10h18"></path><path d="M9 15h6M13 12l3 3-3 3"></path></svg></span>
+        <div><div class="diary-tool-title" id="tomorrowPlanTitle">明日の予定</div><div class="diary-tool-sub">カレンダーとは別の、明日のための下書き</div></div>
+        <div class="diary-tool-date" id="tomorrowPlanDate"></div>
+      </div>
+      <div class="today-plan-carry" id="todayPlanCarry" hidden>
+        <div class="today-plan-copy"><strong>昨日書いた今日の予定</strong><div class="today-plan-preview" id="todayPlanPreview"></div></div>
+        <button type="button" class="today-plan-insert" id="todayPlanInsertBtn" onclick="insertTodayPlanIntoDiary()">日記に反映</button>
+      </div>
+      <textarea class="tomorrow-plan-textarea" id="tomorrowPlanText" placeholder="明日やること、順番、忘れたくないこと" oninput="handleTomorrowPlanInput()" onblur="saveTomorrowPlanNow()"></textarea>
+      <div class="tomorrow-plan-foot" id="tomorrowPlanSaved">入力すると自動保存</div>
+    </section>
+
+    <section class="diary-tool-shell sleep-system-shell" aria-labelledby="sleepSystemTitle">
+      <div class="diary-tool-head">
+        <span class="diary-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"></path><path d="M17 4v4M15 6h4"></path></svg></span>
+        <div><div class="diary-tool-title" id="sleepSystemTitle">睡眠</div><div class="diary-tool-sub">寝る前の音から、翌朝の記録まで</div></div>
+        <div class="diary-tool-date" id="sleepDateLabel"></div>
+      </div>
+
+      <div class="sleep-sound-title">睡眠導入音</div>
+      <div class="sleep-sound-grid" id="sleepSoundGrid">
+        <button type="button" class="sleep-sound-btn active" data-sleep-sound="rain" onclick="selectSleepSound('rain')">細い雨</button>
+        <button type="button" class="sleep-sound-btn" data-sleep-sound="brown" onclick="selectSleepSound('brown')">深いノイズ</button>
+        <button type="button" class="sleep-sound-btn" data-sleep-sound="ocean" onclick="selectSleepSound('ocean')">遠い波</button>
+        <button type="button" class="sleep-sound-btn" data-sleep-sound="night" onclick="selectSleepSound('night')">夜の風</button>
+      </div>
+      <div class="sleep-player-row">
+        <button type="button" class="sleep-play-btn" id="sleepPlayBtn" onclick="toggleSleepSound()">再生</button>
+        <select class="sleep-timer-select" id="sleepTimerSelect" onchange="saveSleepSoundPrefs()" aria-label="自動停止タイマー">
+          <option value="15">15分</option><option value="30" selected>30分</option><option value="45">45分</option><option value="60">60分</option><option value="0">タイマーなし</option>
+        </select>
+        <label class="sleep-volume-wrap"><span>音量</span><input type="range" id="sleepSoundVolume" min="0" max="100" value="35" oninput="changeSleepSoundVolume(this.value)" aria-label="睡眠導入音の音量"></label>
+      </div>
+      <div class="sleep-player-status" id="sleepPlayerStatus">選んだ音はタイマーの終わりにゆっくり消えます</div>
+
+      <div class="sleep-system-divider"></div>
+      <div class="sleep-track-row">
+        <label class="sleep-track-field"><span class="sleep-track-label">就寝</span><input type="time" id="sleepBedtime" oninput="updateSleepDuration()"></label>
+        <label class="sleep-track-field"><span class="sleep-track-label">起床</span><input type="time" id="sleepWaketime" oninput="updateSleepDuration()"></label>
+        <div id="sleepDurationLabel" class="sleep-track-duration"></div>
+      </div>
+      <div class="sleep-eval-grid">
+        <label class="sleep-eval-field"><span class="sleep-eval-label">入眠まで</span><select id="sleepLatency" class="sleep-eval-select" onchange="updateSleepEvaluationField('latency', this.value)"><option value="">未記録</option><option value="0">5分未満</option><option value="5">5～10分</option><option value="10">10～20分</option><option value="20">20～30分</option><option value="30">30～45分</option><option value="45">45～60分</option><option value="60">60分以上</option></select></label>
+        <label class="sleep-eval-field"><span class="sleep-eval-label">途中で起きた回数</span><select id="sleepAwakenings" class="sleep-eval-select" onchange="updateSleepEvaluationField('awakenings', this.value)"><option value="">未記録</option><option value="0">0回</option><option value="1">1回</option><option value="2">2回</option><option value="3">3回</option><option value="4">4回以上</option></select></label>
+        <label class="sleep-eval-field"><span class="sleep-eval-label">自分の目標時間</span><span class="sleep-target-wrap"><input type="number" id="sleepTargetHours" class="sleep-target-input" min="4" max="12" step="0.5" value="8" onchange="updateSleepEvaluationField('targetHours', this.value)"><span class="sleep-target-unit">時間</span></span></label>
+      </div>
+      <div class="sleep-rating-group"><div class="sleep-rating-head"><span>眠れた感覚</span><span id="sleepQualityLabel">未記録</span></div><div class="sleep-rating-row" id="sleepQualityRating"><button type="button" class="sleep-rating-btn" onclick="setSleepRating('quality',1)">1</button><button type="button" class="sleep-rating-btn" onclick="setSleepRating('quality',2)">2</button><button type="button" class="sleep-rating-btn" onclick="setSleepRating('quality',3)">3</button><button type="button" class="sleep-rating-btn" onclick="setSleepRating('quality',4)">4</button><button type="button" class="sleep-rating-btn" onclick="setSleepRating('quality',5)">5</button></div></div>
+      <div class="sleep-rating-group"><div class="sleep-rating-head"><span>起きた時の感覚</span><span id="sleepMorningLabel">未記録</span></div><div class="sleep-rating-row" id="sleepMorningRating"><button type="button" class="sleep-rating-btn" onclick="setSleepRating('morning',1)">1</button><button type="button" class="sleep-rating-btn" onclick="setSleepRating('morning',2)">2</button><button type="button" class="sleep-rating-btn" onclick="setSleepRating('morning',3)">3</button><button type="button" class="sleep-rating-btn" onclick="setSleepRating('morning',4)">4</button><button type="button" class="sleep-rating-btn" onclick="setSleepRating('morning',5)">5</button></div></div>
+      <textarea id="sleepNote" class="sleep-note-input" placeholder="眠りに影響したこと、起きた時のメモ" oninput="handleSleepNoteInput()" onblur="saveSleepNoteNow()"></textarea>
+      <div class="sleep-score-line">
+        <div class="sleep-score-number" id="sleepScoreNumber">—<small> / 100</small></div>
+        <div class="sleep-score-copy" id="sleepScoreCopy">時刻と2つの主観評価を入れると、自分用の指標が出ます。</div>
+        <div class="sleep-trend" id="sleepTrend" aria-label="直近7日の睡眠評価"></div>
+      </div>
+      <div class="sleep-system-note">この評価は自分の記録を比べるための目安で、睡眠段階の測定や医療診断ではありません。</div>
+    </section>
+  </div>
   <div class="cal-section" style="margin-top:0;">
     <div id="moodEntryList" class="mood-entry-list"></div>
     <div class="mood-journal-shell" id="moodComposeShell">
@@ -5011,17 +5215,6 @@
           <button class="mood-tag-btn" data-mood="neutral" onclick="selectMoodTag('neutral')">😐</button>
           <button class="mood-tag-btn" data-mood="bad" onclick="selectMoodTag('bad')">😞</button>
         </div>
-      </div>
-      <div class="sleep-track-row">
-        <div class="sleep-track-field">
-          <span class="sleep-track-label">🌙 就寝</span>
-          <input type="time" id="sleepBedtime" oninput="updateSleepDuration()">
-        </div>
-        <div class="sleep-track-field">
-          <span class="sleep-track-label">☀️ 起床</span>
-          <input type="time" id="sleepWaketime" oninput="updateSleepDuration()">
-        </div>
-        <div id="sleepDurationLabel" class="sleep-track-duration"></div>
       </div>
       <textarea id="moodJournalText" class="mood-journal-textarea" data-i18n-placeholder="ph_mood_journal" placeholder="今日の気分、体調、頭に浮かんだこと。何でも自由に。" oninput="handleMoodJournalInput()" onblur="handleMoodJournalBlur()"></textarea>
       <section class="incident-note" id="incidentNote">
@@ -7344,6 +7537,7 @@
     function resetTracking(pointerId = activePointer) {
       if (claimed) gestureArbiter.release('swipe-delete', pointerId);
       if (pointerId !== null) releasePointer(pointerId);
+      wrapEl.classList.remove('swipe-revealing');
       activePointer = null;
       axisLocked = null;
       claimed = false;
@@ -7398,6 +7592,7 @@
       if (!claimed) {
         if (!gestureArbiter.claim('swipe-delete', e.pointerId)) { resetTracking(e.pointerId); return; }
         claimed = true;
+        wrapEl.classList.add('swipe-revealing');
         try { contentEl.setPointerCapture(e.pointerId); } catch (_) {}
       }
       e.preventDefault();
@@ -9350,6 +9545,7 @@
     events: 'quest-events-v1',
     mementoCards: 'quest-memento-cards-v1',
     sleep: 'quest-sleep-v1',
+    tomorrowPlans: 'quest-tomorrow-plans-v1',
     quickMemo: 'quest-quickmemo-v1',
     alarms: 'quest-alarms-v2',
     theme: 'quest-theme-v1',
@@ -9762,6 +9958,7 @@
     await loadStreakMilestone();
     await loadScheduledEvents();
     await loadSleepData();
+    await loadNextDayPlans();
     await loadQuickMemo();
     loadWeather();
     await loadAlarmSettings();
@@ -9848,6 +10045,8 @@
         renderCalendar();
         renderTodayTasksList();
         renderMoodJournalUI();
+        loadTodaySleepUI();
+        renderTomorrowPlanner();
         if (carried.length > 0) openMissedTasksReview(carried);
         showToast('<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg> 日付が変わりました。今日の分を記録しました');
       }
@@ -10537,78 +10736,105 @@
     const runningText = runningToday ? (currentLang === 'en' ? ` · ${runningToday} running` : `・${runningToday}件計測中`) : '';
     return `<div class="task-time-summary"><span>⏱ ${completedText}${runningText}</span><strong>${formatTaskDuration(totalMs)}</strong></div>`;
   }
+  function taskDateHeadingParts(dateKey) {
+    const date = dateFromKey(dateKey);
+    const weekdays = currentLang === 'en' ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : ['日', '月', '火', '水', '木', '金', '土'];
+    if (currentLang === 'en') return { main: date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), weekday: weekdays[date.getDay()] };
+    return { main: `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`, weekday: `${weekdays[date.getDay()]}曜日` };
+  }
+  function taskDateRelation(dateKey, todayKey) {
+    const diff = Math.round((dateFromKey(dateKey) - dateFromKey(todayKey)) / 86400000);
+    if (diff < 0) return { className: 'is-past', label: currentLang === 'en' ? 'OVERDUE' : '期限切れ' };
+    if (diff === 0) return { className: 'is-today', label: currentLang === 'en' ? 'TODAY' : '今日' };
+    if (diff === 1) return { className: 'is-future', label: currentLang === 'en' ? 'TOMORROW' : '明日' };
+    return { className: 'is-future', label: currentLang === 'en' ? 'UPCOMING' : '予定' };
+  }
+  function renderCustomTodayTaskRow(task) {
+    const carryLabel = task.carriedFrom
+      ? (currentLang === 'en' ? ` (carried over from ${formatShortDate(task.carriedFrom)})` : ` (${formatShortDate(task.carriedFrom)}から持ち越し)`)
+      : '';
+    const inner = `
+      <div class="item today-custom${task.done ? ' done' : ''}" style="--item-accent:${attrMuted('task')}">
+        <div class="check-box" onclick="toggleTodayTask('${task.id}')"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
+        <div class="item-main" onclick="toggleTodayTask('${task.id}')">
+          <div class="item-main-row">
+            <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
+            <span class="item-label">${escapeHtml(task.text)}${carryLabel ? `<span class="today-task-carry-tag">${escapeHtml(carryLabel)}</span>` : ''}</span>
+          </div>
+          ${taskTimingHtml(task, `beginTodayTaskTimer('${task.id}')`)}
+        </div>
+        <span class="row-kebab" onclick="event.stopPropagation(); openTodayTaskEdit('${task.id}')">${KEBAB_SVG}</span>
+      </div>`;
+    return wrapForSwipeDelete(inner, `deleteTodayTask('${task.id}')`);
+  }
+  function renderDatedScheduledTaskRow(ev, occurrenceKey) {
+    const isDone = ev.recurrence ? (ev.doneOccurrences || []).includes(occurrenceKey) : !!ev.done;
+    const timingState = timingStateForScheduledEvent(ev, occurrenceKey, false) || ev;
+    const dot = ev.color ? `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${ev.color}; margin-right:3px;"></span>` : '';
+    const inner = `
+      <div class="item today-custom${isDone ? ' done' : ''}" style="--item-accent:${attrMuted(ev.attr || 'event')}">
+        <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${occurrenceKey}'); renderTodayTasksList();"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
+        <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${occurrenceKey}'); renderTodayTasksList();">
+          <div class="item-main-row">
+            <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg></span>
+            <span class="item-label">${dot}${ev.time ? `${escapeHtml(ev.time)} ` : ''}${escapeHtml(ev.text)}</span>
+          </div>
+          ${taskTimingHtml(timingState, `beginScheduledTaskTimer('${ev.id}', '${occurrenceKey}')`)}
+        </div>
+        <span class="row-kebab" onclick="event.stopPropagation(); openEventEditor('${ev.id}')">${KEBAB_SVG}</span>
+      </div>`;
+    return wrapForSwipeDelete(inner, `deleteScheduledEvent('${ev.id}'); renderTodayTasksList();`);
+  }
   function renderTodayTasksList() {
     renderHudCalLink();
     const el = document.getElementById('todayTasksList');
     if (!el) return;
     const todayKey = logicalDateKey(trustedNow);
-    const todaysScheduled = eventsForDate(todayKey); // カレンダーで今日の日付になった予定も、ここに合流させる
-    // 過去の日付のまま未完了で残っている(繰り返しではない)予定も、期限切れとして一緒に表示する(旧・持ち越し機能の役割を引き継ぐ)
-    // 「未完了」か、「今日チェックしたばかり」のものだけを表示する。
-    // (以前は、一度チェックした予定が、日付が変わっても永遠に残り続けてしまうバグがあった。
-    //  特にバックアップ復元時、過去の完了済み予定が大量に復活し、一覧を埋め尽くす原因になっていた)
-    const overdue = scheduledEvents.filter(e => e.dateKey && !e.recurrence && e.dateKey !== todayKey && dateFromKey(e.dateKey) < dateFromKey(todayKey) && (!e.done || e.doneOnDateKey === todayKey));
+    const groups = new Map();
+    const addToGroup = (dateKey, item) => {
+      if (!dateKey) return;
+      if (!groups.has(dateKey)) groups.set(dateKey, []);
+      groups.get(dateKey).push(item);
+    };
+
+    // 日付指定された非繰り返し予定は、過去から将来まですべて時系列に載せる。
+    // 過去の完了済みは「今日完了したもの」だけ残し、翌日以降に大量復活しないようにする。
+    scheduledEvents.forEach((ev) => {
+      if (!ev.dateKey || ev.recurrence) return;
+      const isPast = dateFromKey(ev.dateKey) < dateFromKey(todayKey);
+      if (isPast && ev.done && ev.doneOnDateKey !== todayKey) return;
+      addToGroup(ev.dateKey, { kind: 'scheduled', event: ev, occurrenceKey: ev.dateKey });
+    });
+
+    // 繰り返しを無限の将来分まで生成すると一覧が埋まるため、今日発生した分だけを今日の日付に置く。
+    eventsForDate(todayKey).filter((ev) => ev.recurrence).forEach((ev) => addToGroup(todayKey, { kind: 'scheduled', event: ev, occurrenceKey: todayKey }));
+    todayTasks.forEach((task) => addToGroup(todayKey, { kind: 'custom', task }));
+
     const timingSummary = taskTimeSummaryHtml(todayKey);
-    if (todayTasks.length === 0 && todaysScheduled.length === 0 && overdue.length === 0) {
-      el.innerHTML = timingSummary + `<div class="today-tasks-empty">${currentLang === 'en' ? 'Nothing here yet today' : '今日はまだ何もありません'}</div>`;
+    if (groups.size === 0 && !timingSummary) {
+      el.innerHTML = `<div class="today-tasks-empty">${currentLang === 'en' ? 'No dated tasks yet' : '日付のあるタスクはまだありません'}</div>`;
       return;
     }
-    const customHtml = todayTasks.map(t => {
-      const carryLabel = t.carriedFrom
-        ? (currentLang === 'en' ? ` (carried over, missed ${formatShortDate(t.carriedFrom)})` : `(未完了${formatShortDate(t.carriedFrom)}から持ち越し)`)
-        : '';
-      const inner = `
-      <div class="item today-custom${t.done ? ' done' : ''}" style="--item-accent:${attrMuted('task')}">
-        <div class="check-box" onclick="toggleTodayTask('${t.id}')"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
-        <div class="item-main" onclick="toggleTodayTask('${t.id}')">
-          <div class="item-main-row">
-            <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M12 2l3 3-5 5-3 6 6-3 5-5 3 3"></path><path d="M9 15l-5 5"></path></svg></span>
-            <span class="item-label">${escapeHtml(t.text)}${carryLabel ? ` <span class="today-task-carry-tag">${escapeHtml(carryLabel)}</span>` : ''}</span>
-          </div>
-          ${taskTimingHtml(t, `beginTodayTaskTimer('${t.id}')`)}
-        </div>
-        <span class="row-kebab" onclick="event.stopPropagation(); openTodayTaskEdit('${t.id}')">${KEBAB_SVG}</span>
-      </div>
-    `;
-      return wrapForSwipeDelete(inner, `deleteTodayTask('${t.id}')`);
+    if (timingSummary && !groups.has(todayKey)) groups.set(todayKey, []);
+
+    const sortedDates = [...groups.keys()].sort((a, b) => dateFromKey(a) - dateFromKey(b));
+    el.innerHTML = sortedDates.map((dateKey) => {
+      const parts = taskDateHeadingParts(dateKey);
+      const relation = taskDateRelation(dateKey, todayKey);
+      const items = groups.get(dateKey).slice().sort((a, b) => {
+        const aTime = a.kind === 'scheduled' ? (a.event.time || '99:99') : '99:99';
+        const bTime = b.kind === 'scheduled' ? (b.event.time || '99:99') : '99:99';
+        return aTime.localeCompare(bTime);
+      });
+      const rows = items.map((item) => item.kind === 'scheduled'
+        ? renderDatedScheduledTaskRow(item.event, item.occurrenceKey)
+        : renderCustomTodayTaskRow(item.task)).join('');
+      const summary = dateKey === todayKey ? timingSummary : '';
+      return `<section class="task-date-group ${relation.className}" data-task-date="${escapeHtml(dateKey)}">
+        <div class="task-date-bar"><span class="task-date-main">${escapeHtml(parts.main)}</span><span class="task-date-weekday">${escapeHtml(parts.weekday)}</span><span class="task-date-state">${escapeHtml(relation.label)}</span></div>
+        ${summary}${rows}
+      </section>`;
     }).join('');
-    const scheduledHtml = todaysScheduled.map(ev => {
-      const isDone = ev.recurrence ? (ev.doneOccurrences || []).includes(todayKey) : ev.done;
-      const timingState = timingStateForScheduledEvent(ev, todayKey, false) || ev;
-      const dot = ev.color ? `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${ev.color}; margin-right:3px;"></span>` : '';
-      const inner = `
-      <div class="item today-custom${isDone ? ' done' : ''}" style="--item-accent:${attrMuted(ev.attr || 'event')}">
-        <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
-        <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${todayKey}'); renderTodayTasksList();">
-          <div class="item-main-row">
-            <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg></span>
-            <span class="item-label">${dot}${ev.time ? `${ev.time} ` : ''}${escapeHtml(ev.text)}</span>
-          </div>
-          ${taskTimingHtml(timingState, `beginScheduledTaskTimer('${ev.id}', '${todayKey}')`)}
-        </div>
-        <span class="row-kebab" onclick="event.stopPropagation(); openEventEditor('${ev.id}')">${KEBAB_SVG}</span>
-      </div>
-    `;
-      return wrapForSwipeDelete(inner, `deleteScheduledEvent('${ev.id}'); renderTodayTasksList();`);
-    }).join('');
-    const overdueHtml = overdue.map(ev => {
-      const overdueLabel = currentLang === 'en' ? ` (overdue, was ${formatShortDate(ev.dateKey)})` : `(未完了${formatShortDate(ev.dateKey)}から持ち越し)`;
-      const inner = `
-      <div class="item today-custom${ev.done ? ' done' : ''}" style="--item-accent:${attrMuted(ev.attr || 'event')}">
-        <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>
-        <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${ev.dateKey}'); renderTodayTasksList();">
-          <div class="item-main-row">
-            <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg></span>
-            <span class="item-label">${escapeHtml(ev.text)} <span class="today-task-carry-tag">${escapeHtml(overdueLabel)}</span></span>
-          </div>
-          ${taskTimingHtml(ev, `beginScheduledTaskTimer('${ev.id}', '${ev.dateKey}')`)}
-        </div>
-        <span class="row-kebab" onclick="event.stopPropagation(); openEventEditor('${ev.id}')">${KEBAB_SVG}</span>
-      </div>
-    `;
-      return wrapForSwipeDelete(inner, `deleteScheduledEvent('${ev.id}'); renderTodayTasksList();`);
-    }).join('');
-    el.innerHTML = timingSummary + overdueHtml + scheduledHtml + customHtml;
     initAllSwipeDelete(el);
   }
   function openAddTodayTask() {
@@ -11873,12 +12099,98 @@
 
   // ---- 気分日記(自由記述+画像添付、日付ごとに保存) ----
   let moodJournalData = {}; // { "YYYY-M-D": [ { id, time, text, images }, ... ] } 1日に複数の記録を持てる配列形式
-  let sleepData = {}; // { "YYYY-M-D": { bedtime: "23:30", waketime: "07:00" } } EXP等の評価には一切絡めない、純粋な記録
+  let nextDayPlans = {}; // { "YYYY-M-D": { text, updatedAt, insertedAt } } カレンダー予定とは独立した「明日の下書き」
+  let tomorrowPlanSaveTimer = null;
+  function offsetDateKey(key, days) {
+    const parts = String(key || '').split('-').map(Number);
+    if (parts.length !== 3 || parts.some((n) => !Number.isFinite(n))) return '';
+    const date = new Date(parts[0], parts[1] - 1, parts[2] + days);
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  }
+  function formatPlanDate(key) {
+    const parts = String(key || '').split('-').map(Number);
+    if (parts.length !== 3) return '';
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+    const wd = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
+    return `${parts[1]}/${parts[2]} (${wd})`;
+  }
+  async function loadNextDayPlans() {
+    try {
+      const saved = await window.storage.get('quest-tomorrow-plans-v1');
+      nextDayPlans = (saved && saved.value) ? (sanitizeBackupField('tomorrowPlans', JSON.parse(saved.value)) || {}) : {};
+    } catch (e) { nextDayPlans = {}; }
+  }
+  async function saveNextDayPlans() {
+    try { await window.storage.set('quest-tomorrow-plans-v1', JSON.stringify(nextDayPlans)); } catch (e) {}
+  }
+  function renderTomorrowPlanner() {
+    const todayKey = logicalDateKey(trustedNow);
+    const tomorrowKey = offsetDateKey(todayKey, 1);
+    const editor = document.getElementById('tomorrowPlanText');
+    const date = document.getElementById('tomorrowPlanDate');
+    if (date) date.textContent = formatPlanDate(tomorrowKey);
+    if (editor) editor.value = nextDayPlans[tomorrowKey]?.text || '';
+    const todayPlan = String(nextDayPlans[todayKey]?.text || '').trim();
+    const carry = document.getElementById('todayPlanCarry');
+    const preview = document.getElementById('todayPlanPreview');
+    if (carry) carry.hidden = !todayPlan;
+    if (preview) preview.textContent = todayPlan.replace(/\s+/g, ' ');
+    const sleepDate = document.getElementById('sleepDateLabel');
+    if (sleepDate) sleepDate.textContent = formatPlanDate(todayKey);
+  }
+  function handleTomorrowPlanInput() {
+    const info = document.getElementById('tomorrowPlanSaved');
+    if (info) info.textContent = '保存中…';
+    clearTimeout(tomorrowPlanSaveTimer);
+    tomorrowPlanSaveTimer = setTimeout(saveTomorrowPlanNow, 650);
+  }
+  async function saveTomorrowPlanNow() {
+    clearTimeout(tomorrowPlanSaveTimer);
+    const editor = document.getElementById('tomorrowPlanText');
+    if (!editor) return;
+    const tomorrowKey = offsetDateKey(logicalDateKey(trustedNow), 1);
+    const text = editor.value.slice(0, 20000);
+    if (text.trim()) nextDayPlans[tomorrowKey] = { ...(nextDayPlans[tomorrowKey] || {}), text, updatedAt: Date.now() };
+    else delete nextDayPlans[tomorrowKey];
+    await saveNextDayPlans();
+    const info = document.getElementById('tomorrowPlanSaved');
+    if (info) info.textContent = `自動保存しました ${new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}`;
+  }
+  async function insertTodayPlanIntoDiary() {
+    const todayKey = logicalDateKey(trustedNow);
+    const plan = String(nextDayPlans[todayKey]?.text || '').trim();
+    const textarea = document.getElementById('moodJournalText');
+    if (!plan || !textarea) return;
+    const section = `・今日のスケジュール\n${plan}\n`;
+    if (textarea.value.includes('・今日のスケジュール')) {
+      textarea.value = textarea.value.replace(/・今日のスケジュール\n[\s\S]*?(?=\n・一番の学び)/, section);
+    } else {
+      textarea.value = `${textarea.value.trimEnd()}\n\n◆今日のスケジュール\n${plan}\n`;
+    }
+    nextDayPlans[todayKey] = { ...nextDayPlans[todayKey], insertedAt: Date.now() };
+    await saveNextDayPlans();
+    handleMoodJournalInput();
+    document.getElementById('moodComposeShell')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showToast('昨日書いた予定を、今日の日記に反映しました');
+  }
+
+  let sleepData = {}; // 日付ごとの時刻・主観評価・メモ。一般のEXPや健康診断には絡めない
+  let sleepEvalSaveTimer = null;
+  let sleepSoundName = 'rain';
+  let sleepSoundVolume = 0.35;
+  let sleepAudio = null;
+  let sleepAudioStopTimer = null;
+  let sleepAudioFadeTimer = null;
+  let sleepAudioClockTimer = null;
+  let sleepAudioEndsAt = 0;
   async function loadSleepData() {
     try {
       const saved = await window.storage.get('quest-sleep-v1');
       sleepData = (saved && saved.value) ? (sanitizeBackupField('sleep', JSON.parse(saved.value)) || {}) : {};
     } catch (e) { sleepData = {}; }
+    const prefs = sleepData.__prefs || {};
+    sleepSoundName = ['rain', 'brown', 'ocean', 'night'].includes(prefs.sound) ? prefs.sound : 'rain';
+    sleepSoundVolume = Math.max(0, Math.min(1, Number(prefs.volume) || .35));
   }
   async function saveSleepData() {
     try { await window.storage.set('quest-sleep-v1', JSON.stringify(sleepData)); } catch (e) {}
@@ -11891,27 +12203,236 @@
     if (mins <= 0) mins += 24 * 60; // 日付をまたぐ場合(23時就寝→7時起床、など)
     return mins / 60;
   }
-  function updateSleepDuration() {
+  function getTodaySleepRecord() {
     const key = logicalDateKey(trustedNow);
-    const bedtime = document.getElementById('sleepBedtime').value;
-    const waketime = document.getElementById('sleepWaketime').value;
+    if (!sleepData[key] || typeof sleepData[key] !== 'object') sleepData[key] = {};
+    return sleepData[key];
+  }
+  function updateSleepDuration(shouldSave = true) {
+    const key = logicalDateKey(trustedNow);
+    const bedtime = document.getElementById('sleepBedtime')?.value || '';
+    const waketime = document.getElementById('sleepWaketime')?.value || '';
     const labelEl = document.getElementById('sleepDurationLabel');
     const hours = calcSleepHours(bedtime, waketime);
-    labelEl.textContent = (hours !== null) ? `睡眠時間: 約${hours.toFixed(1)}時間` : '';
+    if (labelEl) labelEl.textContent = (hours !== null) ? `睡眠時間: 約${hours.toFixed(1)}時間` : '就寝と起床を入れると睡眠時間が出ます';
     if (!sleepData[key]) sleepData[key] = {};
     sleepData[key].bedtime = bedtime || null;
     sleepData[key].waketime = waketime || null;
-    saveSleepData();
+    if (shouldSave) saveSleepData();
+    renderSleepEvaluation();
   }
   function loadTodaySleepUI() {
     const key = logicalDateKey(trustedNow);
-    const rec = sleepData[key];
+    const rec = sleepData[key] || {};
     const bedtimeEl = document.getElementById('sleepBedtime');
     const waketimeEl = document.getElementById('sleepWaketime');
     if (!bedtimeEl || !waketimeEl) return;
-    bedtimeEl.value = (rec && rec.bedtime) || '';
-    waketimeEl.value = (rec && rec.waketime) || '';
-    updateSleepDuration();
+    bedtimeEl.value = rec.bedtime || '';
+    waketimeEl.value = rec.waketime || '';
+    const latency = document.getElementById('sleepLatency');
+    const awakenings = document.getElementById('sleepAwakenings');
+    const target = document.getElementById('sleepTargetHours');
+    const note = document.getElementById('sleepNote');
+    if (latency) latency.value = rec.latency ?? '';
+    if (awakenings) awakenings.value = rec.awakenings ?? '';
+    if (target) target.value = Number(rec.targetHours) || 8;
+    if (note) note.value = rec.note || '';
+    const volume = document.getElementById('sleepSoundVolume');
+    const timer = document.getElementById('sleepTimerSelect');
+    if (volume) volume.value = Math.round(sleepSoundVolume * 100);
+    if (timer && sleepData.__prefs?.timer !== undefined) timer.value = String(sleepData.__prefs.timer);
+    document.querySelectorAll('.sleep-sound-btn').forEach((btn) => btn.classList.toggle('active', btn.dataset.sleepSound === sleepSoundName));
+    updateSleepDuration(false);
+    renderTomorrowPlanner();
+  }
+
+  function updateSleepEvaluationField(field, value) {
+    const rec = getTodaySleepRecord();
+    if (field === 'targetHours') rec.targetHours = Math.max(4, Math.min(12, Number(value) || 8));
+    else rec[field] = value === '' ? null : Math.max(0, Number(value));
+    saveSleepData();
+    renderSleepEvaluation();
+  }
+  function setSleepRating(field, value) {
+    const rec = getTodaySleepRecord();
+    rec[field] = Math.max(1, Math.min(5, Number(value) || 0));
+    saveSleepData();
+    renderSleepEvaluation();
+    playUIClick();
+  }
+  function handleSleepNoteInput() {
+    clearTimeout(sleepEvalSaveTimer);
+    sleepEvalSaveTimer = setTimeout(saveSleepNoteNow, 650);
+  }
+  function saveSleepNoteNow() {
+    clearTimeout(sleepEvalSaveTimer);
+    const note = document.getElementById('sleepNote');
+    if (!note) return;
+    getTodaySleepRecord().note = note.value.slice(0, 20000);
+    saveSleepData();
+  }
+  function calcPersonalSleepScore(rec) {
+    if (!rec || !rec.bedtime || !rec.waketime || !rec.quality || !rec.morning) return null;
+    const hours = calcSleepHours(rec.bedtime, rec.waketime);
+    if (hours === null) return null;
+    const target = Math.max(4, Math.min(12, Number(rec.targetHours) || 8));
+    const duration = Math.max(0, 35 - Math.abs(hours - target) * 12);
+    const quality = (Number(rec.quality) / 5) * 30;
+    const morning = (Number(rec.morning) / 5) * 25;
+    const latencyN = rec.latency === null || rec.latency === undefined ? 20 : Number(rec.latency);
+    const latency = latencyN <= 20 ? 5 : latencyN <= 40 ? 3 : 1;
+    const wakeN = rec.awakenings === null || rec.awakenings === undefined ? 1 : Number(rec.awakenings);
+    const awakenings = [5, 4, 3, 2, 1][Math.min(4, Math.max(0, wakeN))];
+    return { total: Math.round(duration + quality + morning + latency + awakenings), hours, target, duration: Math.round(duration), quality: Math.round(quality), morning: Math.round(morning) };
+  }
+  function renderSleepRating(groupId, labelId, value) {
+    const group = document.getElementById(groupId);
+    if (group) group.querySelectorAll('.sleep-rating-btn').forEach((btn, index) => btn.classList.toggle('active', index + 1 === Number(value)));
+    const label = document.getElementById(labelId);
+    const words = ['', 'つらい', 'やや不足', 'ふつう', '良い', 'とても良い'];
+    if (label) label.textContent = value ? `${value} · ${words[value]}` : '未記録';
+  }
+  function renderSleepTrend() {
+    const trend = document.getElementById('sleepTrend');
+    if (!trend) return;
+    const today = logicalDateKey(trustedNow);
+    const values = [];
+    for (let i = 6; i >= 0; i--) values.push(calcPersonalSleepScore(sleepData[offsetDateKey(today, -i)] || {})?.total ?? null);
+    trend.innerHTML = values.map((value) => `<i class="sleep-trend-bar${value === null ? ' empty' : ''}" style="height:${value === null ? 3 : Math.max(6, Math.round(value * .34))}px" title="${value === null ? '未記録' : value + ' / 100'}"></i>`).join('');
+  }
+  function renderSleepEvaluation() {
+    const rec = sleepData[logicalDateKey(trustedNow)] || {};
+    renderSleepRating('sleepQualityRating', 'sleepQualityLabel', rec.quality);
+    renderSleepRating('sleepMorningRating', 'sleepMorningLabel', rec.morning);
+    const score = calcPersonalSleepScore(rec);
+    const number = document.getElementById('sleepScoreNumber');
+    const copy = document.getElementById('sleepScoreCopy');
+    if (number) number.innerHTML = score ? `${score.total}<small> / 100</small>` : `—<small> / 100</small>`;
+    if (copy) copy.textContent = score
+      ? `目標${score.target.toFixed(1)}時間に対し${score.hours.toFixed(1)}時間。時間 ${score.duration}/35 ・ 眠れた感覚 ${score.quality}/30 ・ 起床時 ${score.morning}/25。`
+      : '時刻と2つの主観評価を入れると、自分用の指標が出ます。';
+    renderSleepTrend();
+  }
+
+  function saveSleepSoundPrefs() {
+    if (!sleepData.__prefs) sleepData.__prefs = {};
+    sleepData.__prefs.sound = sleepSoundName;
+    sleepData.__prefs.volume = sleepSoundVolume;
+    sleepData.__prefs.timer = Number(document.getElementById('sleepTimerSelect')?.value || 30);
+    saveSleepData();
+  }
+  function selectSleepSound(name) {
+    if (!['rain', 'brown', 'ocean', 'night'].includes(name)) return;
+    const wasPlaying = !!sleepAudio;
+    if (wasPlaying) stopSleepSound(false);
+    sleepSoundName = name;
+    document.querySelectorAll('.sleep-sound-btn').forEach((btn) => btn.classList.toggle('active', btn.dataset.sleepSound === name));
+    saveSleepSoundPrefs();
+    if (wasPlaying) startSleepSound();
+    else playUIClick();
+  }
+  function changeSleepSoundVolume(value) {
+    sleepSoundVolume = Math.max(0, Math.min(1, Number(value) / 100));
+    if (sleepAudio?.gain && sleepAudio.ctx) {
+      sleepAudio.gain.gain.cancelScheduledValues(sleepAudio.ctx.currentTime);
+      sleepAudio.gain.gain.setTargetAtTime(Math.max(.0001, sleepSoundVolume), sleepAudio.ctx.currentTime, .08);
+    }
+    saveSleepSoundPrefs();
+  }
+  function makeSleepNoiseBuffer(audioCtx, kind) {
+    const seconds = 4;
+    const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * seconds, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let brown = 0;
+    let pink0 = 0, pink1 = 0, pink2 = 0;
+    for (let i = 0; i < data.length; i++) {
+      const white = Math.random() * 2 - 1;
+      if (kind === 'brown') {
+        brown = (brown + .018 * white) / 1.018;
+        data[i] = brown * 3.1;
+      } else if (kind === 'pink') {
+        pink0 = .99765 * pink0 + white * .099046;
+        pink1 = .963 * pink1 + white * .2965164;
+        pink2 = .57 * pink2 + white * 1.0526913;
+        data[i] = (pink0 + pink1 + pink2 + white * .1848) * .11;
+      } else data[i] = white * .45;
+    }
+    return buffer;
+  }
+  function startSleepSound() {
+    if (sleepAudio) return;
+    const audioCtx = ensureAudioCtx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    pauseThemeBGM(.8);
+    const source = audioCtx.createBufferSource();
+    const filter = audioCtx.createBiquadFilter();
+    const gain = audioCtx.createGain();
+    const nodes = [source, filter, gain];
+    const kind = sleepSoundName === 'rain' ? 'white' : sleepSoundName === 'brown' ? 'brown' : 'pink';
+    source.buffer = makeSleepNoiseBuffer(audioCtx, kind);
+    source.loop = true;
+    if (sleepSoundName === 'rain') { filter.type = 'bandpass'; filter.frequency.value = 3600; filter.Q.value = .42; }
+    else if (sleepSoundName === 'brown') { filter.type = 'lowpass'; filter.frequency.value = 720; filter.Q.value = .25; }
+    else if (sleepSoundName === 'ocean') { filter.type = 'lowpass'; filter.frequency.value = 1050; filter.Q.value = .35; }
+    else { filter.type = 'lowpass'; filter.frequency.value = 520; filter.Q.value = .18; }
+    source.connect(filter).connect(gain).connect(audioCtx.destination);
+    if (sleepSoundName === 'ocean' || sleepSoundName === 'night') {
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.frequency.value = sleepSoundName === 'ocean' ? .085 : .045;
+      lfoGain.gain.value = sleepSoundName === 'ocean' ? .11 : .055;
+      lfo.connect(lfoGain).connect(gain.gain);
+      lfo.start(); nodes.push(lfo, lfoGain);
+    }
+    gain.gain.setValueAtTime(.0001, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0001, sleepSoundVolume), audioCtx.currentTime + 2.8);
+    source.start();
+    sleepAudio = { ctx: audioCtx, source, gain, nodes };
+    const minutes = Number(document.getElementById('sleepTimerSelect')?.value || 30);
+    sleepAudioEndsAt = minutes > 0 ? Date.now() + minutes * 60000 : 0;
+    clearTimeout(sleepAudioStopTimer); clearTimeout(sleepAudioFadeTimer); clearInterval(sleepAudioClockTimer);
+    if (minutes > 0) {
+      const fadeMs = Math.max(0, minutes * 60000 - 12000);
+      sleepAudioFadeTimer = setTimeout(() => fadeSleepSound(12), fadeMs);
+      sleepAudioStopTimer = setTimeout(() => stopSleepSound(true), minutes * 60000 + 120);
+    }
+    sleepAudioClockTimer = setInterval(updateSleepPlayerStatus, 1000);
+    updateSleepPlayerStatus();
+    document.getElementById('sleepPlayBtn')?.classList.add('playing');
+    const btn = document.getElementById('sleepPlayBtn'); if (btn) btn.textContent = '停止';
+    saveSleepSoundPrefs();
+  }
+  function fadeSleepSound(seconds) {
+    if (!sleepAudio) return;
+    const { ctx: audioCtx, gain } = sleepAudio;
+    gain.gain.cancelScheduledValues(audioCtx.currentTime);
+    gain.gain.setValueAtTime(Math.max(.0001, gain.gain.value), audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + Math.max(1, seconds));
+  }
+  function stopSleepSound(fromTimer) {
+    if (!sleepAudio) return;
+    clearTimeout(sleepAudioStopTimer); clearTimeout(sleepAudioFadeTimer); clearInterval(sleepAudioClockTimer);
+    const active = sleepAudio; sleepAudio = null; sleepAudioEndsAt = 0;
+    try { active.source.stop(); } catch (e) {}
+    active.nodes.forEach((node) => { try { node.disconnect(); } catch (e) {} });
+    const btn = document.getElementById('sleepPlayBtn');
+    if (btn) { btn.textContent = '再生'; btn.classList.remove('playing'); }
+    const status = document.getElementById('sleepPlayerStatus');
+    if (status) status.textContent = fromTimer ? 'タイマーで停止しました' : '停止しました';
+  }
+  function toggleSleepSound() {
+    if (sleepAudio) stopSleepSound(false); else startSleepSound();
+  }
+  function updateSleepPlayerStatus() {
+    const status = document.getElementById('sleepPlayerStatus');
+    if (!status || !sleepAudio) return;
+    const names = { rain: '細い雨', brown: '深いノイズ', ocean: '遠い波', night: '夜の風' };
+    if (!sleepAudioEndsAt) status.textContent = `${names[sleepSoundName]} · 再生中`;
+    else {
+      const remain = Math.max(0, sleepAudioEndsAt - Date.now());
+      const mins = Math.floor(remain / 60000), secs = Math.floor((remain % 60000) / 1000);
+      status.textContent = `${names[sleepSoundName]} · 残り ${mins}:${String(secs).padStart(2, '0')}`;
+    }
   }
   let currentMoodImages = []; // 今編集中の画像配列
   let currentMoodTag = null; // 今選んでいる気分タグ(v35で追加。great/good/neutral/low/rough または null)
