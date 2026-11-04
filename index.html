@@ -4472,6 +4472,54 @@
   body.theme-simple:not(.theme-dark) .task-date-group .swipe-del-wrap .item,
   body.theme-fancy .task-date-group .swipe-del-wrap .item { background: #fff; }
 
+  /* V437: Lifebearを参考に、日付一覧を一枚の紙と細い罫線だけで読む構成へ簡略化 */
+  .task-date-group + .task-date-group { margin-top: 0; }
+  .task-date-bar,
+  .task-date-group.is-past .task-date-bar,
+  .task-date-group.is-today .task-date-bar,
+  .task-date-group.is-future .task-date-bar {
+    min-height: 34px; padding: 7px 14px; gap: 6px;
+    background: #ececeb; color: #242424;
+    border-top: 1px solid #dededc; border-bottom: 1px solid #d8d8d6;
+  }
+  .task-date-main { font-size: 12px; font-weight: 650; letter-spacing: 0; }
+  .task-date-weekday { font-size: 10px; color: #929292; }
+  .task-date-state,
+  .task-date-group.is-past .task-date-state,
+  .task-date-group.is-today .task-date-state {
+    padding: 0; border-radius: 0; background: none;
+    color: #9b9b9b; font-size: 9px; font-weight: 500; letter-spacing: 0;
+  }
+  .task-date-group.is-past .task-date-state { color: #a06c6c; }
+  .task-date-group .swipe-del-wrap > .item {
+    min-height: 74px; padding: 11px 14px !important;
+    border: 0 !important; border-bottom: 1px solid #e5e5e3 !important;
+    border-radius: 0 !important; box-shadow: none !important;
+    background: #fff !important;
+  }
+  .task-date-group .swipe-del-wrap > .item::before { display: none !important; }
+  .task-date-group .swipe-del-wrap + .swipe-del-wrap .item { border-top: 0 !important; }
+  .task-date-group .item-emoji { display: none; }
+  .task-date-group .item-main-row { gap: 5px; }
+  .task-date-group .item-label { font-size: 13px; font-weight: 500; color: #222; }
+  .task-date-group .check-box { width: 21px; height: 21px; border-color: #b9b9b7; box-shadow: none; }
+  .task-date-group .row-kebab { color: #aaa; }
+  .task-date-group .task-time-meta { min-height: 18px; margin: 4px 0 0; gap: 5px; }
+  .task-date-group .task-time-meta .task-time-start + span { display: none; }
+  .task-date-group .task-time-start {
+    padding: 2px 0; border: 0; border-radius: 0;
+    background: transparent; color: #6d8a7f; font-size: 9.5px; font-weight: 500;
+  }
+  .task-date-group .item.today-custom.done { background: #fafafa !important; }
+  body.theme-simple.theme-dark .task-date-bar,
+  body.theme-simple.theme-dark .task-date-group.is-past .task-date-bar,
+  body.theme-simple.theme-dark .task-date-group.is-today .task-date-bar,
+  body.theme-simple.theme-dark .task-date-group.is-future .task-date-bar {
+    background: #2a2b2d; color: #f2f2f2; border-color: #3a3b3d;
+  }
+  body.theme-simple.theme-dark .task-date-group .swipe-del-wrap > .item { background: #17191d !important; border-bottom-color: #2b2d31 !important; }
+  body.theme-simple.theme-dark .task-date-group .item-label { color: #f1f1f1; }
+
 </style>
 </head>
 <body class="theme-simple">
@@ -4852,7 +4900,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.34</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.36</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -10770,7 +10818,7 @@
   function renderDatedScheduledTaskRow(ev, occurrenceKey) {
     const isDone = ev.recurrence ? (ev.doneOccurrences || []).includes(occurrenceKey) : !!ev.done;
     const timingState = timingStateForScheduledEvent(ev, occurrenceKey, false) || ev;
-    const dot = ev.color ? `<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${ev.color}; margin-right:3px;"></span>` : '';
+    const dot = ev.color ? `<span class="task-item-color-dot" style="display:inline-block; width:5px; height:5px; border-radius:50%; background:${ev.color}; margin-right:3px;"></span>` : '';
     const inner = `
       <div class="item today-custom${isDone ? ' done' : ''}" style="--item-accent:${attrMuted(ev.attr || 'event')}">
         <div class="check-box" onclick="toggleScheduledEvent('${ev.id}', '${occurrenceKey}'); renderTodayTasksList();"><svg class="cb-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4L19 7.5"></path></svg></div>

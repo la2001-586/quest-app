@@ -190,6 +190,15 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`dated task timeline marker is missing: ${marker}`);
 }
 
+for (const marker of [
+  'V437: Lifebearを参考に',
+  '.task-date-group .item-emoji { display: none; }',
+  '.task-date-group .task-time-meta .task-time-start + span { display: none; }',
+  'task-item-color-dot'
+]) {
+  if (!html.includes(marker)) failures.push(`simplified dated task UI marker is missing: ${marker}`);
+}
+
 const forbiddenMarkers = [
   'support@quest-app-demo',
   'api.anthropic.com',
