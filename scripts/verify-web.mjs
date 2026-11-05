@@ -259,6 +259,16 @@ for (const marker of [
 }
 
 for (const marker of [
+  'V446: QUIETER, THINNER TASK DATE BARS',
+  'min-height: 25px',
+  'font-size: 10.5px',
+  "if (diff < 0) return { className: 'is-past', label: '' }",
+  "const relationHtml = relation.label ?"
+]) {
+  if (!html.includes(marker)) failures.push(`quiet task date bar marker is missing: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',

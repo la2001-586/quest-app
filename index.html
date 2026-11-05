@@ -4478,6 +4478,32 @@
     100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
   }
 
+  /* ================= V446: QUIETER, THINNER TASK DATE BARS =================
+     日付は区切りとして読める最小限に抑え、過去日は冗長な期限切れ表示を出さない。 */
+  .task-date-group .task-date-bar {
+    min-height: 25px;
+    padding: 3px 12px;
+    gap: 5px;
+  }
+  .task-date-group .task-date-main {
+    font-size: 10.5px;
+    font-weight: 560;
+    color: #4c4c4c;
+  }
+  .task-date-group .task-date-weekday {
+    font-size: 8.5px;
+    font-weight: 400;
+    color: #a5a5a5;
+  }
+  .task-date-group .task-date-state {
+    font-size: 8px;
+    font-weight: 500;
+    color: #969696;
+  }
+  body.theme-simple.theme-dark .task-date-main { color: #d9d9da; }
+  body.theme-simple.theme-dark .task-date-weekday,
+  body.theme-simple.theme-dark .task-date-state { color: #85868a; }
+
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
   .task-date-group { position: relative; }
   .task-date-group + .task-date-group { margin-top: 0; }
@@ -4906,7 +4932,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.45</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.46</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -10859,7 +10885,7 @@
   }
   function taskDateRelation(dateKey, todayKey) {
     const diff = Math.round((dateFromKey(dateKey) - dateFromKey(todayKey)) / 86400000);
-    if (diff < 0) return { className: 'is-past', label: currentLang === 'en' ? 'OVERDUE' : '期限切れ' };
+    if (diff < 0) return { className: 'is-past', label: '' };
     if (diff === 0) return { className: 'is-today', label: currentLang === 'en' ? 'TODAY' : '今日' };
     if (diff === 1) return { className: 'is-future', label: currentLang === 'en' ? 'TOMORROW' : '明日' };
     return { className: 'is-future', label: currentLang === 'en' ? 'UPCOMING' : '予定' };
@@ -10945,8 +10971,9 @@
         ? renderDatedScheduledTaskRow(item.event, item.occurrenceKey)
         : renderCustomTodayTaskRow(item.task)).join('');
       const summary = dateKey === todayKey ? timingSummary : '';
+      const relationHtml = relation.label ? `<span class="task-date-state">${escapeHtml(relation.label)}</span>` : '';
       return `<section class="task-date-group ${relation.className}" data-task-date="${escapeHtml(dateKey)}">
-        <div class="task-date-bar"><span class="task-date-main">${escapeHtml(parts.main)}</span><span class="task-date-weekday">${escapeHtml(parts.weekday)}</span><span class="task-date-state">${escapeHtml(relation.label)}</span></div>
+        <div class="task-date-bar"><span class="task-date-main">${escapeHtml(parts.main)}</span><span class="task-date-weekday">${escapeHtml(parts.weekday)}</span>${relationHtml}</div>
         ${summary}${rows}
       </section>`;
     }).join('');
