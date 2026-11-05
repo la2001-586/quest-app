@@ -319,6 +319,18 @@ for (const marker of [
 }
 
 for (const marker of [
+  'V450: ROOMIER EVENT EDITOR',
+  'modal-card event-edit-card',
+  'class="event-edit-title"',
+  'class="event-edit-row event-edit-time-row"',
+  'padding: 30px 28px 32px !important',
+  'min-height: 70px !important',
+  'margin-top: 12px !important'
+]) {
+  if (!html.includes(marker)) failures.push(`roomier event editor marker is missing: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',

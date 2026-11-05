@@ -4515,6 +4515,61 @@
     display: none !important;
   }
 
+  /* ================= V450: ROOMIER EVENT EDITOR =================
+     予定編集は情報量を減らさず、外周と各操作の間に十分な呼吸をつくる。 */
+  #eventEditModal .event-edit-card {
+    box-sizing: border-box;
+    width: min(340px, 88vw);
+    max-width: min(340px, 88vw) !important;
+    padding: 30px 28px 32px !important;
+    overscroll-behavior: contain;
+  }
+  #eventEditModal .event-edit-title {
+    margin-bottom: 20px !important;
+  }
+  #eventEditModal .event-edit-card > #eventEditText {
+    min-height: 48px;
+    padding: 12px 14px !important;
+    margin-bottom: 14px !important;
+  }
+  #eventEditModal .event-edit-row {
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+  #eventEditModal .event-edit-card input:not([type="checkbox"]),
+  #eventEditModal .event-edit-card select {
+    min-height: 44px;
+  }
+  #eventEditModal .event-edit-time-row input[type="time"] {
+    width: 0 !important;
+    min-width: 0;
+    flex: 1 1 0;
+    padding: 9px 7px !important;
+  }
+  #eventEditModal .event-edit-card > #eventEditLocation {
+    min-height: 44px;
+    padding: 10px 12px !important;
+    margin-bottom: 12px !important;
+  }
+  #eventEditModal .event-edit-card > #eventEditNote {
+    min-height: 70px !important;
+    padding: 11px 12px !important;
+    margin-bottom: 20px !important;
+  }
+  #eventEditModal .event-edit-card > .badge-close-btn {
+    min-height: 48px;
+  }
+  #eventEditModal .event-edit-card > .badge-close-btn + .badge-close-btn {
+    margin-top: 12px !important;
+  }
+  @media (max-width: 350px) {
+    #eventEditModal .event-edit-card {
+      width: 90vw;
+      max-width: 90vw !important;
+      padding-inline: 22px !important;
+    }
+  }
+
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
   .task-date-group { position: relative; }
   .task-date-group + .task-date-group { margin-top: 0; }
@@ -4943,7 +4998,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.49</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.50</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5802,10 +5857,10 @@
 
 <!-- 予定/タスクの編集(3点リーダーから) -->
 <div class="grand-modal" id="eventEditModal" onclick="closeEventEditor()">
-  <div class="modal-card" style="border:1.5px solid var(--magenta); border-radius:18px; padding:24px 22px; max-width:min(340px,88vw); text-align:left; max-height:86vh; overflow-y:auto;" onclick="event.stopPropagation()">
-    <div style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--magenta); font-weight:800; margin-bottom:14px;">予定を編集</div>
+  <div class="modal-card event-edit-card" style="border:1.5px solid var(--magenta); border-radius:18px; padding:24px 22px; max-width:min(340px,88vw); text-align:left; max-height:86vh; overflow-y:auto;" onclick="event.stopPropagation()">
+    <div class="event-edit-title" style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--magenta); font-weight:800; margin-bottom:14px;">予定を編集</div>
     <input type="text" id="eventEditText" placeholder="予定を入力" style="width:100%; box-sizing:border-box; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:10px;">
-    <div style="display:flex; gap:6px; align-items:center; margin-bottom:10px;">
+    <div class="event-edit-row event-edit-time-row" style="display:flex; gap:6px; align-items:center; margin-bottom:10px;">
       <input type="time" id="eventEditTime" style="width:70px; flex-shrink:0; font-size:12px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
       <span style="color:var(--ink-dim); font-size:10px;">〜</span>
       <input type="time" id="eventEditEndTime" style="width:70px; flex-shrink:0; font-size:12px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
@@ -5813,7 +5868,7 @@
         <input type="checkbox" id="eventEditAllDay" onchange="document.getElementById('eventEditTime').disabled=this.checked; document.getElementById('eventEditEndTime').disabled=this.checked;"> 終日
       </label>
     </div>
-    <div style="display:flex; gap:6px; margin-bottom:10px;">
+    <div class="event-edit-row" style="display:flex; gap:6px; margin-bottom:10px;">
       <select id="eventEditRecur" style="flex:1; font-size:11px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
         <option value="">繰り返さない</option>
         <option value="daily">毎日</option>
@@ -5829,7 +5884,7 @@
         <option value="other">その他</option>
       </select>
     </div>
-    <div style="display:flex; align-items:center; gap:6px; margin-bottom:10px;">
+    <div class="event-edit-row" style="display:flex; align-items:center; gap:6px; margin-bottom:10px;">
       <span style="font-size:10.5px; color:var(--ink-dim); flex-shrink:0;">リマインド</span>
       <select id="eventEditReminder" onchange="document.getElementById('eventEditReminderCustom').style.display=(this.value==='custom')?'inline-block':'none';" style="flex:1; font-size:11px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
         <option value="">なし</option>
