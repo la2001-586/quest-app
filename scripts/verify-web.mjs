@@ -269,6 +269,21 @@ for (const marker of [
 }
 
 for (const marker of [
+  'V447: ONE OWNER FOR THE CALENDAR DAY RAIL',
+  'scroll-snap-stop: normal',
+  '.cal-chip.is-centered',
+  "gestureArbiter.claim('calendar-rail')",
+  "gestureArbiter.release('calendar-rail')",
+  '_calRailClickBlockedUntil = performance.now() + 420',
+  '}, 160);'
+]) {
+  if (!html.includes(marker)) failures.push(`single-owner calendar rail marker is missing: ${marker}`);
+}
+for (const marker of ['function _calSnap()', '_calFireDetent(ch)', '_calSnap();']) {
+  if (html.includes(marker)) failures.push(`competing calendar rail signal remains: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',

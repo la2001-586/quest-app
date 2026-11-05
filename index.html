@@ -4504,6 +4504,24 @@
   body.theme-simple.theme-dark .task-date-weekday,
   body.theme-simple.theme-dark .task-date-state { color: #85868a; }
 
+  /* ================= V447: ONE OWNER FOR THE CALENDAR DAY RAIL =================
+     下の日付レールはブラウザ標準の横スクロール＋スナップだけに統一する。
+     中央候補だけを一つの視覚信号にし、独自の二重スナップは使わない。 */
+  .cal-rail {
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+  .cal-chip { scroll-snap-stop: normal; }
+  .cal-chip.on {
+    border-color: rgba(130,130,145,.18);
+    box-shadow: none;
+  }
+  .cal-chip.is-centered {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 1.5px var(--cyan) inset, 0 6px 16px -8px var(--cyan);
+  }
+
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
   .task-date-group { position: relative; }
   .task-date-group + .task-date-group { margin-top: 0; }
@@ -4932,7 +4950,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.46</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.47</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -13765,7 +13783,12 @@
       const badge = date.getDate() === 1 ? '<span class="cmo">' + (date.getMonth() + 1) + '月</span>' : '';
       chip.innerHTML = badge + '<span class="cw">' + _CALWK[wd] + '</span><span class="cd">' + date.getDate() + '</span><span class="cdots">' + _calDots(_calKey(date)) + '</span>';
       chip.dataset.k = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
-      (function (dd) { chip.onclick = () => selectCalDay(dd, true); })(new Date(date));
+      (function (dd) {
+        chip.onclick = (event) => {
+          if (performance.now() < _calRailClickBlockedUntil) { event.preventDefault(); return; }
+          selectCalDay(dd, true);
+        };
+      })(new Date(date));
       rail.appendChild(chip);
     }
     _calSetRailYm(selCalDate);
@@ -13781,18 +13804,24 @@
     const rail = document.getElementById('calRail'); if (!rail || !rail.firstElementChild) return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const c = rail.scrollLeft + rail.clientWidth / 2, reach = Math.max(1, rail.clientWidth * 0.40);
-    [].forEach.call(rail.children, function (ch) { const cc = ch.offsetLeft + ch.offsetWidth / 2, t = Math.min(Math.abs(cc - c) / reach, 1); ch.style.transform = 'scale(' + (1.2 - t * 0.44).toFixed(3) + ')'; ch.style.opacity = (1 - t * 0.5).toFixed(3); });
+    let centered = null, centeredDistance = Infinity;
+    [].forEach.call(rail.children, function (ch) {
+      const cc = ch.offsetLeft + ch.offsetWidth / 2;
+      const distance = Math.abs(cc - c);
+      const t = Math.min(distance / reach, 1);
+      ch.style.transform = 'scale(' + (1.08 - t * 0.16).toFixed(3) + ')';
+      ch.style.opacity = (1 - t * 0.24).toFixed(3);
+      if (distance < centeredDistance) { centeredDistance = distance; centered = ch; }
+    });
+    [].forEach.call(rail.children, ch => ch.classList.toggle('is-centered', ch === centered));
   }
   function _calCentered() { const rail = document.getElementById('calRail'); if (!rail) return null; const c = rail.scrollLeft + rail.clientWidth / 2; let best = null, bd = 1e9; [].forEach.call(rail.children, function (ch) { const cc = ch.offsetLeft + ch.offsetWidth / 2, dd = Math.abs(cc - c); if (dd < bd) { bd = dd; best = ch; } }); return best; }
-  let _calLastIso = null;
-  function _calFireDetent(ch) { if (!ch || ch.dataset.k === _calLastIso) return; _calLastIso = ch.dataset.k; playUIClick(); try { if (navigator.vibrate) navigator.vibrate(9); } catch (e) {} }
-  let _calSnapping = false;
-  function _calSnap() { if (_calSnapping) return; const rail = document.getElementById('calRail'); const ch = _calCentered(); if (!rail || !ch) return; const target = ch.offsetLeft + ch.offsetWidth / 2 - rail.clientWidth / 2; const from = rail.scrollLeft, dist = target - from; if (Math.abs(dist) < 0.5) return; _calSnapping = true; let t0 = null; (function step(ts) { if (!t0) t0 = ts; const p = Math.min(1, (ts - t0) / 200); const e = 1 - Math.pow(1 - p, 3); rail.scrollLeft = from + dist * e; if (p < 1) requestAnimationFrame(step); else _calSnapping = false; })(); }
   let _calRailBound = false, _calScrollTO = null;
+  let _calRailClickBlockedUntil = 0, _calRailTouchStartX = 0, _calRailTouchStartY = 0, _calRailTouchMoved = false;
   function _calBindRail() {
     const rail = document.getElementById('calRail'); if (!rail || _calRailBound) return; _calRailBound = true;
     rail.addEventListener('scroll', function () {
-      requestAnimationFrame(function () { _calScale(); const ch = _calCentered(); if (ch) { const p = ch.dataset.k.split('-'); _calSetRailYm(new Date(+p[0], +p[1], +p[2])); _calFireDetent(ch); } });
+      requestAnimationFrame(function () { _calScale(); const ch = _calCentered(); if (ch) { const p = ch.dataset.k.split('-'); _calSetRailYm(new Date(+p[0], +p[1], +p[2])); } });
       if (_calScrollTO) clearTimeout(_calScrollTO);
       _calScrollTO = setTimeout(function () {
         if (_calSuppress || rail.clientWidth === 0) return; // プログラム的な中央寄せ・非表示中は無視
@@ -13803,13 +13832,43 @@
           const idx = [].indexOf.call(rail.children, best);
           if (idx < 3 || idx > rail.children.length - 4) renderCalRail(); // 端に近づいたら窓を広げる
         }
-        _calSnap();
-      }, 70);
+      }, 160);
     }, { passive: true });
-    let drag = false, sx = 0, sl = 0;
-    rail.addEventListener('mousedown', function (e) { drag = true; sx = e.clientX; sl = rail.scrollLeft; });
-    window.addEventListener('mousemove', function (e) { if (drag) rail.scrollLeft = sl - (e.clientX - sx); });
-    window.addEventListener('mouseup', function () { drag = false; });
+    rail.addEventListener('touchstart', function (event) {
+      if (event.touches.length !== 1) return;
+      _calRailTouchStartX = event.touches[0].clientX;
+      _calRailTouchStartY = event.touches[0].clientY;
+      _calRailTouchMoved = false;
+    }, { passive: true });
+    rail.addEventListener('touchmove', function (event) {
+      if (event.touches.length !== 1) return;
+      const dx = event.touches[0].clientX - _calRailTouchStartX;
+      const dy = event.touches[0].clientY - _calRailTouchStartY;
+      if (Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) {
+        _calRailTouchMoved = true;
+        gestureArbiter.claim('calendar-rail');
+      }
+    }, { passive: true });
+    const finishRailTouch = function () {
+      if (_calRailTouchMoved) _calRailClickBlockedUntil = performance.now() + 420;
+      _calRailTouchMoved = false;
+      gestureArbiter.release('calendar-rail');
+    };
+    rail.addEventListener('touchend', finishRailTouch, { passive: true });
+    rail.addEventListener('touchcancel', finishRailTouch, { passive: true });
+
+    let drag = false, dragMoved = false, sx = 0, sl = 0;
+    rail.addEventListener('mousedown', function (e) { drag = true; dragMoved = false; sx = e.clientX; sl = rail.scrollLeft; });
+    window.addEventListener('mousemove', function (e) {
+      if (!drag) return;
+      if (Math.abs(e.clientX - sx) > 5) dragMoved = true;
+      rail.scrollLeft = sl - (e.clientX - sx);
+    });
+    window.addEventListener('mouseup', function () {
+      if (dragMoved) _calRailClickBlockedUntil = performance.now() + 300;
+      drag = false;
+      dragMoved = false;
+    });
   }
   function _calMarkRail() { const rail = document.getElementById('calRail'); if (!rail) return; [].forEach.call(rail.children, function (ch) { const p = ch.dataset.k.split('-'); const d = new Date(+p[0], +p[1], +p[2]); ch.classList.toggle('on', _calSame(d, selCalDate)); }); }
   function _calMarkGridSel() {
