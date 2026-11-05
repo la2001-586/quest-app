@@ -4522,6 +4522,14 @@
     box-shadow: 0 0 0 1.5px var(--cyan) inset, 0 6px 16px -8px var(--cyan);
   }
 
+  /* ================= V448: ZOOM-SAFE ROUTINE REORDERING =================
+     持ち上げ感は位置をずらす大きな変形ではなく、控えめな拡大と影だけで示す。 */
+  .swipe-del-wrap.routine-dragging-wrap,
+  .routine-list-row.routine-dragging-wrap {
+    transform: scale(1.012) rotate(.06deg);
+    filter: drop-shadow(0 16px 20px rgba(31,57,48,.24));
+  }
+
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
   .task-date-group { position: relative; }
   .task-date-group + .task-date-group { margin-top: 0; }
@@ -4950,7 +4958,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.47</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.48</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -8976,6 +8984,14 @@
   // ---- 専用ハンドルの長押しドラッグ&ドロップ(日課の並び替え) ----
   let dragState = null;
 
+  function routineDragBodyZoom() {
+    return Math.max(.5, Number.parseFloat(getComputedStyle(document.body).zoom) || 1);
+  }
+
+  function routineDragCssPx(visualPx, state) {
+    return visualPx / Math.max(.5, state.bodyZoom || 1);
+  }
+
   function releaseRoutinePointer(state) {
     if (!state || !state.handle) return;
     try {
@@ -9042,21 +9058,23 @@
     document.body.style.overscrollBehavior = 'none';
 
     const rect = state.wrap.getBoundingClientRect();
+    state.bodyZoom = routineDragBodyZoom();
+    state.dragVisualHeight = rect.height;
     state.originalIndex = Array.from(state.list.querySelectorAll(':scope > .routine-list-row')).indexOf(state.wrap);
     state.grabOffsetY = state.lastY - rect.top;
     state.placeholder = document.createElement('div');
     state.placeholder.className = 'routine-drop-placeholder';
-    state.placeholder.style.height = `${rect.height}px`;
+    state.placeholder.style.height = `${routineDragCssPx(rect.height, state)}px`;
     state.list.insertBefore(state.placeholder, state.wrap);
     state.list.removeChild(state.wrap);
     document.body.appendChild(state.wrap);
     try { state.handle.setPointerCapture(state.pointerId); } catch (_) {}
     state.wrap.classList.add('routine-dragging-wrap');
     Object.assign(state.wrap.style, {
-      left: `${rect.left}px`,
-      top: `${rect.top}px`,
-      width: `${rect.width}px`,
-      height: `${rect.height}px`,
+      left: `${routineDragCssPx(rect.left, state)}px`,
+      top: `${routineDragCssPx(rect.top, state)}px`,
+      width: `${routineDragCssPx(rect.width, state)}px`,
+      height: `${routineDragCssPx(rect.height, state)}px`,
     });
   }
 
@@ -9064,9 +9082,9 @@
     event.preventDefault();
     state.lastX = event.clientX;
     state.lastY = event.clientY;
-    const maxTop = Math.max(8, window.innerHeight - state.wrap.offsetHeight - 8);
+    const maxTop = Math.max(8, window.innerHeight - state.dragVisualHeight - 8);
     const top = Math.max(8, Math.min(maxTop, event.clientY - state.grabOffsetY));
-    state.wrap.style.top = `${top}px`;
+    state.wrap.style.top = `${routineDragCssPx(top, state)}px`;
     if (event.clientY < 92) window.scrollBy(0, -14);
     else if (event.clientY > window.innerHeight - 118) window.scrollBy(0, 14);
     moveRoutinePlaceholder(state, event.clientY);
@@ -9080,9 +9098,9 @@
     }
     const targetRect = state.placeholder.getBoundingClientRect();
     state.wrap.classList.add('routine-drop-animating');
-    state.wrap.style.left = `${targetRect.left}px`;
-    state.wrap.style.top = `${targetRect.top}px`;
-    state.wrap.style.width = `${targetRect.width}px`;
+    state.wrap.style.left = `${routineDragCssPx(targetRect.left, state)}px`;
+    state.wrap.style.top = `${routineDragCssPx(targetRect.top, state)}px`;
+    state.wrap.style.width = `${routineDragCssPx(targetRect.width, state)}px`;
     const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     setTimeout(() => {
       state.placeholder.replaceWith(state.wrap);

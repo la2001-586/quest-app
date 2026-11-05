@@ -284,6 +284,19 @@ for (const marker of ['function _calSnap()', '_calFireDetent(ch)', '_calSnap();'
 }
 
 for (const marker of [
+  'V448: ZOOM-SAFE ROUTINE REORDERING',
+  'function routineDragBodyZoom()',
+  'function routineDragCssPx(visualPx, state)',
+  'state.bodyZoom = routineDragBodyZoom()',
+  'state.dragVisualHeight = rect.height',
+  'routineDragCssPx(rect.left, state)',
+  'routineDragCssPx(targetRect.top, state)',
+  'transform: scale(1.012) rotate(.06deg)'
+]) {
+  if (!html.includes(marker)) failures.push(`zoom-safe routine reorder marker is missing: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',
