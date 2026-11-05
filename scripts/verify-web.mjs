@@ -291,9 +291,31 @@ for (const marker of [
   'state.dragVisualHeight = rect.height',
   'routineDragCssPx(rect.left, state)',
   'routineDragCssPx(targetRect.top, state)',
-  'transform: scale(1.012) rotate(.06deg)'
+  'filter: drop-shadow(0 16px 20px rgba(31,57,48,.24))'
 ]) {
   if (!html.includes(marker)) failures.push(`zoom-safe routine reorder marker is missing: ${marker}`);
+}
+
+for (const marker of [
+  'V449: LIFT THE EXACT CARD, NOT A RESTYLED CARD',
+  'function matchRoutineDragVisualSize(element, visualRect, state)',
+  'function matchRoutinePlaceholderHeight(placeholder, visualHeight)',
+  'function freezeRoutineDragAppearance(state)',
+  'function restoreRoutineDragAppearance(state)',
+  'ROUTINE_DRAG_APPEARANCE_PROPS',
+  'matchRoutineDragVisualSize(state.wrap, rect, state)',
+  'state.dragCssWidth = state.wrap.style.width',
+  'transform: none !important'
+]) {
+  if (!html.includes(marker)) failures.push(`exact lifted routine card marker is missing: ${marker}`);
+}
+for (const marker of [
+  '.swipe-del-wrap.routine-dragging-wrap .check-box',
+  '.swipe-del-wrap.routine-dragging-wrap .item-label',
+  '.routine-divider-wrap.routine-dragging-wrap { padding: 0',
+  "state.div.classList.add('dragging')"
+]) {
+  if (html.includes(marker)) failures.push(`lifted routine card restyling remains: ${marker}`);
 }
 
 for (const marker of [

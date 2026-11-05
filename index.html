@@ -4319,26 +4319,11 @@
     margin: 0 !important;
     overflow: visible !important;
     pointer-events: none !important;
-    transform: scale(1.025) rotate(.25deg);
+    transform: none;
     transform-origin: center;
     filter: drop-shadow(0 20px 22px rgba(31,57,48,.25));
     will-change: top, left, transform;
   }
-  .swipe-del-wrap.routine-dragging-wrap .item {
-    min-height: 64px;
-    padding: 14px 18px 14px 52px !important;
-    opacity: 1 !important;
-    transform: none !important;
-    border-radius: 17px !important;
-    border-color: rgba(82,170,140,.34) !important;
-    box-shadow: 0 18px 42px rgba(38,73,61,.22), inset 0 1px 0 rgba(255,255,255,.86) !important;
-  }
-  body.theme-simple:not(.theme-dark) .swipe-del-wrap.routine-dragging-wrap .item,
-  body.theme-fancy .swipe-del-wrap.routine-dragging-wrap .item {
-    background: #fff !important;
-  }
-  .swipe-del-wrap.routine-dragging-wrap .check-box { margin-left: -36px; }
-  .swipe-del-wrap.routine-dragging-wrap .item-label { font-size: 13.5px; letter-spacing: .01em; }
   .swipe-del-wrap.routine-drop-animating {
     transition: top .18s cubic-bezier(.2,.8,.25,1), left .18s cubic-bezier(.2,.8,.25,1), transform .18s ease;
     transform: scale(1);
@@ -4378,26 +4363,16 @@
   }
   body.theme-dark .routine-divider-card,
   body.theme-mono.theme-dark .routine-divider-card { background: rgba(150, 154, 158, .26); }
-  .routine-divider-card.dragging .routine-drag-handle {
-    opacity: 1;
-    color: var(--cyan);
-  }
   .routine-list-row.routine-dragging-wrap {
     position: fixed !important;
     z-index: 10020 !important;
     margin: 0 !important;
     overflow: visible !important;
     pointer-events: none !important;
-    transform: scale(1.025) rotate(.25deg);
+    transform: none;
     transform-origin: center;
     filter: drop-shadow(0 20px 22px rgba(31,57,48,.25));
     will-change: top, left, transform;
-  }
-  .routine-divider-wrap.routine-dragging-wrap { padding: 0 !important; }
-  .routine-divider-wrap.routine-dragging-wrap .routine-divider-card {
-    height: 100%;
-    background: rgba(95, 100, 102, .30);
-    box-shadow: 0 18px 42px rgba(38,73,61,.22);
   }
   .routine-list-row.routine-drop-animating {
     transition: top .18s cubic-bezier(.2,.8,.25,1), left .18s cubic-bezier(.2,.8,.25,1), transform .18s ease;
@@ -4522,12 +4497,22 @@
     box-shadow: 0 0 0 1.5px var(--cyan) inset, 0 6px 16px -8px var(--cyan);
   }
 
-  /* ================= V448: ZOOM-SAFE ROUTINE REORDERING =================
-     持ち上げ感は位置をずらす大きな変形ではなく、控えめな拡大と影だけで示す。 */
+  /* ================= V448: ZOOM-SAFE ROUTINE REORDERING ================= */
   .swipe-del-wrap.routine-dragging-wrap,
   .routine-list-row.routine-dragging-wrap {
-    transform: scale(1.012) rotate(.06deg);
     filter: drop-shadow(0 16px 20px rgba(31,57,48,.24));
+  }
+
+  /* ================= V449: LIFT THE EXACT CARD, NOT A RESTYLED CARD =================
+     持ち上げ中も元カードの幅・高さ・余白・文字組み・角丸を一切変えず、影だけを加える。 */
+  .swipe-del-wrap.routine-dragging-wrap,
+  .routine-list-row.routine-dragging-wrap {
+    transform: none !important;
+  }
+  .swipe-del-wrap.routine-dragging-wrap .item::before,
+  .swipe-del-wrap.routine-dragging-wrap .item::after {
+    content: none !important;
+    display: none !important;
   }
 
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
@@ -4958,7 +4943,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.48</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.49</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -8992,6 +8977,73 @@
     return visualPx / Math.max(.5, state.bodyZoom || 1);
   }
 
+  function matchRoutineDragVisualSize(element, visualRect, state) {
+    const measured = element.getBoundingClientRect();
+    const cssWidth = Number.parseFloat(element.style.width);
+    const cssHeight = Number.parseFloat(element.style.height);
+    if (Number.isFinite(cssWidth) && measured.width > .5) {
+      element.style.width = `${cssWidth * visualRect.width / measured.width}px`;
+    }
+    if (Number.isFinite(cssHeight) && measured.height > .5) {
+      element.style.height = `${cssHeight * visualRect.height / measured.height}px`;
+    }
+    const corrected = element.getBoundingClientRect();
+    const cssLeft = Number.parseFloat(element.style.left);
+    const cssTop = Number.parseFloat(element.style.top);
+    if (Number.isFinite(cssLeft)) element.style.left = `${cssLeft + routineDragCssPx(visualRect.left - corrected.left, state)}px`;
+    if (Number.isFinite(cssTop)) element.style.top = `${cssTop + routineDragCssPx(visualRect.top - corrected.top, state)}px`;
+  }
+
+  function matchRoutinePlaceholderHeight(placeholder, visualHeight) {
+    const measuredHeight = placeholder.getBoundingClientRect().height;
+    const cssHeight = Number.parseFloat(placeholder.style.height);
+    if (Number.isFinite(cssHeight) && measuredHeight > .5) {
+      placeholder.style.height = `${cssHeight * visualHeight / measuredHeight}px`;
+    }
+  }
+
+  const ROUTINE_DRAG_APPEARANCE_PROPS = [
+    'box-sizing', 'display', 'align-items', 'justify-content', 'gap', 'min-height',
+    'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+    'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+    'border-top-width', 'border-top-style', 'border-top-color',
+    'border-right-width', 'border-right-style', 'border-right-color',
+    'border-bottom-width', 'border-bottom-style', 'border-bottom-color',
+    'border-left-width', 'border-left-style', 'border-left-color', 'border-radius',
+    'background-color', 'background-image', 'background-position', 'background-size',
+    'box-shadow', 'color', 'font-family', 'font-size', 'font-weight', 'font-style',
+    'line-height', 'letter-spacing', 'text-align', 'opacity'
+  ];
+
+  function freezeRoutineDragAppearance(state) {
+    const nodes = [
+      state.div,
+      ...state.div.querySelectorAll('.check-box, .item-main, .item-main-row, .item-emoji, .item-label, .routine-completed-time, .item-tag, .item-note, .routine-drag-handle')
+    ];
+    state.frozenAppearance = nodes.map(element => {
+      const computed = getComputedStyle(element);
+      const previous = ROUTINE_DRAG_APPEARANCE_PROPS.map(property => ({
+        property,
+        value: element.style.getPropertyValue(property),
+        priority: element.style.getPropertyPriority(property),
+      }));
+      ROUTINE_DRAG_APPEARANCE_PROPS.forEach(property => {
+        element.style.setProperty(property, computed.getPropertyValue(property), 'important');
+      });
+      return { element, previous };
+    });
+  }
+
+  function restoreRoutineDragAppearance(state) {
+    (state.frozenAppearance || []).forEach(({ element, previous }) => {
+      previous.forEach(({ property, value, priority }) => {
+        if (value) element.style.setProperty(property, value, priority);
+        else element.style.removeProperty(property);
+      });
+    });
+    state.frozenAppearance = null;
+  }
+
   function releaseRoutinePointer(state) {
     if (!state || !state.handle) return;
     try {
@@ -9050,7 +9102,6 @@
   function beginRoutineDrag(state) {
     if (!state || dragState !== state || !gestureArbiter.isOwnedBy('routine-reorder')) return;
     state.dragging = true;
-    state.div.classList.add('dragging');
     state.handle.classList.remove('drag-armed');
     if (navigator.vibrate) { try { navigator.vibrate(18); } catch (_) {} }
     document.body.style.userSelect = 'none';
@@ -9060,12 +9111,14 @@
     const rect = state.wrap.getBoundingClientRect();
     state.bodyZoom = routineDragBodyZoom();
     state.dragVisualHeight = rect.height;
+    freezeRoutineDragAppearance(state);
     state.originalIndex = Array.from(state.list.querySelectorAll(':scope > .routine-list-row')).indexOf(state.wrap);
     state.grabOffsetY = state.lastY - rect.top;
     state.placeholder = document.createElement('div');
     state.placeholder.className = 'routine-drop-placeholder';
     state.placeholder.style.height = `${routineDragCssPx(rect.height, state)}px`;
     state.list.insertBefore(state.placeholder, state.wrap);
+    matchRoutinePlaceholderHeight(state.placeholder, rect.height);
     state.list.removeChild(state.wrap);
     document.body.appendChild(state.wrap);
     try { state.handle.setPointerCapture(state.pointerId); } catch (_) {}
@@ -9076,6 +9129,9 @@
       width: `${routineDragCssPx(rect.width, state)}px`,
       height: `${routineDragCssPx(rect.height, state)}px`,
     });
+    matchRoutineDragVisualSize(state.wrap, rect, state);
+    state.dragCssWidth = state.wrap.style.width;
+    state.dragCssHeight = state.wrap.style.height;
   }
 
   function updateRoutineDrag(state, event) {
@@ -9100,13 +9156,15 @@
     state.wrap.classList.add('routine-drop-animating');
     state.wrap.style.left = `${routineDragCssPx(targetRect.left, state)}px`;
     state.wrap.style.top = `${routineDragCssPx(targetRect.top, state)}px`;
-    state.wrap.style.width = `${routineDragCssPx(targetRect.width, state)}px`;
+    state.wrap.style.width = state.dragCssWidth;
+    state.wrap.style.height = state.dragCssHeight;
     const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     setTimeout(() => {
       state.placeholder.replaceWith(state.wrap);
       state.wrap.classList.remove('routine-dragging-wrap', 'routine-drop-animating');
       state.div.classList.remove('dragging');
       ['left','top','width','height'].forEach(prop => { state.wrap.style[prop] = ''; });
+      restoreRoutineDragAppearance(state);
       clearRoutineDragSurface(state);
       if (!cancelled) {
         logDebug(`日課の並び順を更新: ${state.task.label}`);
