@@ -410,6 +410,21 @@ for (const file of requiredFiles) {
   }
 }
 
+// GitHub Pages currently has both the verified artifact workflow and its legacy
+// branch-root publisher enabled. Keep these two public assets identical so
+// either publisher produces a working barcode scanner without a CDN fallback.
+for (const file of ['barcode-detector.js', 'zxing_reader.wasm']) {
+  try {
+    const [sourceAsset, builtAsset] = await Promise.all([
+      readFile(resolve(root, file)),
+      readFile(resolve(root, 'www', file)),
+    ]);
+    if (!sourceAsset.equals(builtAsset)) failures.push(`${file} in the repository root is out of sync with the verified web bundle`);
+  } catch {
+    failures.push(`${file} must exist in both the repository root and www`);
+  }
+}
+
 if (failures.length) {
   console.error(failures.map((failure) => `FAIL: ${failure}`).join('\n'));
   process.exitCode = 1;
