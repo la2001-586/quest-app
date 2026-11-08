@@ -26,6 +26,8 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>現在地の天気を表示するために位置情報を使用します。</string>
+	<key>NSCameraUsageDescription</key>
+	<string>日記への写真追加と商品のバーコード読み取りにカメラを使用します。</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

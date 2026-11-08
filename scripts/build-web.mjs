@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const output = resolve(root, 'www');
@@ -24,6 +25,13 @@ for (const asset of webAssets) {
   await cp(resolve(root, asset), resolve(output, asset));
 }
 
+// Barcode reading is bundled locally so diary scanning works without a third-party CDN.
+const require = createRequire(import.meta.url);
+const detectorEntry = require.resolve('barcode-detector');
+const detectorRoot = resolve(dirname(detectorEntry), '..', '..');
+await cp(resolve(detectorRoot, 'dist', 'iife', 'polyfill.js'), resolve(output, 'barcode-detector.js'));
+await cp(resolve(detectorRoot, '..', 'zxing-wasm', 'dist', 'reader', 'zxing_reader.wasm'), resolve(output, 'zxing_reader.wasm'));
+
 const pkg = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'));
 let revision = String(process.env.GITHUB_SHA || '').slice(0, 7);
 if (!revision) {
@@ -40,4 +48,4 @@ const builtHtml = (await readFile(outputIndex, 'utf8')).replace(
 );
 await writeFile(outputIndex, builtHtml);
 
-console.log(`Prepared ${webAssets.length} web assets in ${output} (v${pkg.version} · ${revision})`);
+console.log(`Prepared ${webAssets.length + 2} web assets in ${output} (v${pkg.version} · ${revision})`);

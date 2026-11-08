@@ -1,6 +1,6 @@
 {
   "name": "daily-station",
-  "version": "0.4.50",
+  "version": "0.4.51",
   "private": true,
   "description": "Daily Station web app and Capacitor native shells",
   "engines": {
@@ -21,7 +21,9 @@
     "@capacitor/android": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "@capacitor/ios": "^8.0.0",
-    "@capacitor/status-bar": "^8.0.0"
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/status-bar": "^8.0.0",
+    "barcode-detector": "^3.2.3"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

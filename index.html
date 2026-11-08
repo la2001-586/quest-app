@@ -8,12 +8,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#07080B">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.open-meteo.com https://api.bigdatacloud.net https://wondrous-hotteok-44dee9.netlify.app; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob: https://images.openfoodfacts.org; media-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; connect-src 'self' https://api.open-meteo.com https://api.bigdatacloud.net https://wondrous-hotteok-44dee9.netlify.app https://world.openfoodfacts.org https://prices.openfoodfacts.org; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Daily Station</title>
 <meta name="apple-mobile-web-app-title" content="Daily Station">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="manifest" href="manifest.json">
+<script src="barcode-detector.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
 <style>
@@ -4570,6 +4571,94 @@
     }
   }
 
+  /* ================= V451: PURCHASE SCAN + LINKED TASK ALARMS ================= */
+  .diary-capture-card,
+  .barcode-product-card {
+    box-sizing: border-box;
+    width: min(360px, 90vw);
+    max-height: 84vh;
+    overflow-y: auto;
+    padding: 28px 24px 30px;
+    border: 1.5px solid rgba(43,201,204,.45);
+    border-radius: 20px;
+    text-align: left;
+  }
+  .diary-capture-title,
+  .barcode-product-title {
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .diary-capture-sub,
+  .barcode-lookup-status {
+    margin-bottom: 18px;
+    color: var(--ink-dim);
+    font-size: 11px;
+    line-height: 1.65;
+  }
+  .diary-capture-choice {
+    width: 100%; min-height: 58px; margin-top: 10px; padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px; text-align: left;
+    border: 1px solid rgba(130,130,145,.22); border-radius: 14px;
+    background: rgba(255,255,255,.5); color: var(--ink); cursor: pointer;
+  }
+  .diary-capture-choice strong { display: block; font-size: 13px; }
+  .diary-capture-choice small { display: block; margin-top: 2px; color: var(--ink-dim); font-size: 10px; }
+  .diary-capture-choice-icon { width: 30px; text-align: center; font-size: 22px; flex: 0 0 auto; }
+  .barcode-product-summary { display: grid; grid-template-columns: 70px minmax(0,1fr); gap: 12px; margin: 14px 0 18px; }
+  .barcode-product-image {
+    width: 70px; height: 70px; object-fit: contain; border-radius: 12px;
+    background: rgba(130,130,145,.08); border: 1px solid rgba(130,130,145,.18);
+  }
+  .barcode-product-image.is-empty { display: grid; place-items: center; color: var(--ink-dim); font-size: 10px; text-align: center; }
+  .barcode-field { display: block; margin-bottom: 12px; }
+  .barcode-field > span { display: block; margin: 0 0 5px 2px; color: var(--ink-dim); font-size: 10px; }
+  .barcode-field input {
+    box-sizing: border-box; width: 100%; min-height: 44px; padding: 10px 12px;
+    border: 1px solid rgba(130,130,145,.24); border-radius: 11px;
+    background: rgba(130,130,145,.06); color: var(--ink); font: inherit;
+  }
+  .barcode-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .barcode-lookup-line { display: flex; gap: 8px; align-items: end; }
+  .barcode-lookup-line .barcode-field { flex: 1; margin: 0; }
+  .barcode-lookup-btn {
+    min-height: 44px; padding: 0 14px; border: 1px solid rgba(43,201,204,.5);
+    border-radius: 11px; background: rgba(43,201,204,.09); color: var(--cyan); font-weight: 700;
+  }
+  .barcode-reference {
+    display: none; margin: 2px 0 14px; padding: 10px 12px; border-radius: 11px;
+    background: rgba(43,201,204,.08); color: var(--ink); font-size: 10.5px; line-height: 1.55;
+  }
+  .barcode-reference.show { display: block; }
+  .barcode-reference button { margin-left: 6px; border: 0; background: none; color: var(--cyan); font-weight: 700; }
+  .mood-product-cards { display: grid; gap: 8px; margin: 8px 0 12px; }
+  .mood-product-cards:empty { display: none; }
+  .mood-product-card {
+    position: relative; display: grid; grid-template-columns: 42px minmax(0,1fr) auto;
+    gap: 10px; align-items: center; min-height: 58px; padding: 9px 34px 9px 10px;
+    border: 1px solid rgba(130,130,145,.18); border-radius: 13px; background: rgba(130,130,145,.055);
+  }
+  .mood-product-card img { width: 42px; height: 42px; object-fit: contain; border-radius: 8px; background: #fff; }
+  .mood-product-card .product-fallback { width:42px; height:42px; display:grid; place-items:center; border-radius:8px; background:rgba(130,130,145,.10); }
+  .mood-product-name { overflow-wrap: anywhere; font-size: 11.5px; font-weight: 700; color: var(--ink); }
+  .mood-product-meta { margin-top: 2px; overflow-wrap: anywhere; font-size: 9.5px; color: var(--ink-dim); }
+  .mood-product-price { white-space: nowrap; font-size: 12px; font-weight: 800; color: var(--ink); }
+  .mood-product-remove { position: absolute; right: 7px; top: 6px; border: 0; background: none; color: var(--ink-dim); font-size: 12px; }
+  .event-alarm-link,
+  .evt-alarm-link {
+    box-sizing: border-box; display: flex; align-items: center; gap: 9px; width: 100%;
+    margin: 0 0 14px; padding: 11px 12px; border: 1px solid rgba(130,130,145,.18);
+    border-radius: 11px; background: rgba(130,130,145,.045); color: var(--ink); font-size: 11px;
+  }
+  .event-alarm-link small,
+  .evt-alarm-link small { margin-left: auto; color: var(--ink-dim); font-size: 9px; }
+  .event-alarm-link.disabled,
+  .evt-alarm-link.disabled { opacity: .48; }
+  .linked-alarm-badge { display:inline-flex; margin-left:5px; color:var(--cyan); font-size:9px; font-weight:700; }
+  body.theme-simple.theme-dark .diary-capture-choice,
+  body.theme-simple.theme-dark .barcode-field input { background: rgba(255,255,255,.05); }
+
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
   .task-date-group { position: relative; }
   .task-date-group + .task-date-group { margin-top: 0; }
@@ -4998,7 +5087,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.50</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.51</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5293,9 +5382,10 @@
           <div class="cal-section-title" style="position:relative; z-index:1; font-family:'Yu Mincho','YuMincho','Hiragino Mincho ProN',serif; font-size:24px; font-weight:500; letter-spacing:0.1em; margin-bottom:6px;" data-i18n="mood_journal_title">日記</div>
           <div style="width:36px; height:3px; border-radius:2px; background:var(--magenta); opacity:0.7; position:relative; z-index:1;"></div>
         </div>
-        <div id="moodJournalImages" class="mood-journal-images-top" onclick="triggerMoodImageUpload()"></div>
+        <div id="moodJournalImages" class="mood-journal-images-top" onclick="openDiaryCaptureMenu()"></div>
       </div>
       <div id="diaryBigDateRow" class="diary-big-date-row"></div>
+      <div id="moodProductCards" class="mood-product-cards"></div>
       <div class="mood-tag-row" id="moodTagRow">
         <button class="mood-tag-toggle" id="moodTagToggle" onclick="toggleMoodTagPicker()" data-i18n="mood_tag_default">🙂 気分を記録</button>
         <div class="mood-tag-options" id="moodTagOptions">
@@ -5347,6 +5437,7 @@
         <button class="mood-journal-btn" id="moodResetBtn" onclick="resetMoodCompose()" style="display:none;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg> リセット(新しく書く)</button>
       </div>
       <input type="file" id="moodImageInput" accept="image/*" multiple style="display:none;">
+      <input type="file" id="barcodeImageInput" accept="image/*" capture="environment" style="display:none;">
       <div id="moodJournalSavedInfo" class="mood-journal-saved-info"></div>
     </div>
   </div>
@@ -5587,8 +5678,8 @@
     <div style="font-size:12px; line-height:1.8; color:var(--ink-dim);">
       <p style="margin-bottom:10px;"><b style="color:var(--ink);">端末内データ</b><br>
       タスク、予定、日記、写真、備忘録、睡眠記録などは、原則としてこの端末内に保存されます。重要な記録はデータ管理から定期的にバックアップしてください。</p>
-      <p style="margin-bottom:10px;"><b style="color:var(--ink);">天気と外部通信</b><br>
-      天気を有効にした場合、許可された位置情報をOpen-MeteoとBigDataCloudへ送信します。フォント表示や配信のため、Google Fontsや配信事業者へIPアドレス等が送られる場合があります。</p>
+      <p style="margin-bottom:10px;"><b style="color:var(--ink);">天気・商品検索と外部通信</b><br>
+      天気を有効にした場合、許可された位置情報をOpen-MeteoとBigDataCloudへ送信します。バーコードは端末内で読み取り、商品検索を実行した場合だけ商品コードをOpen Food FactsとOpen Pricesへ送信します。日記写真や購入価格は送信しません。フォント表示や配信のため、Google Fontsや配信事業者へIPアドレス等が送られる場合があります。</p>
       <p style="margin-bottom:10px;"><b style="color:var(--ink);">AI相談用コピー</b><br>
       コピー機能は文章をクリップボードへ入れるだけで、Daily StationからAIへ自動送信しません。貼り付け先と内容はご自身で確認してください。</p>
       <p style="margin-bottom:10px;"><b style="color:var(--ink);">サービスの位置づけ</b><br>
@@ -5663,16 +5754,16 @@
         <div class="evt-row">
           <span class="evt-label" data-i18n="evt_date_label">日付</span>
           <div class="evt-ctrl">
-            <input type="date" id="dayDetailEventDate" class="evt-in evt-grow">
+            <input type="date" id="dayDetailEventDate" class="evt-in evt-grow" onchange="refreshDayEventAlarmLinkAvailability()">
           </div>
         </div>
         <div class="evt-row evt-time-row">
           <span class="evt-label">日時</span>
           <div class="evt-ctrl">
-            <input type="time" id="dayDetailEventTime" class="evt-in evt-time" onchange="autofillEventEndTime()">
+            <input type="time" id="dayDetailEventTime" class="evt-in evt-time" onchange="autofillEventEndTime(); refreshDayEventAlarmLinkAvailability();">
             <span class="evt-sep">〜</span>
             <input type="time" id="dayDetailEventEndTime" class="evt-in evt-time">
-            <label class="evt-allday"><input type="checkbox" id="dayDetailEventAllDay" onchange="document.getElementById('dayDetailEventTime').disabled = this.checked; document.getElementById('dayDetailEventEndTime').disabled = this.checked;"> 終日</label>
+            <label class="evt-allday"><input type="checkbox" id="dayDetailEventAllDay" onchange="document.getElementById('dayDetailEventTime').disabled = this.checked; document.getElementById('dayDetailEventEndTime').disabled = this.checked; refreshDayEventAlarmLinkAvailability();"> 終日</label>
           </div>
         </div>
         <div class="evt-row">
@@ -5714,6 +5805,11 @@
             <input type="number" id="dayDetailEventReminderCustom" class="evt-in evt-rmd-custom" data-i18n-placeholder="reminder_custom_placeholder" placeholder="分前" min="1" style="display:none;">
           </div>
         </div>
+        <label class="evt-alarm-link">
+          <input type="checkbox" id="dayDetailEventAlarmLink">
+          <span>アラームにも登録</span>
+          <small>日時を変更すると連動</small>
+        </label>
         <div class="evt-row">
           <span class="evt-label">場所</span>
           <div class="evt-ctrl">
@@ -5861,11 +5957,11 @@
     <div class="event-edit-title" style="font-family:'Orbitron',sans-serif; font-size:14px; color:var(--magenta); font-weight:800; margin-bottom:14px;">予定を編集</div>
     <input type="text" id="eventEditText" placeholder="予定を入力" style="width:100%; box-sizing:border-box; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:10px;">
     <div class="event-edit-row event-edit-time-row" style="display:flex; gap:6px; align-items:center; margin-bottom:10px;">
-      <input type="time" id="eventEditTime" style="width:70px; flex-shrink:0; font-size:12px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
+      <input type="time" id="eventEditTime" onchange="refreshEventAlarmLinkAvailability()" style="width:70px; flex-shrink:0; font-size:12px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
       <span style="color:var(--ink-dim); font-size:10px;">〜</span>
       <input type="time" id="eventEditEndTime" style="width:70px; flex-shrink:0; font-size:12px; padding:8px 4px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
       <label style="display:flex; align-items:center; gap:4px; font-size:11px; color:var(--ink-dim); margin-left:4px;">
-        <input type="checkbox" id="eventEditAllDay" onchange="document.getElementById('eventEditTime').disabled=this.checked; document.getElementById('eventEditEndTime').disabled=this.checked;"> 終日
+        <input type="checkbox" id="eventEditAllDay" onchange="document.getElementById('eventEditTime').disabled=this.checked; document.getElementById('eventEditEndTime').disabled=this.checked; refreshEventAlarmLinkAvailability();"> 終日
       </label>
     </div>
     <div class="event-edit-row" style="display:flex; gap:6px; margin-bottom:10px;">
@@ -5897,12 +5993,61 @@
       </select>
       <input type="number" id="eventEditReminderCustom" placeholder="分前" min="1" style="display:none; width:60px; font-size:11px; padding:8px 6px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff;">
     </div>
+    <label class="event-alarm-link">
+      <input type="checkbox" id="eventEditAlarmLink">
+      <span>アラームにも登録</span>
+      <small>日時変更・完了・削除と連動</small>
+    </label>
     <input type="text" id="eventEditLocation" placeholder="場所(任意)" style="width:100%; box-sizing:border-box; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; margin-bottom:8px;">
     <textarea id="eventEditNote" placeholder="メモ(任意)" style="width:100%; box-sizing:border-box; font-size:12px; padding:8px 10px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:#fff; min-height:44px; font-family:inherit; margin-bottom:16px;"></textarea>
     <button class="badge-close-btn" style="width:100%; font-weight:700;" onclick="confirmEventEditor()">保存する</button>
     <button class="badge-close-btn" style="width:100%; margin-top:8px; background:transparent; border-color:var(--cyan); color:var(--cyan);" onclick="shareOneEvent()"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.14em;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg> <span data-i18n="share_event_btn">共有 / カレンダーに追加</span></button>
     <button class="badge-close-btn" id="eventEditDeleteBtn" style="width:100%; margin-top:8px; background:transparent; border-color:var(--magenta); color:var(--magenta);" onclick="deleteEventFromEditor()">削除</button>
     <button class="badge-close-btn" style="width:100%; margin-top:8px; background:transparent; border-color:rgba(255,255,255,0.15); color:var(--ink-dim);" onclick="closeEventEditor()">キャンセル</button>
+  </div>
+</div>
+
+<div class="grand-modal" id="diaryCaptureModal" onclick="closeDiaryCaptureMenu()">
+  <div class="modal-card diary-capture-card" onclick="event.stopPropagation()">
+    <div class="diary-capture-title">日記に追加</div>
+    <div class="diary-capture-sub">写真はそのまま添付し、商品はバーコードから購入記録として追加します。</div>
+    <button class="diary-capture-choice" onclick="chooseDiaryPhoto()">
+      <span class="diary-capture-choice-icon">📷</span><span><strong>写真を追加</strong><small>カメラまたは写真ライブラリ</small></span>
+    </button>
+    <button class="diary-capture-choice" onclick="chooseBarcodePhoto()">
+      <span class="diary-capture-choice-icon">▥</span><span><strong>バーコードを読む</strong><small>JAN・EAN・UPCの商品コード</small></span>
+    </button>
+    <button class="diary-capture-choice" onclick="openBarcodeManualEntry()">
+      <span class="diary-capture-choice-icon">⌨</span><span><strong>コードを手入力</strong><small>カメラで読めない場合</small></span>
+    </button>
+    <button class="badge-close-btn" style="width:100%; margin-top:14px;" onclick="closeDiaryCaptureMenu()">キャンセル</button>
+  </div>
+</div>
+
+<div class="grand-modal" id="barcodeProductModal" onclick="closeBarcodeProductModal()">
+  <div class="modal-card barcode-product-card" onclick="event.stopPropagation()">
+    <div class="barcode-product-title">購入記録</div>
+    <div id="barcodeLookupStatus" class="barcode-lookup-status">バーコードを確認しています…</div>
+    <div class="barcode-lookup-line">
+      <label class="barcode-field"><span>商品コード</span><input id="barcodeProductCode" inputmode="numeric" maxlength="18" placeholder="JAN / EAN / UPC"></label>
+      <button class="barcode-lookup-btn" onclick="lookupBarcodeProduct()">検索</button>
+    </div>
+    <div class="barcode-product-summary">
+      <div id="barcodeProductImageFallback" class="barcode-product-image is-empty">画像なし</div>
+      <img id="barcodeProductImage" class="barcode-product-image" alt="" style="display:none;">
+      <div>
+        <label class="barcode-field"><span>商品名</span><input id="barcodeProductName" placeholder="商品名を入力"></label>
+        <label class="barcode-field" style="margin-bottom:0;"><span>メーカー・ブランド</span><input id="barcodeProductBrand" placeholder="任意"></label>
+      </div>
+    </div>
+    <div id="barcodeReferencePrice" class="barcode-reference"></div>
+    <div class="barcode-field-row">
+      <label class="barcode-field"><span>今回の価格</span><input id="barcodeProductPrice" type="number" min="0" step="1" inputmode="decimal" placeholder="円"></label>
+      <label class="barcode-field"><span>数量・容量</span><input id="barcodeProductQuantity" placeholder="例 500ml"></label>
+    </div>
+    <label class="barcode-field"><span>購入店</span><input id="barcodeProductStore" placeholder="任意"></label>
+    <button class="badge-close-btn" style="width:100%; font-weight:700;" onclick="saveBarcodePurchase()">日記に追加</button>
+    <button class="badge-close-btn" style="width:100%; margin-top:10px; background:transparent; border-color:rgba(130,130,145,.25); color:var(--ink-dim);" onclick="closeBarcodeProductModal()">キャンセル</button>
   </div>
 </div>
 
@@ -7960,6 +8105,123 @@
     goToPage('task', 'otherWrap' + key.charAt(0).toUpperCase() + key.slice(1));
   }
 
+  function localNotificationsPlugin() {
+    return window.Capacitor?.Plugins?.LocalNotifications || null;
+  }
+  function linkedNotificationId(eventId) {
+    let hash = 2166136261;
+    for (const ch of String(eventId || '')) {
+      hash ^= ch.charCodeAt(0);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (Math.abs(hash) % 2000000000) + 100000;
+  }
+  function eventOccursOnDate(event, dateKey) {
+    if (!event?.dateKey || !dateKey) return false;
+    if (!event.recurrence) return event.dateKey === dateKey;
+    const target = dateFromKey(dateKey);
+    const origin = dateFromKey(event.dateKey);
+    if (target < origin) return false;
+    if (event.recurrence === 'daily') return true;
+    if (event.recurrence === 'weekdays') return target.getDay() >= 1 && target.getDay() <= 5;
+    if (event.recurrence === 'weekly') return target.getDay() === origin.getDay();
+    if (event.recurrence === 'monthly') return target.getDate() === origin.getDate();
+    return false;
+  }
+  function nextEventAlarmDate(event, afterDate = new Date()) {
+    if (!event?.dateKey || !event.time || event.allDay) return null;
+    const startDay = new Date(afterDate.getFullYear(), afterDate.getMonth(), afterDate.getDate());
+    for (let offset = 0; offset <= 370; offset++) {
+      const day = new Date(startDay);
+      day.setDate(startDay.getDate() + offset);
+      const key = `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`;
+      if (!eventOccursOnDate(event, key)) continue;
+      if (event.recurrence && Array.isArray(event.doneOccurrences) && event.doneOccurrences.includes(key)) continue;
+      const [hour, minute] = event.time.split(':').map(Number);
+      const at = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hour, minute, 0, 0);
+      if (at.getTime() > afterDate.getTime() + 1000) return at;
+    }
+    return null;
+  }
+  function linkedAlarmRepeatDays(event) {
+    if (event.recurrence === 'daily') return [0,1,2,3,4,5,6];
+    if (event.recurrence === 'weekdays') return [1,2,3,4,5];
+    if (event.recurrence === 'weekly' && event.dateKey) return [dateFromKey(event.dateKey).getDay()];
+    return [];
+  }
+  async function cancelLinkedEventNotification(eventId) {
+    const plugin = localNotificationsPlugin();
+    if (!plugin) return;
+    try { await plugin.cancel({ notifications: [{ id: linkedNotificationId(eventId) }] }); } catch (error) {}
+  }
+  async function scheduleLinkedEventNotification(event, requestPermission) {
+    const plugin = localNotificationsPlugin();
+    if (!plugin || !event?.alarmLinked || event.done) return;
+    const at = nextEventAlarmDate(event);
+    if (!at) { await cancelLinkedEventNotification(event.id); return; }
+    try {
+      let permission = await plugin.checkPermissions();
+      if (permission.display !== 'granted' && requestPermission) permission = await plugin.requestPermissions();
+      if (permission.display !== 'granted') return;
+      const id = linkedNotificationId(event.id);
+      await plugin.cancel({ notifications: [{ id }] });
+      await plugin.schedule({ notifications: [{
+        id,
+        title: event.attr === 'task' ? 'タスクの時間です' : '予定の時間です',
+        body: event.text,
+        schedule: { at, allowWhileIdle: true },
+        sound: 'default',
+        extra: { sourceEventId: event.id, dateKey: event.dateKey },
+      }] });
+    } catch (error) {
+      if (requestPermission) showToast('端末通知を予約できませんでした。通知設定を確認してください');
+    }
+  }
+  async function syncScheduledEventAlarm(event, options = {}) {
+    if (!event) return;
+    const existingIndex = alarms.findIndex(alarm => alarm.sourceEventId === event.id);
+    const nextAt = nextEventAlarmDate(event);
+    const shouldLink = !!event.alarmLinked && !!event.dateKey && !!event.time && !event.allDay && !event.done && !!nextAt;
+    if (!shouldLink) {
+      if (existingIndex !== -1) alarms.splice(existingIndex, 1);
+      await persistAlarms();
+      renderAlarmList();
+      await cancelLinkedEventNotification(event.id);
+      return;
+    }
+    const repeatDays = linkedAlarmRepeatDays(event);
+    const alarm = {
+      id: existingIndex !== -1 ? alarms[existingIndex].id : 'linked_' + event.id,
+      time: event.time,
+      label: event.text,
+      enabled: true,
+      repeatDays,
+      dismissMethod: 'tap',
+      favorite: existingIndex !== -1 ? !!alarms[existingIndex].favorite : false,
+      sourceEventId: event.id,
+      dateKey: repeatDays.length ? null : event.dateKey,
+    };
+    if (existingIndex === -1) alarms.push(alarm); else alarms[existingIndex] = alarm;
+    await persistAlarms();
+    renderAlarmList();
+    await scheduleLinkedEventNotification(event, !!options.requestPermission);
+  }
+  async function syncAllLinkedEventAlarms(requestPermission) {
+    const linkedIds = new Set(scheduledEvents.filter(event => event.alarmLinked).map(event => event.id));
+    alarms = alarms.filter(alarm => !alarm.sourceEventId || linkedIds.has(alarm.sourceEventId));
+    for (const event of scheduledEvents) {
+      if (event.alarmLinked) await syncScheduledEventAlarm(event, { requestPermission: !!requestPermission });
+    }
+    await persistAlarms();
+    renderAlarmList();
+  }
+  function unlinkAlarmFromSource(alarm) {
+    if (!alarm?.sourceEventId) return;
+    const event = scheduledEvents.find(item => item.id === alarm.sourceEventId);
+    if (event) { event.alarmLinked = false; saveScheduledEvents(); }
+    cancelLinkedEventNotification(alarm.sourceEventId);
+  }
+
   async function loadAlarmSettings() {
     try {
       const saved = await window.storage.get('quest-alarms-v2');
@@ -7980,19 +8242,21 @@
     }
     const sorted = [...alarms].sort((a, b) => ((b.favorite ? 1 : 0) - (a.favorite ? 1 : 0)) || a.time.localeCompare(b.time));
     box.innerHTML = sorted.map(a => {
-      const weekLabel = a.repeatDays.length === 7 ? '毎日'
-        : a.repeatDays.length > 0
-        ? a.repeatDays.slice().sort().map(d => ALARM_DAY_LABELS[d]).join('')
+      const repeatDays = Array.isArray(a.repeatDays) ? a.repeatDays : [];
+      const weekLabel = repeatDays.length === 7 ? '毎日'
+        : repeatDays.length > 0
+        ? repeatDays.slice().sort().map(d => ALARM_DAY_LABELS[d]).join('')
         : '1回のみ';
       // 時間帯によって、控えめなアイコンを添える(清潔なレイアウトは保ちつつ、少しだけ温かみを足す)
       const hourNum = parseInt(a.time.split(':')[0], 10);
       const timeIcon = (hourNum >= 4 && hourNum < 11) ? '🌅' : (hourNum >= 11 && hourNum < 17) ? '☀️' : (hourNum >= 17 && hourNum < 21) ? '🌇' : '🌙';
+      const linkedBadge = a.sourceEventId ? '<span class="linked-alarm-badge">タスク連携</span>' : '';
       const inner = `
       <div class="alarm-row${a.enabled ? '' : ' disabled'}">
-        <div class="alarm-row-info" onclick="openAlarmEditor('${a.id}')">
-          <div class="alarm-row-time">${a.favorite ? '<span class="fav-star"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="#D9A84E" stroke="#D9A84E" stroke-width="2" stroke-linejoin="round"><path d="M12 2l2.9 6.26L21.5 9.27l-4.75 4.63 1.12 6.54L12 17.27l-5.87 3.17 1.12-6.54L2.5 9.27l6.6-1.01z"></path></svg></span>' : ''}<span class="alarm-row-time-num">${a.time}</span><span class="alarm-row-days">${escapeHtml(weekLabel)}${a.label ? '　' + escapeHtml(a.label) : ''}</span></div>
+        <div class="alarm-row-info" onclick="openAlarmOrSource('${a.id}')">
+          <div class="alarm-row-time">${a.favorite ? '<span class="fav-star"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="#D9A84E" stroke="#D9A84E" stroke-width="2" stroke-linejoin="round"><path d="M12 2l2.9 6.26L21.5 9.27l-4.75 4.63 1.12 6.54L12 17.27l-5.87 3.17 1.12-6.54L2.5 9.27l6.6-1.01z"></path></svg></span>' : ''}<span class="alarm-row-time-num">${a.time}</span><span class="alarm-row-days">${escapeHtml(weekLabel)}${a.label ? '　' + escapeHtml(a.label) : ''}${linkedBadge}</span></div>
         </div>
-        <span class="row-kebab" onclick="event.stopPropagation(); openAlarmEditor('${a.id}')">${KEBAB_SVG}</span>
+        <span class="row-kebab" onclick="event.stopPropagation(); openAlarmOrSource('${a.id}')">${KEBAB_SVG}</span>
         <label class="toggle-switch">
           <input type="checkbox" ${a.enabled ? 'checked' : ''} onchange="toggleAlarmEnabled('${a.id}', this.checked)">
           <span class="toggle-track"></span>
@@ -8004,6 +8268,8 @@
   }
   function deleteAlarmDirect(id) {
     if (!confirm(currentLang === 'en' ? 'Delete this alarm?' : 'このアラームを削除しますか？')) return;
+    const alarm = alarms.find(x => x.id === id);
+    unlinkAlarmFromSource(alarm);
     alarms = alarms.filter(x => x.id !== id);
     persistAlarms();
     renderAlarmList();
@@ -8011,6 +8277,19 @@
   function toggleAlarmEnabled(id, enabled) {
     const a = alarms.find(x => x.id === id);
     if (!a) return;
+    if (a.sourceEventId) {
+      const source = scheduledEvents.find(event => event.id === a.sourceEventId);
+      if (!enabled) {
+        if (source) { source.alarmLinked = false; saveScheduledEvents(); }
+        cancelLinkedEventNotification(a.sourceEventId);
+        alarms = alarms.filter(alarm => alarm.id !== id);
+        persistAlarms();
+        renderAlarmList();
+        showToast('予定とのアラーム連動を解除しました');
+        return;
+      }
+      if (source) scheduleLinkedEventNotification(source, true);
+    }
     a.enabled = enabled;
     persistAlarms();
     renderAlarmList();
@@ -8021,6 +8300,14 @@
     a.favorite = !a.favorite;
     persistAlarms();
     renderAlarmList();
+  }
+  function openAlarmOrSource(id) {
+    const alarm = alarms.find(item => item.id === id);
+    if (alarm?.sourceEventId) {
+      const source = scheduledEvents.find(event => event.id === alarm.sourceEventId);
+      if (source) { openEventEditor(source.id); return; }
+    }
+    openAlarmEditor(id);
   }
   function openAlarmEditor(id) {
     editingAlarmId = id;
@@ -8061,6 +8348,8 @@
   }
   function deleteAlarmFromEditor() {
     if (!editingAlarmId) return;
+    const alarm = alarms.find(x => x.id === editingAlarmId);
+    unlinkAlarmFromSource(alarm);
     alarms = alarms.filter(x => x.id !== editingAlarmId);
     persistAlarms();
     renderAlarmList();
@@ -8068,9 +8357,16 @@
   }
   function checkAlarms(hh, mm, dayOfWeek) {
     const current = `${hh}:${mm}`;
+    const nowDate = new Date();
+    const currentDateKey = `${nowDate.getFullYear()}-${nowDate.getMonth() + 1}-${nowDate.getDate()}`;
     alarms.forEach(a => {
       if (!a.enabled || a.time !== current) return;
+      if (a.dateKey && a.dateKey !== currentDateKey) return;
       if (a.repeatDays.length > 0 && !a.repeatDays.includes(dayOfWeek)) return;
+      if (a.sourceEventId) {
+        const source = scheduledEvents.find(event => event.id === a.sourceEventId);
+        if (!source || source.done || (source.recurrence && Array.isArray(source.doneOccurrences) && source.doneOccurrences.includes(currentDateKey))) return;
+      }
       if (alarmFiredAtMinute[a.id] === current) return; // この分は既に鳴らした
       alarmFiredAtMinute[a.id] = current;
       fireAlarm(a);
@@ -8525,7 +8821,7 @@
   function addScheduledEvent(dateKey, time, text, recurrence, color, extra) {
     if (!text || !text.trim()) return;
     extra = extra || {};
-    scheduledEvents.push({
+    const event = {
       id: 'ev_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
       dateKey, time: time || null, text: text.trim(), done: false,
       createdAt: Date.now(), startedAt: null, completedAt: null, elapsedMs: null,
@@ -8534,8 +8830,12 @@
       location: extra.location || null, note: extra.note || null,
       linkedTaskKey: extra.linkedTaskKey || null,
       reminderMinutes: (extra.reminderMinutes !== undefined) ? extra.reminderMinutes : null,
-    });
+      alarmLinked: !!extra.alarmLinked,
+    };
+    scheduledEvents.push(event);
     saveScheduledEvents();
+    if (event.alarmLinked) syncScheduledEventAlarm(event, { requestPermission: true });
+    return event;
   }
   function toggleScheduledEvent(id, occurrenceDateKey) {
     const ev = scheduledEvents.find(e => e.id === id);
@@ -8583,6 +8883,7 @@
       updateSummary();
     }
     saveScheduledEvents();
+    if (ev.alarmLinked) syncScheduledEventAlarm(ev);
     if (justCompleted) awardGardenDrops('event', ev.id, ev.text, ev.linkedTaskKey ? 2 : 3, timingOccurrenceKey);
     // 完了時は日課と同じ完了音、解除時は解除音、それ以外は軽いクリック
     if (justCompleted) { playSelectSound(); if (navigator.vibrate) navigator.vibrate(10); }
@@ -8591,8 +8892,10 @@
   }
   function deleteScheduledEvent(id) {
     if (!confirm(currentLang === 'en' ? 'Delete this?' : 'これを削除しますか？')) return;
+    const removed = scheduledEvents.find(e => e.id === id);
     scheduledEvents = scheduledEvents.filter(e => e.id !== id);
     saveScheduledEvents();
+    if (removed) syncScheduledEventAlarm({ ...removed, alarmLinked: false });
     playUIClick();
   }
 
@@ -9446,12 +9749,23 @@
     if (rem === null || rem === undefined) { remSel.value = ''; remCustom.style.display = 'none'; remCustom.value = ''; }
     else if (known.includes(String(rem))) { remSel.value = String(rem); remCustom.style.display = 'none'; }
     else { remSel.value = 'custom'; remCustom.style.display = 'inline-block'; remCustom.value = rem; }
+    document.getElementById('eventEditAlarmLink').checked = !!ev.alarmLinked;
+    refreshEventAlarmLinkAvailability();
     document.getElementById('eventEditModal').classList.add('show');
     playUIClick();
   }
   function closeEventEditor() {
     document.getElementById('eventEditModal').classList.remove('show');
     editingEventId = null;
+  }
+  function refreshEventAlarmLinkAvailability() {
+    const checkbox = document.getElementById('eventEditAlarmLink');
+    if (!checkbox) return;
+    const event = scheduledEvents.find(item => item.id === editingEventId);
+    const available = !!event?.dateKey && !!document.getElementById('eventEditTime').value && !document.getElementById('eventEditAllDay').checked;
+    checkbox.disabled = !available;
+    checkbox.closest('.event-alarm-link')?.classList.toggle('disabled', !available);
+    if (!available) checkbox.checked = false;
   }
   function confirmEventEditor() {
     const ev = scheduledEvents.find(e => e.id === editingEventId);
@@ -9471,7 +9785,9 @@
     const remSel = document.getElementById('eventEditReminder').value;
     if (remSel === 'custom') { const c = document.getElementById('eventEditReminderCustom').value; ev.reminderMinutes = c ? parseInt(c, 10) : null; }
     else ev.reminderMinutes = remSel ? parseInt(remSel, 10) : null;
+    ev.alarmLinked = !!document.getElementById('eventEditAlarmLink').checked && !!ev.dateKey && !!ev.time && !ev.allDay;
     saveScheduledEvents();
+    syncScheduledEventAlarm(ev, { requestPermission: ev.alarmLinked });
     renderCalendar();
     if (typeof renderTodayTasksList === 'function') renderTodayTasksList();
     if (typeof dayDetailCurrentKey !== 'undefined' && dayDetailCurrentKey) renderDayDetailEvents(dayDetailCurrentKey);
@@ -10180,6 +10496,7 @@
     await loadQuickMemo();
     loadWeather();
     await loadAlarmSettings();
+    await syncAllLinkedEventAlarms(false);
     await loadOtherPinState();
     await loadMultiPageModePref();
     await loadAlarmDismissMethod();
@@ -11067,7 +11384,7 @@
         <div class="item-main" onclick="toggleScheduledEvent('${ev.id}', '${occurrenceKey}'); renderTodayTasksList();">
           <div class="item-main-row">
             <span class="item-emoji"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-0.15em;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg></span>
-            <span class="item-label">${dot}${ev.time ? `${escapeHtml(ev.time)} ` : ''}${escapeHtml(ev.text)}</span>
+            <span class="item-label">${dot}${ev.time ? `${escapeHtml(ev.time)} ` : ''}${escapeHtml(ev.text)}${ev.alarmLinked ? '<span class="linked-alarm-badge">⏰ 連動</span>' : ''}</span>
           </div>
           ${taskTimingHtml(timingState, `beginScheduledTaskTimer('${ev.id}', '${occurrenceKey}')`)}
         </div>
@@ -12444,6 +12761,7 @@
     updateSleepDuration();
   }
   let currentMoodImages = []; // 今編集中の画像配列
+  let currentMoodProducts = []; // バーコードから追加した購入記録
   let currentMoodTag = null; // 今選んでいる気分タグ(v35で追加。great/good/neutral/low/rough または null)
   let editingMoodEntryId = null; // 既存エントリーを編集中ならそのid、新規作成中ならnull
 
@@ -12602,6 +12920,7 @@
       editingMoodEntryId = entry.id;
       document.getElementById('moodJournalText').value = entry.text || '';
       currentMoodImages = entry.images ? [...entry.images] : [];
+      currentMoodProducts = Array.isArray(entry.products) ? entry.products.map(normalizeMoodProduct) : [];
       currentMoodTag = entry.mood || null;
       setIncidentNoteFields(entry.incident);
       moodLastSavedText = entry.text || '';
@@ -12610,6 +12929,7 @@
       editingMoodEntryId = null;
       document.getElementById('moodJournalText').value = MOOD_JOURNAL_TEMPLATE_JA;
       currentMoodImages = [];
+      currentMoodProducts = [];
       currentMoodTag = null;
       setIncidentNoteFields(null);
       moodLastSavedText = '';
@@ -12618,6 +12938,7 @@
     document.querySelectorAll('.mood-tag-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mood === currentMoodTag));
     updateMoodTagToggleUI();
     renderMoodImageThumbs();
+    renderMoodProductCards();
     document.getElementById('moodJournalSavedInfo').textContent = '';
     document.getElementById('moodResetBtn').style.display = 'none';
     const incidentOpen = incidentNoteHasContent(readIncidentNoteFields());
@@ -12672,9 +12993,11 @@
       (moodJournalData[key] || []).forEach(e => {
         if (!e) return;
         const hasImg = !!(e.images && e.images.length);
+        const hasProducts = !!(e.products && e.products.length);
+        const productText = moodProductsPlainText(e.products);
         const incidentText = incidentNotePlainText(e.incident);
-        if (!e.text && !hasImg && !incidentText) return;
-        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', incidentText, hasImg });
+        if (!e.text && !hasImg && !hasProducts && !incidentText) return;
+        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', incidentText, hasImg, hasProducts, productText });
       });
     });
     items.sort((a, b) => (b.y - a.y) || (b.m - a.m) || (b.d - a.d) || b.time.localeCompare(a.time));
@@ -12684,15 +13007,15 @@
       return;
     }
     box.innerHTML = recent.map(i => {
-      const full = i.text || i.incidentText || (i.hasImg ? '（写真）' : '');
+      const full = i.text || i.incidentText || i.productText || (i.hasImg ? '（写真）' : '');
       const longEnough = (full.split('\n').length > 6) || (full.length > 140); // 6行を超えそうな時だけ「続きを読む」
       const more = longEnough ? `<span class="dhi-more" onclick="this.closest('.dhi-row').classList.toggle('open')"></span>` : '';
       return `<div class="dhi-row">
         <div class="dhi-date"><span class="dhi-dn">${i.d}</span><span class="dhi-wd">${i.wd}</span></div>
         <div class="dhi-body">
           <div class="dhi-pv">${escapeHtml(full)}</div>
-          <div class="dhi-full">${escapeHtml(i.text || (i.hasImg ? '（写真）' : ''))}${i.incidentText ? `<div class="incident-history">↗ 改善メモ\n${escapeHtml(i.incidentText)}</div>` : ''}</div>
-          <div class="dhi-meta">${i.y}/${i.m}${i.time ? ' ・ ' + i.time : ''}${i.hasImg ? ' ・ 📷' : ''}${i.incidentText ? ' ・ ↗ 改善メモ' : ''}</div>
+          <div class="dhi-full">${escapeHtml(i.text || (i.hasImg ? '（写真）' : ''))}${i.productText ? `<div class="incident-history">購入記録\n${escapeHtml(i.productText)}</div>` : ''}${i.incidentText ? `<div class="incident-history">↗ 改善メモ\n${escapeHtml(i.incidentText)}</div>` : ''}</div>
+          <div class="dhi-meta">${i.y}/${i.m}${i.time ? ' ・ ' + i.time : ''}${i.hasImg ? ' ・ 📷' : ''}${i.hasProducts ? ' ・ 購入記録' : ''}${i.incidentText ? ' ・ ↗ 改善メモ' : ''}</div>
           ${more}
         </div>
       </div>`;
@@ -12726,6 +13049,7 @@
     editingMoodEntryId = entryId;
     document.getElementById('moodJournalText').value = entry.text || '';
     currentMoodImages = entry.images ? [...entry.images] : [];
+    currentMoodProducts = Array.isArray(entry.products) ? entry.products.map(normalizeMoodProduct) : [];
     currentMoodTag = entry.mood || null;
     setIncidentNoteFields(entry.incident);
     const incidentOpen = incidentNoteHasContent(entry.incident);
@@ -12736,6 +13060,7 @@
     });
     updateMoodTagToggleUI();
     renderMoodImageThumbs();
+    renderMoodProductCards();
     moodLastSavedText = entry.text || '';
     moodLastSavedImagesJson = JSON.stringify(currentMoodImages);
     moodPrevText = entry.text || '';
@@ -12752,6 +13077,7 @@
     editingMoodEntryId = null;
     document.getElementById('moodJournalText').value = '';
     currentMoodImages = [];
+    currentMoodProducts = [];
     currentMoodTag = null;
     setIncidentNoteFields(null);
     document.getElementById('incidentNote')?.classList.remove('open');
@@ -12759,6 +13085,7 @@
     document.querySelectorAll('.mood-tag-btn').forEach(btn => btn.classList.remove('active'));
     updateMoodTagToggleUI();
     renderMoodImageThumbs();
+    renderMoodProductCards();
     moodLastSavedText = '';
     moodLastSavedImagesJson = '[]';
     document.getElementById('moodResetBtn').style.display = 'none';
@@ -12812,7 +13139,7 @@
     playUIClick();
     // 戻した/進めた内容をそのまま保存し直す(空なら保存はスキップされる)
     clearTimeout(moodJournalAutosaveTimer);
-    if (el.value.trim() || currentMoodImages.length || currentMoodTag) saveMoodJournal(true);
+    if (el.value.trim() || currentMoodImages.length || currentMoodProducts.length || currentMoodTag) saveMoodJournal(true);
   }
   function diaryUndo() {
     commitDiaryHistory();               // 未確定の最新入力も1手として確定してから戻す
@@ -12857,9 +13184,255 @@
     handleMoodJournalBlur(); // 画像の増減も、すぐ自動保存に反映させる
   }
 
-  function triggerMoodImageUpload() {
+  function openDiaryCaptureMenu() {
     playUIClick();
+    document.getElementById('diaryCaptureModal').classList.add('show');
+  }
+  function closeDiaryCaptureMenu() {
+    document.getElementById('diaryCaptureModal').classList.remove('show');
+  }
+  function chooseDiaryPhoto() {
+    closeDiaryCaptureMenu();
     document.getElementById('moodImageInput').click();
+  }
+  function triggerMoodImageUpload() { openDiaryCaptureMenu(); }
+
+  let barcodeModuleReady = null;
+  let barcodeLookupState = { imageUrl: '', referencePrice: null, referenceLabel: '' };
+
+  function normalizeBarcodeValue(value) {
+    return String(value || '').replace(/[^0-9A-Za-z]/g, '').slice(0, 18);
+  }
+  function isValidGtin(value) {
+    const digits = String(value || '');
+    if (!/^\d{8}$|^\d{12}$|^\d{13}$|^\d{14}$/.test(digits)) return false;
+    const body = digits.slice(0, -1).split('').reverse().map(Number);
+    const sum = body.reduce((total, digit, index) => total + digit * (index % 2 === 0 ? 3 : 1), 0);
+    return (10 - (sum % 10)) % 10 === Number(digits.at(-1));
+  }
+  function normalizeMoodProduct(value) {
+    const source = value && typeof value === 'object' ? value : {};
+    const imageUrl = String(source.imageUrl || '');
+    return {
+      id: safeRecordId(source.id || ('purchase_' + Date.now()), 'purchase'),
+      barcode: normalizeBarcodeValue(source.barcode),
+      name: String(source.name || '').slice(0, 240),
+      brand: String(source.brand || '').slice(0, 160),
+      quantity: String(source.quantity || '').slice(0, 80),
+      price: Number.isFinite(Number(source.price)) && source.price !== '' && source.price !== null ? Math.max(0, Number(source.price)) : null,
+      currency: 'JPY',
+      store: String(source.store || '').slice(0, 160),
+      imageUrl: /^https:\/\/images\.openfoodfacts\.org\//.test(imageUrl) ? imageUrl : '',
+      referencePrice: source.referencePrice !== '' && source.referencePrice !== null && source.referencePrice !== undefined && Number.isFinite(Number(source.referencePrice)) ? Math.max(0, Number(source.referencePrice)) : null,
+      referenceLabel: String(source.referenceLabel || '').slice(0, 240),
+      recordedAt: String(source.recordedAt || new Date().toISOString()).slice(0, 40),
+    };
+  }
+  function formatPurchasePrice(value) {
+    return value !== '' && value !== null && value !== undefined && Number.isFinite(Number(value)) ? `¥${Math.round(Number(value)).toLocaleString('ja-JP')}` : '価格未入力';
+  }
+  function moodProductsPlainText(products) {
+    return (Array.isArray(products) ? products : []).map(raw => {
+      const product = normalizeMoodProduct(raw);
+      return `${product.name || '商品名未入力'} ${formatPurchasePrice(product.price)}${product.store ? '（' + product.store + '）' : ''}`;
+    }).join('\n');
+  }
+  function moodProductsHistoryHtml(products) {
+    const list = Array.isArray(products) ? products : [];
+    if (!list.length) return '';
+    return `<div class="mood-product-cards" style="margin-top:8px;">${list.map(raw => {
+      const product = normalizeMoodProduct(raw);
+      const image = product.imageUrl ? `<img src="${escapeHtml(product.imageUrl)}" alt="">` : '<span class="product-fallback">▥</span>';
+      const meta = [product.brand, product.quantity, product.store].filter(Boolean).join(' ・ ');
+      return `<div class="mood-product-card" style="padding-right:10px;">${image}<div><div class="mood-product-name">${escapeHtml(product.name || '商品名未入力')}</div><div class="mood-product-meta">${escapeHtml(meta || product.barcode || '購入記録')}</div></div><div class="mood-product-price">${escapeHtml(formatPurchasePrice(product.price))}</div></div>`;
+    }).join('')}</div>`;
+  }
+  function renderMoodProductCards() {
+    const box = document.getElementById('moodProductCards');
+    if (!box) return;
+    box.innerHTML = currentMoodProducts.map((raw, index) => {
+      const product = normalizeMoodProduct(raw);
+      const image = product.imageUrl
+        ? `<img src="${escapeHtml(product.imageUrl)}" alt="">`
+        : '<span class="product-fallback">▥</span>';
+      const meta = [product.brand, product.quantity, product.store].filter(Boolean).join(' ・ ');
+      return `<div class="mood-product-card">
+        ${image}
+        <div><div class="mood-product-name">${escapeHtml(product.name || '商品名未入力')}</div><div class="mood-product-meta">${escapeHtml(meta || product.barcode || '購入記録')}</div></div>
+        <div class="mood-product-price">${escapeHtml(formatPurchasePrice(product.price))}</div>
+        <button class="mood-product-remove" aria-label="購入記録を削除" onclick="removeMoodProduct(${index})">✕</button>
+      </div>`;
+    }).join('');
+  }
+  function removeMoodProduct(index) {
+    currentMoodProducts.splice(index, 1);
+    renderMoodProductCards();
+    handleMoodJournalBlur();
+  }
+  async function prepareBarcodeDetector() {
+    if (window.BarcodeDetectionAPI?.prepareZXingModule && !barcodeModuleReady) {
+      barcodeModuleReady = window.BarcodeDetectionAPI.prepareZXingModule({
+        overrides: {
+          locateFile: (path, prefix) => path.endsWith('.wasm') ? new URL('zxing_reader.wasm', document.baseURI).href : prefix + path,
+        },
+        fireImmediately: true,
+      });
+    }
+    if (barcodeModuleReady) await barcodeModuleReady;
+    if (typeof window.BarcodeDetector !== 'function') throw new Error('barcode detector unavailable');
+    return new window.BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] });
+  }
+  function chooseBarcodePhoto() {
+    closeDiaryCaptureMenu();
+    document.getElementById('barcodeImageInput').click();
+  }
+  function resetBarcodeProductForm(code) {
+    barcodeLookupState = { imageUrl: '', referencePrice: null, referenceLabel: '' };
+    document.getElementById('barcodeProductCode').value = normalizeBarcodeValue(code);
+    document.getElementById('barcodeProductName').value = '';
+    document.getElementById('barcodeProductBrand').value = '';
+    document.getElementById('barcodeProductQuantity').value = '';
+    document.getElementById('barcodeProductPrice').value = '';
+    document.getElementById('barcodeProductStore').value = '';
+    document.getElementById('barcodeProductImage').style.display = 'none';
+    document.getElementById('barcodeProductImage').removeAttribute('src');
+    document.getElementById('barcodeProductImageFallback').style.display = 'grid';
+    const reference = document.getElementById('barcodeReferencePrice');
+    reference.classList.remove('show');
+    reference.textContent = '';
+  }
+  function openBarcodeManualEntry() {
+    closeDiaryCaptureMenu();
+    resetBarcodeProductForm('');
+    document.getElementById('barcodeLookupStatus').textContent = '商品コードを入力して検索するか、商品名と価格を直接記録できます。';
+    document.getElementById('barcodeProductModal').classList.add('show');
+    setTimeout(() => document.getElementById('barcodeProductCode').focus(), 120);
+  }
+  function closeBarcodeProductModal() {
+    document.getElementById('barcodeProductModal').classList.remove('show');
+  }
+  function showBarcodeProductImage(url) {
+    const safe = /^https:\/\/images\.openfoodfacts\.org\//.test(String(url || '')) ? String(url) : '';
+    barcodeLookupState.imageUrl = safe;
+    const image = document.getElementById('barcodeProductImage');
+    const fallback = document.getElementById('barcodeProductImageFallback');
+    if (!safe) { image.style.display = 'none'; fallback.style.display = 'grid'; return; }
+    image.src = safe;
+    image.style.display = 'block';
+    fallback.style.display = 'none';
+  }
+  function findPreviousPurchase(barcode) {
+    const found = [];
+    Object.values(moodJournalData || {}).forEach(entries => (Array.isArray(entries) ? entries : []).forEach(entry => {
+      (Array.isArray(entry.products) ? entry.products : []).forEach(product => {
+        const normalized = normalizeMoodProduct(product);
+        if (normalized.barcode === barcode && normalized.price !== null) found.push(normalized);
+      });
+    }));
+    return found.sort((a, b) => String(b.recordedAt).localeCompare(String(a.recordedAt)))[0] || null;
+  }
+  function setBarcodeReferencePrice(price, label) {
+    const amount = Number(price);
+    const box = document.getElementById('barcodeReferencePrice');
+    if (!Number.isFinite(amount)) { box.classList.remove('show'); return; }
+    barcodeLookupState.referencePrice = amount;
+    barcodeLookupState.referenceLabel = String(label || '参考価格');
+    box.innerHTML = `${escapeHtml(label || '参考価格')}：<strong>${escapeHtml(formatPurchasePrice(amount))}</strong><button type="button" onclick="useBarcodeReferencePrice()">今回価格へ</button>`;
+    box.classList.add('show');
+  }
+  function useBarcodeReferencePrice() {
+    if (Number.isFinite(barcodeLookupState.referencePrice)) document.getElementById('barcodeProductPrice').value = String(Math.round(barcodeLookupState.referencePrice));
+  }
+  async function lookupBarcodeProduct() {
+    const code = normalizeBarcodeValue(document.getElementById('barcodeProductCode').value);
+    document.getElementById('barcodeProductCode').value = code;
+    if (!code) { showToast('商品コードを入力してください'); return; }
+    const status = document.getElementById('barcodeLookupStatus');
+    status.textContent = isValidGtin(code) ? '商品情報と参考価格を検索しています…' : 'コード形式を確認しながら検索しています…';
+    const productUrl = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}?fields=code,product_name,product_name_ja,brands,quantity,image_front_small_url`;
+    const pricesUrl = `https://prices.openfoodfacts.org/api/v1/prices?product_code=${encodeURIComponent(code)}&currency=JPY&order_by=-date&size=5`;
+    const [productResult, priceResult] = await Promise.allSettled([
+      fetch(productUrl).then(response => response.ok ? response.json() : Promise.reject(new Error('product lookup failed'))),
+      fetch(pricesUrl).then(response => response.ok ? response.json() : Promise.reject(new Error('price lookup failed'))),
+    ]);
+    let foundProduct = false;
+    if (productResult.status === 'fulfilled' && productResult.value?.status === 1) {
+      const product = productResult.value.product || {};
+      document.getElementById('barcodeProductName').value = product.product_name_ja || product.product_name || '';
+      document.getElementById('barcodeProductBrand').value = product.brands || '';
+      document.getElementById('barcodeProductQuantity').value = product.quantity || '';
+      showBarcodeProductImage(product.image_front_small_url || '');
+      foundProduct = true;
+    }
+    const localPrevious = findPreviousPurchase(code);
+    const openPrice = priceResult.status === 'fulfilled' && Array.isArray(priceResult.value?.items) ? priceResult.value.items[0] : null;
+    if (localPrevious) {
+      setBarcodeReferencePrice(localPrevious.price, `前回価格${localPrevious.store ? '（' + localPrevious.store + '）' : ''}`);
+    } else if (openPrice && openPrice.currency === 'JPY') {
+      const shop = openPrice.location?.osm_name || openPrice.location?.osm_brand || '';
+      setBarcodeReferencePrice(openPrice.price, `参考価格${shop ? '（' + shop + '）' : ''}${openPrice.date ? ' ' + openPrice.date : ''}`);
+    }
+    status.textContent = foundProduct
+      ? '商品候補を取得しました。実際の商品と今回価格を確認してください。'
+      : '商品台帳に見つかりませんでした。商品名と今回価格を入力して記録できます。';
+  }
+  async function barcodeImageSource(file) {
+    if ('createImageBitmap' in window) return createImageBitmap(file);
+    const url = URL.createObjectURL(file);
+    try {
+      const image = new Image();
+      image.src = url;
+      await image.decode();
+      return image;
+    } finally {
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  }
+  document.getElementById('barcodeImageInput').addEventListener('change', async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    resetBarcodeProductForm('');
+    document.getElementById('barcodeLookupStatus').textContent = '画像からバーコードを読み取っています…';
+    document.getElementById('barcodeProductModal').classList.add('show');
+    let source = null;
+    try {
+      const detector = await prepareBarcodeDetector();
+      source = await barcodeImageSource(file);
+      const results = await detector.detect(source);
+      const candidate = results.map(result => normalizeBarcodeValue(result.rawValue)).find(value => /^\d{8,14}$/.test(value));
+      if (!candidate) throw new Error('no retail barcode');
+      document.getElementById('barcodeProductCode').value = candidate;
+      await lookupBarcodeProduct();
+    } catch (error) {
+      document.getElementById('barcodeLookupStatus').textContent = 'バーコードを読み取れませんでした。数字を手入力するか、もう一度近くから撮影してください。';
+      setTimeout(() => document.getElementById('barcodeProductCode').focus(), 120);
+    } finally {
+      if (source && typeof source.close === 'function') source.close();
+    }
+  });
+  async function saveBarcodePurchase() {
+    const name = document.getElementById('barcodeProductName').value.trim();
+    if (!name) { showToast('商品名を入力してください'); return; }
+    const priceText = document.getElementById('barcodeProductPrice').value;
+    const product = normalizeMoodProduct({
+      id: 'purchase_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+      barcode: document.getElementById('barcodeProductCode').value,
+      name,
+      brand: document.getElementById('barcodeProductBrand').value,
+      quantity: document.getElementById('barcodeProductQuantity').value,
+      price: priceText === '' ? null : Number(priceText),
+      store: document.getElementById('barcodeProductStore').value,
+      imageUrl: barcodeLookupState.imageUrl,
+      referencePrice: barcodeLookupState.referencePrice,
+      referenceLabel: barcodeLookupState.referenceLabel,
+      recordedAt: new Date().toISOString(),
+    });
+    currentMoodProducts.push(product);
+    renderMoodProductCards();
+    closeBarcodeProductModal();
+    await saveMoodJournal(true);
+    showToast('購入記録を日記に追加しました');
   }
 
   function compressImageFile(file, maxWidth) {
@@ -12900,8 +13473,9 @@
 
   async function copyForAIConsult() {
     const text = document.getElementById('moodJournalText').value.trim();
+    const productText = moodProductsPlainText(currentMoodProducts);
     const incidentText = incidentNotePlainText(readIncidentNoteFields());
-    if (!text && !incidentText) {
+    if (!text && !productText && !incidentText) {
       showToast(currentLang === 'en' ? 'Write something first' : '先に何か書いてみてください');
       return;
     }
@@ -12914,8 +13488,8 @@
     if (bedtime && waketime) sleepLine = `\n睡眠: ${bedtime} 〜 ${waketime}`;
 
     const prompt = (currentLang === 'en')
-      ? `Here is my journal from ${dateLabel}. First note one thing I did well, then point out anything worth improving — honestly, but kindly and constructively. Treat the lesson note as hypotheses rather than proven causes. End with one small experiment I could try next. Keep it brief.\n\n[${dateLabel}] (streak ${streak})${sleepLine}\n${text || '(No diary text)'}${incidentText ? `\n\n[Lesson note]\n${incidentText}` : ''}`
-      : `以下は${dateLabel}の自分の記録です。まず良かった点にふれ、その上で気づいた課題を率直に、でも前向きに指摘してください。改善メモの原因候補は断定せず仮説として扱い、最後に次回試せる小さな実験を一つ提案してください。簡潔にお願いします。\n\n【${dateLabel}の記録】(連続記録${streak}日目)${sleepLine}\n${text || '（日記本文なし）'}${incidentText ? `\n\n【改善メモ】\n${incidentText}` : ''}`;
+      ? `Here is my journal from ${dateLabel}. First note one thing I did well, then point out anything worth improving — honestly, but kindly and constructively. Treat the lesson note as hypotheses rather than proven causes. End with one small experiment I could try next. Keep it brief.\n\n[${dateLabel}] (streak ${streak})${sleepLine}\n${text || '(No diary text)'}${productText ? `\n\n[Purchases]\n${productText}` : ''}${incidentText ? `\n\n[Lesson note]\n${incidentText}` : ''}`
+      : `以下は${dateLabel}の自分の記録です。まず良かった点にふれ、その上で気づいた課題を率直に、でも前向きに指摘してください。改善メモの原因候補は断定せず仮説として扱い、最後に次回試せる小さな実験を一つ提案してください。簡潔にお願いします。\n\n【${dateLabel}の記録】(連続記録${streak}日目)${sleepLine}\n${text || '（日記本文なし）'}${productText ? `\n\n【購入記録】\n${productText}` : ''}${incidentText ? `\n\n【改善メモ】\n${incidentText}` : ''}`;
 
     try {
       await navigator.clipboard.writeText(prompt);
@@ -12954,15 +13528,17 @@
       (moodJournalData[key] || []).forEach(e => {
         if (!e) return;
         const hasImg = !!(e.images && e.images.length);
+        const hasProducts = !!(e.products && e.products.length);
+        const productText = moodProductsPlainText(e.products || []);
         const incidentText = incidentNotePlainText(e.incident);
-        if (!e.text && !hasImg && !incidentText) return;
-        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', incidentText, mood: e.mood || '', hasImg });
+        if (!e.text && !hasImg && !hasProducts && !incidentText) return;
+        items.push({ y, m, d, wd, time: e.time || '', text: e.text || '', incidentText, mood: e.mood || '', hasImg, hasProducts, productText });
       });
     });
     items.sort((a, b) => (b.y - a.y) || (b.m - a.m) || (b.d - a.d) || b.time.localeCompare(a.time));
     let filtered = diaryHistoryFilter === 'all' ? items : items.filter(i => i.mood === diaryHistoryFilter);
     const dhq = (document.getElementById('dhSearch') ? document.getElementById('dhSearch').value : '').trim().toLowerCase();
-    if (dhq) filtered = filtered.filter(i => `${i.text || ''}\n${i.incidentText || ''}`.toLowerCase().includes(dhq));
+    if (dhq) filtered = filtered.filter(i => `${i.text || ''}\n${i.productText || ''}\n${i.incidentText || ''}`.toLowerCase().includes(dhq));
     if (filtered.length === 0) {
       box.innerHTML = `<div class="dh-empty">${dhq ? (currentLang === 'en' ? 'No matches' : '見つかりませんでした') : (currentLang === 'en' ? 'No entries yet' : 'まだ日記がありません')}</div>`;
       return;
@@ -12973,14 +13549,14 @@
       if (ym !== dhCurYM) { dhCurYM = ym; dhHtml += `<div class="dh-month">${ym}</div>`; }
       const emoji = i.mood && MOOD_TAG_EMOJI[i.mood] ? MOOD_TAG_EMOJI[i.mood] : '';
       const dot = `<span class="dh-dot" style="background:${i.mood ? (DOT[i.mood] || '#C3BDB0') : 'transparent'}"></span>`;
-      const preview = escapeHtml((i.text || i.incidentText || '').replace(/\s+/g, ' ').trim()) || (i.hasImg ? '（写真）' : '');
+      const preview = escapeHtml((i.text || i.productText || i.incidentText || '').replace(/\s+/g, ' ').trim()) || (i.hasImg ? '（写真）' : '');
       dhHtml += `<div class="dh-row" onclick="this.classList.toggle('open')">
         <div class="dh-date"><span class="dh-dn">${i.d}</span><span class="dh-wd">${i.wd}</span></div>
         ${dot}
         <div class="dh-body">
           <div class="dh-pv">${preview}</div>
-          <div class="dh-full">${escapeHtml(i.text || '')}${i.incidentText ? `<div class="incident-history">↗ 改善メモ\n${escapeHtml(i.incidentText)}</div>` : ''}</div>
-          <div class="dh-meta">${i.time ? i.time : ''}${i.hasImg ? ' ・ 📷' : ''}${i.incidentText ? ' ・ ↗ 改善メモ' : ''}</div>
+          <div class="dh-full">${escapeHtml(i.text || '')}${i.productText ? `<div class="incident-history">購入記録\n${escapeHtml(i.productText)}</div>` : ''}${i.incidentText ? `<div class="incident-history">↗ 改善メモ\n${escapeHtml(i.incidentText)}</div>` : ''}</div>
+          <div class="dh-meta">${i.time ? i.time : ''}${i.hasImg ? ' ・ 📷' : ''}${i.hasProducts ? ' ・ 購入記録' : ''}${i.incidentText ? ' ・ ↗ 改善メモ' : ''}</div>
         </div>
         <span class="dh-emoji">${emoji}</span>
       </div>`;
@@ -12997,7 +13573,7 @@
     if (!diaryHistoryApplying) scheduleDiaryHistory();
 
     // --- 保存中インジケータ(息づく三点) ---
-    if (cur.trim() || currentMoodImages.length || currentMoodTag) {
+    if (cur.trim() || currentMoodImages.length || currentMoodProducts.length || currentMoodTag) {
       const info = document.getElementById('moodJournalSavedInfo');
       if (info) info.innerHTML = '<span class="saving-dots"><i></i><i></i><i></i></span>保存中…';
     }
@@ -13006,7 +13582,7 @@
     moodJournalAutosaveTimer = setTimeout(() => {
       const text = document.getElementById('moodJournalText').value;
       // 空欄・気分タグも画像も無い状態では、自動保存しない(「内容が空です」を毎回出さないため)
-      if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
+      if (!text.trim() && currentMoodImages.length === 0 && currentMoodProducts.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
       saveMoodJournal(true); // 自動保存扱い(ボタンの「保存しました」演出は省略)
     }, 2000);
   }
@@ -13014,7 +13590,7 @@
     // 手動保存ボタンが無いので、入力欄から離れた瞬間、2秒待たずに即座に保存する
     clearTimeout(moodJournalAutosaveTimer);
     const text = document.getElementById('moodJournalText').value;
-    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
+    if (!text.trim() && currentMoodImages.length === 0 && currentMoodProducts.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
     saveMoodJournal(true);
   }
   function handleIncidentInput() {
@@ -13027,21 +13603,21 @@
     clearTimeout(moodJournalAutosaveTimer);
     moodJournalAutosaveTimer = setTimeout(() => {
       const text = document.getElementById('moodJournalText').value;
-      if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
+      if (!text.trim() && currentMoodImages.length === 0 && currentMoodProducts.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
       saveMoodJournal(true);
     }, 1200);
   }
   function handleIncidentBlur() {
     clearTimeout(moodJournalAutosaveTimer);
     const text = document.getElementById('moodJournalText').value;
-    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
+    if (!text.trim() && currentMoodImages.length === 0 && currentMoodProducts.length === 0 && !currentMoodTag && !incidentNoteHasContent(readIncidentNoteFields())) return;
     saveMoodJournal(true);
   }
   async function saveMoodJournal(isAutosave) {
     const key = logicalDateKey(trustedNow);
     const text = document.getElementById('moodJournalText').value;
     const incident = readIncidentNoteFields();
-    if (!text.trim() && currentMoodImages.length === 0 && !currentMoodTag && !incidentNoteHasContent(incident)) {
+    if (!text.trim() && currentMoodImages.length === 0 && currentMoodProducts.length === 0 && !currentMoodTag && !incidentNoteHasContent(incident)) {
       showToast('内容が空です');
       return;
     }
@@ -13053,13 +13629,13 @@
       // 既存エントリーの更新
       const idx = moodJournalData[key].findIndex(e => e.id === editingMoodEntryId);
       if (idx !== -1) {
-        moodJournalData[key][idx] = { ...moodJournalData[key][idx], text, images: [...currentMoodImages], time: nowTime, mood: currentMoodTag, incident };
+        moodJournalData[key][idx] = { ...moodJournalData[key][idx], text, images: [...currentMoodImages], products: currentMoodProducts.map(normalizeMoodProduct), time: nowTime, mood: currentMoodTag, incident };
       }
     } else {
       // 新規エントリーの追加(これが「保存したら過去データになる」の実体)
       const newEntry = {
         id: 'mood_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-        time: nowTime, text, images: [...currentMoodImages], mood: currentMoodTag, incident,
+        time: nowTime, text, images: [...currentMoodImages], products: currentMoodProducts.map(normalizeMoodProduct), mood: currentMoodTag, incident,
       };
       moodJournalData[key].push(newEntry);
       editingMoodEntryId = newEntry.id;
@@ -14762,6 +15338,14 @@
     const endH = (h + 1) % 24;
     endTimeEl.value = `${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
+  function refreshDayEventAlarmLinkAvailability() {
+    const checkbox = document.getElementById('dayDetailEventAlarmLink');
+    if (!checkbox) return;
+    const available = !!document.getElementById('dayDetailEventDate').value && !!document.getElementById('dayDetailEventTime').value && !document.getElementById('dayDetailEventAllDay').checked;
+    checkbox.disabled = !available;
+    checkbox.closest('.evt-alarm-link')?.classList.toggle('disabled', !available);
+    if (!available) checkbox.checked = false;
+  }
   function confirmAddDayEvent() {
     const timeEl = document.getElementById('dayDetailEventTime');
     const textEl = document.getElementById('dayDetailEventText');
@@ -14774,6 +15358,7 @@
     const reminderCustomEl = document.getElementById('dayDetailEventReminderCustom');
     const attrEl = document.getElementById('dayDetailEventAttr');
     const dateEl = document.getElementById('dayDetailEventDate');
+    const alarmLinkEl = document.getElementById('dayDetailEventAlarmLink');
     const attrVal = attrEl ? attrEl.value : 'event';
     if (!textEl.value.trim() || !dayDetailCurrentKey) return;
     // 追加先の日付: 日付欄が変更されていれば、その日に予定を入れる(昨日の記録・明日以降の予定)。既定は開いている日。
@@ -14787,6 +15372,7 @@
     addScheduledEvent(targetKey, timeEl.value, textEl.value, recurEl.value || null, attrColor(attrVal), {
       allDay: allDayEl.checked, endTime: endTimeEl.value, location: locationEl.value, note: noteEl.value,
       reminderMinutes: reminderMinutes, attr: attrVal,
+      alarmLinked: !!alarmLinkEl?.checked && !!timeEl.value && !allDayEl.checked,
     });
     // 表示中の日と違う日に入れた時は、その場では一覧に出ないので、トーストで知らせる
     if (targetKey !== dayDetailCurrentKey) {
@@ -14805,8 +15391,10 @@
     reminderEl.value = '';
     reminderCustomEl.value = '';
     reminderCustomEl.style.display = 'none';
+    if (alarmLinkEl) alarmLinkEl.checked = false;
     if (attrEl) attrEl.value = 'event';
     if (dateEl) dateEl.value = keyToISO(dayDetailCurrentKey); // 追加先の日付は、開いている日に戻す
+    refreshDayEventAlarmLinkAvailability();
     renderDayDetailEvents(dayDetailCurrentKey);
     renderCalendar();
     renderTodayTasksList();
@@ -14827,6 +15415,7 @@
     const [y, m, d] = key.split('-');
     const dateInput = document.getElementById('dayDetailEventDate');
     if (dateInput) dateInput.value = keyToISO(key); // 追加先の日付は、開いている日を既定にする(変更すれば別の日に予定を入れられる)
+    refreshDayEventAlarmLinkAvailability();
     const allItems = [...(record.items || []), ...(record.todayTasksCompleted || [])];
     const itemsText = allItems.length ? allItems.join('、') : '記録なし';
     document.getElementById('dayDetailDate').textContent = `${y}年${m}月${d}日の記録`;
@@ -14842,6 +15431,7 @@
         const imgs = (entry.images || []).map(src =>
           `<img src="${src}" style="width:56px; height:56px; object-fit:cover; border-radius:8px; border:1.5px solid rgba(255,255,255,0.15); margin-top:6px; margin-right:4px;">`
         ).join('');
+        const products = moodProductsHistoryHtml(entry.products);
         const moodEmoji = entry.mood && MOOD_TAG_EMOJI[entry.mood] ? MOOD_TAG_EMOJI[entry.mood] + ' ' : '';
         const incidentText = incidentNotePlainText(entry.incident);
         const textId = `dayDetailMoodEntryText_${i}`;
@@ -14850,6 +15440,7 @@
           <div id="${textId}" class="clamp-text">${moodEmoji}${escapeHtml(entry.text || '')}</div>
           <span class="clamp-expand-btn" onclick="document.getElementById('${textId}').classList.toggle('clamp-text'); this.textContent = this.textContent === '続きを読む' ? '短く表示' : '続きを読む';">続きを読む</span>
           ${incidentText ? `<div class="incident-history">↗ 改善メモ\n${escapeHtml(incidentText)}</div>` : ''}
+          ${products}
           <div>${imgs}</div>
         </div>`;
       }).join('');
@@ -14878,7 +15469,8 @@
     const moodText = moodEntries.length
       ? moodEntries.map(e => {
           const incidentText = incidentNotePlainText(e.incident);
-          return `[${e.time || ''}] ${e.text || '（本文なし）'}${incidentText ? `\n【改善メモ】\n${incidentText}` : ''}`;
+          const purchases = moodProductsPlainText(e.products);
+          return `[${e.time || ''}] ${e.text || '（本文なし）'}${purchases ? `\n【購入記録】\n${purchases}` : ''}${incidentText ? `\n【改善メモ】\n${incidentText}` : ''}`;
         }).join('\n')
       : 'なし';
 

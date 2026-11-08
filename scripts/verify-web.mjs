@@ -14,6 +14,8 @@ const requiredFiles = [
   'service-worker.js',
   'apple-touch-icon.png',
   'icon-512.png',
+  'barcode-detector.js',
+  'zxing_reader.wasm',
   'bgm-cyber.mp3',
   'bgm-fancy.mp3'
 ];
@@ -328,6 +330,23 @@ for (const marker of [
   'margin-top: 12px !important'
 ]) {
   if (!html.includes(marker)) failures.push(`roomier event editor marker is missing: ${marker}`);
+}
+
+for (const marker of [
+  'V451: PURCHASE SCAN + LINKED TASK ALARMS',
+  'id="diaryCaptureModal"',
+  'id="barcodeProductModal"',
+  'function prepareBarcodeDetector()',
+  'function lookupBarcodeProduct()',
+  'https://world.openfoodfacts.org/api/v2/product/',
+  'https://prices.openfoodfacts.org/api/v1/prices',
+  'function syncScheduledEventAlarm(',
+  'id="eventEditAlarmLink"',
+  'id="dayDetailEventAlarmLink"',
+  'sourceEventId',
+  '⏰ 連動'
+]) {
+  if (!html.includes(marker)) failures.push(`purchase scan / linked alarm marker is missing: ${marker}`);
 }
 
 for (const marker of [
