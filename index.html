@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=overlays-content, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
@@ -419,8 +419,12 @@
      以前の全体グレースケールは「薄いけど何かある」という不安感につながるとの
      フィードバックのため撤去。代わりに各タスクのチェック円の色分けで表現する) */
 
+  /* V453: ページ倍率を固定し、ダブルタップ・ピンチ拡大で下ナビをずらさない */
   html {
     overscroll-behavior-x: none;
+    touch-action: pan-x pan-y;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   /* iOS Safariは、入力欄の文字サイズが16px未満だと、タップした瞬間に自動でズームしてしまう仕様がある。
      見た目のサイズ感を大きく変えずに、この望まない自動ズームだけを防ぐ */
@@ -437,6 +441,7 @@
     padding: calc(env(safe-area-inset-top, 0px) + 20px) 14px 90px;
     position: relative; overflow-x: hidden;
     overscroll-behavior-x: none;
+    touch-action: pan-x pan-y;
   }
   /* スキャンライン演出 */
   body::before {
@@ -1998,9 +2003,6 @@
       inset 0 1px 0 rgba(255,255,255,0.05),
       0 1px 0 rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.35);
   }
-  /* 2本指のピンチズーム中だけ、カード側の touch-action:none を一時解除して
-     ブラウザ本来の拡大縮小操作を通す(v71で追加。通常時は今まで通りドラッグ操作を優先) */
-  body.pinch-zoom-active .item { touch-action: auto !important; }
   .item.picked {
     border-left-color: var(--cyan); border-color: rgba(43,201,204,0.6);
     background: linear-gradient(160deg, rgba(20,42,44,0.97), rgba(12,15,20,0.97));
@@ -5124,7 +5126,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.52</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.53</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -6381,6 +6383,51 @@
 </div>
 
 <script>
+  // ページ拡大はアプリ全体で使わない。通常のスクロールやドラッグは残し、
+  // iOS 固有のピンチと、同じ場所への連続タップによる拡大だけを止める。
+  (function lockPageZoom() {
+    const preventZoom = (event) => {
+      if (event.cancelable) event.preventDefault();
+    };
+
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach((type) => {
+      document.addEventListener(type, preventZoom, { passive: false, capture: true });
+    });
+    document.addEventListener('touchstart', (event) => {
+      if (event.touches.length > 1) preventZoom(event);
+    }, { passive: false, capture: true });
+    document.addEventListener('touchmove', (event) => {
+      if (event.touches.length > 1) preventZoom(event);
+    }, { passive: false, capture: true });
+
+    let lastTouch = null;
+    document.addEventListener('touchend', (event) => {
+      if (event.changedTouches.length !== 1) {
+        lastTouch = null;
+        return;
+      }
+      const touch = event.changedTouches[0];
+      const now = performance.now();
+      const current = {
+        time: now,
+        x: touch.clientX,
+        y: touch.clientY,
+        target: event.target
+      };
+      const isRepeatedTap = lastTouch
+        && now - lastTouch.time < 350
+        && lastTouch.target === event.target
+        && Math.hypot(current.x - lastTouch.x, current.y - lastTouch.y) < 28;
+      if (isRepeatedTap) {
+        preventZoom(event);
+        lastTouch = null;
+        return;
+      }
+      lastTouch = current;
+    }, { passive: false, capture: true });
+    document.addEventListener('dblclick', preventZoom, { passive: false, capture: true });
+  })();
+
   // 下ナビはページ内容と別レイヤーで、常に端末画面そのものの最下部へ固定する。
   // ソフトキーボード表示時は縮んだ visual viewport の下端へ持ち上げず、
   // キーボードに隠れる本来の画面下端へ補正する。
@@ -11138,25 +11185,6 @@
       it._riseTimer = setTimeout(() => { it.classList.remove('rise-in'); it.style.animationDelay = ''; }, delay + 540);
     });
   }
-  // ---- 2本指ジェスチャー(ピンチズーム)検知(v71で追加) ----
-  // .itemのtouch-action:noneはドラッグ操作のためだが、2本指の拡大縮小まで
-  // 巻き込んで無効化してしまっていたため、2本指になった瞬間だけ一時的に解除する
-  document.addEventListener('touchstart', (e) => {
-    if (e.touches.length >= 2) {
-      if (gestureArbiter.claim('pinch-zoom')) document.body.classList.add('pinch-zoom-active');
-    }
-  }, { passive: true, capture: true });
-  document.addEventListener('touchend', (e) => {
-    if (e.touches.length < 2) {
-      document.body.classList.remove('pinch-zoom-active');
-      gestureArbiter.release('pinch-zoom');
-    }
-  }, { passive: true, capture: true });
-  document.addEventListener('touchcancel', () => {
-    document.body.classList.remove('pinch-zoom-active');
-    gestureArbiter.release('pinch-zoom');
-  }, { passive: true, capture: true });
-
   async function loadRestDayLog() {
     try {
       const saved = await window.storage.get('quest-restday-v1');

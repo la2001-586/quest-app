@@ -364,6 +364,26 @@ for (const marker of [
 }
 
 for (const marker of [
+  'V453: ページ倍率を固定し',
+  'maximum-scale=1.0',
+  'user-scalable=no',
+  'function lockPageZoom()',
+  'gesturestart',
+  'event.touches.length > 1',
+  'Math.hypot',
+  'touch-action: pan-x pan-y'
+]) {
+  if (!html.includes(marker)) failures.push(`page zoom lock marker is missing: ${marker}`);
+}
+for (const marker of [
+  'pinch-zoom-active',
+  "gestureArbiter.claim('pinch-zoom'",
+  "gestureArbiter.release('pinch-zoom'"
+]) {
+  if (html.includes(marker)) failures.push(`obsolete page zoom handler remains: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',
