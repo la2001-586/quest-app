@@ -4698,6 +4698,105 @@
   body.theme-simple.theme-dark .diary-capture-choice,
   body.theme-simple.theme-dark .barcode-field input { background: rgba(255,255,255,.05); }
 
+  /* ================= V454: OFFLINE DISASTER GUIDE =================
+     本文は外部ページへ依存せずアプリ内に保持し、公的な最新情報への導線と
+     一般情報の限界を同じ一枚の画面で明示する。 */
+  .disaster-guide-card {
+    box-sizing: border-box;
+    width: min(430px, calc(100vw - 24px));
+    max-width: 430px !important;
+    max-height: min(86dvh, 780px);
+    padding: 0 !important;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: 1px solid rgba(79, 151, 132, .34) !important;
+    border-radius: 22px !important;
+    background: rgba(250, 252, 251, .98) !important;
+    color: var(--ink) !important;
+    text-align: left;
+  }
+  .disaster-guide-head {
+    position: sticky; top: 0; z-index: 2;
+    display: flex; align-items: center; gap: 12px;
+    min-height: 66px; padding: 12px 16px;
+    border-bottom: 1px solid rgba(96, 120, 113, .14);
+    background: rgba(250, 252, 251, .95);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  }
+  .disaster-guide-head-copy { min-width: 0; flex: 1; }
+  .disaster-guide-kicker { color: #4f806f; font-size: 9px; font-weight: 750; letter-spacing: .12em; }
+  .disaster-guide-title { margin-top: 2px; color: #1f2a27; font-size: 17px; font-weight: 800; }
+  .disaster-guide-close {
+    width: 38px; height: 38px; display: grid; place-items: center; flex: 0 0 auto;
+    border: 1px solid rgba(96,120,113,.18); border-radius: 50%;
+    background: rgba(255,255,255,.82); color: #38423f; font-size: 22px;
+  }
+  .disaster-guide-body { padding: 16px 18px calc(112px + env(safe-area-inset-bottom, 0px)); }
+  .disaster-offline-line {
+    display: flex; align-items: center; gap: 7px; margin-bottom: 12px;
+    color: #527166; font-size: 10px; line-height: 1.5;
+  }
+  .disaster-offline-dot { width: 7px; height: 7px; border-radius: 50%; background: #55b597; box-shadow: 0 0 0 4px rgba(85,181,151,.12); }
+  .disaster-urgent {
+    margin: 0 0 14px; padding: 13px 14px;
+    border-left: 4px solid #e18c63; border-radius: 10px;
+    background: #fff5ee; color: #4a3027; font-size: 11px; line-height: 1.75;
+  }
+  .disaster-urgent strong { display: block; margin-bottom: 3px; color: #823e28; font-size: 12px; }
+  .disaster-topic { border-top: 1px solid rgba(96,120,113,.15); }
+  .disaster-topic summary {
+    min-height: 54px; display: flex; align-items: center; gap: 10px;
+    padding: 3px 2px; list-style: none; cursor: pointer;
+    color: #24332e; font-size: 13px; font-weight: 750;
+  }
+  .disaster-topic summary::-webkit-details-marker { display: none; }
+  .disaster-topic summary::after { content: '＋'; margin-left: auto; color: #71857e; font-size: 16px; font-weight: 400; }
+  .disaster-topic[open] summary::after { content: '−'; }
+  .disaster-topic-icon { width: 27px; height: 27px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 9px; background: #edf5f2; font-size: 15px; }
+  .disaster-topic-content { padding: 0 3px 14px 39px; color: #51605b; font-size: 11px; line-height: 1.75; }
+  .disaster-topic-content ul { margin: 0; padding-left: 17px; }
+  .disaster-topic-content li + li { margin-top: 7px; }
+  .disaster-topic-note { margin-top: 10px; color: #346b59; font-weight: 700; }
+  .disaster-section-title { margin: 20px 0 8px; color: #263732; font-size: 12px; font-weight: 800; }
+  .disaster-official-link {
+    box-sizing: border-box; display: flex; align-items: center; gap: 10px;
+    width: 100%; min-height: 51px; margin-top: 8px; padding: 10px 12px;
+    border: 1px solid rgba(75, 135, 116, .22); border-radius: 12px;
+    background: rgba(237, 247, 243, .72); color: #274f42 !important;
+    text-decoration: none;
+  }
+  .disaster-official-link span { min-width: 0; flex: 1; font-size: 11px; font-weight: 750; }
+  .disaster-official-link small { display: block; margin-top: 2px; color: #71827c; font-size: 9px; font-weight: 400; }
+  .disaster-official-link::after { content: '↗'; flex: 0 0 auto; color: #5f8679; }
+  .disaster-connection { margin: 7px 0 0; color: #7a8783; font-size: 9.5px; line-height: 1.6; }
+  .disaster-disclaimer {
+    margin-top: 20px; padding: 14px;
+    border: 1px solid rgba(171, 132, 69, .22); border-radius: 12px;
+    background: #fffaf0; color: #625640; font-size: 10px; line-height: 1.75;
+  }
+  .disaster-disclaimer strong { display: block; margin-bottom: 5px; color: #594624; font-size: 11px; }
+  .disaster-updated { margin-top: 10px; color: #85918d; font-size: 9px; text-align: right; }
+  body.theme-simple.theme-dark .disaster-guide-card,
+  body.theme-dark .disaster-guide-card { background: rgba(22, 25, 25, .98) !important; }
+  body.theme-simple.theme-dark .disaster-guide-head,
+  body.theme-dark .disaster-guide-head { background: rgba(22,25,25,.95); border-bottom-color: rgba(255,255,255,.10); }
+  body.theme-simple.theme-dark .disaster-guide-title,
+  body.theme-dark .disaster-guide-title,
+  body.theme-simple.theme-dark .disaster-topic summary,
+  body.theme-dark .disaster-topic summary,
+  body.theme-simple.theme-dark .disaster-section-title,
+  body.theme-dark .disaster-section-title { color: #eef4f1; }
+  body.theme-simple.theme-dark .disaster-topic-content,
+  body.theme-dark .disaster-topic-content { color: #bbc6c2; }
+  body.theme-simple.theme-dark .disaster-guide-head .disaster-guide-close,
+  body.theme-dark .disaster-guide-head .disaster-guide-close { background: rgba(255,255,255,.06); color: #e9efed; }
+  body.theme-simple.theme-dark .disaster-topic-icon,
+  body.theme-dark .disaster-topic-icon { background: rgba(85,181,151,.12); }
+  body.theme-simple.theme-dark .disaster-urgent,
+  body.theme-dark .disaster-urgent { background: rgba(225,140,99,.10); color: #e6c4b4; }
+  body.theme-simple.theme-dark .disaster-disclaimer,
+  body.theme-dark .disaster-disclaimer { background: rgba(185,142,72,.10); color: #d8c9aa; }
+
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
   .task-date-group { position: relative; }
   .task-date-group + .task-date-group { margin-top: 0; }
@@ -5126,7 +5225,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.53</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.54</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5715,6 +5814,13 @@
       日課・タスク・予定・日記を一か所にまとめ、記録から振り返り、次の一歩までを支える個人用アプリです。
     </div>
     <button class="settings-btn" data-i18n="tutorial_btn" onclick="openTutorial()">アプリ説明・チュートリアル</button>
+    <button class="settings-btn settings-evidence-link" onclick="openDisasterGuide()" aria-haspopup="dialog">
+      <span class="settings-evidence-copy">
+        <strong>防災マニュアル</strong>
+        <small>地震・津波・風水害などの一般的な備えをオフラインでも確認できます。</small>
+      </span>
+      <span class="settings-evidence-arrow" aria-hidden="true">›</span>
+    </button>
     <button class="settings-btn" data-i18n="opt_contact_btn" onclick="contactSupport()">運営に連絡する</button>
     <button class="settings-btn" data-i18n="opt_policy_btn" onclick="showPolicy()">利用規約・プライバシー</button>
     <button class="settings-btn" data-i18n="opt_credits_label" onclick="showCredits()">クレジット</button>
@@ -5729,6 +5835,97 @@
   <div id="settingsVersionFooter" style="text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; color:rgba(255,255,255,0.25); margin-top:24px; margin-bottom:8px; letter-spacing:0.05em;"></div>
 </div>
 
+<div class="grand-modal" id="disasterGuideModal" onclick="closeDisasterGuide()">
+  <article class="modal-card disaster-guide-card" role="dialog" aria-modal="true" aria-labelledby="disasterGuideTitle" onclick="event.stopPropagation()">
+    <header class="disaster-guide-head">
+      <div class="disaster-guide-head-copy">
+        <div class="disaster-guide-kicker">OFFLINE SAFETY GUIDE</div>
+        <div class="disaster-guide-title" id="disasterGuideTitle">防災マニュアル</div>
+      </div>
+      <button class="disaster-guide-close" type="button" onclick="closeDisasterGuide()" aria-label="閉じる">×</button>
+    </header>
+    <div class="disaster-guide-body">
+      <div class="disaster-offline-line"><span class="disaster-offline-dot" aria-hidden="true"></span>以下の本文は通信がなくても読めます</div>
+      <div class="disaster-urgent">
+        <strong>いま危険が迫っている場合</strong>
+        この画面を読み続けず、まず安全な場所へ移動してください。火災・救急は119、事件・事故は110です。自治体、消防、警察、気象庁などの指示を優先してください。危険な場所からの避難は警戒レベル4までに行い、警戒レベル5を待たないでください。
+      </div>
+
+      <details class="disaster-topic" open>
+        <summary><span class="disaster-topic-icon" aria-hidden="true">揺</span>地震</summary>
+        <div class="disaster-topic-content"><ul>
+          <li>姿勢を低くし、丈夫な机の下などで頭を守り、揺れが収まるまで動き回らないでください。</li>
+          <li>あわてて外へ飛び出さず、揺れが収まってから出口と周囲の安全を確認してください。倒れた家具、ガラス、塀、看板に注意します。</li>
+          <li>火を使っている場合も、強い揺れの最中に無理をせず、揺れが収まって安全を確かめてから確認します。</li>
+          <li>損傷した建物、電気器具、ガス設備は使わず、行政・事業者の案内に従ってください。</li>
+        </ul></div>
+      </details>
+
+      <details class="disaster-topic">
+        <summary><span class="disaster-topic-icon" aria-hidden="true">波</span>津波</summary>
+        <div class="disaster-topic-content"><ul>
+          <li>海岸や川の近くで強い揺れ、または長くゆっくりした揺れを感じたら、警報を待たず高台や津波避難ビルなどへ直ちに避難してください。</li>
+          <li>海岸や川から離れ、できるだけ高い安全な場所を目指します。車では渋滞するおそれがあるため、地域の計画に従います。</li>
+          <li>津波は繰り返し来ます。警報・注意報が解除されるまで戻らないでください。</li>
+        </ul><div class="disaster-topic-note">避難前に海を見に行かないでください。</div></div>
+      </details>
+
+      <details class="disaster-topic">
+        <summary><span class="disaster-topic-icon" aria-hidden="true">雨</span>大雨・台風・洪水・土砂災害</summary>
+        <div class="disaster-topic-content"><ul>
+          <li>ハザードマップで自宅・職場の洪水、土砂災害、高潮の危険と避難先を平時に確認してください。</li>
+          <li>警戒レベル3では高齢者や避難に時間のかかる人が避難、警戒レベル4では危険な場所にいる全員が避難します。</li>
+          <li>夜間や道路冠水の前に早めに行動し、川、用水路、崖、地下空間へ近づかないでください。冠水した道を無理に歩いたり運転したりしません。</li>
+          <li>屋外へ出る方が危険な段階では、崖や川から離れた建物の上階など、少しでも安全な場所で直ちに安全を確保します。</li>
+        </ul></div>
+      </details>
+
+      <details class="disaster-topic">
+        <summary><span class="disaster-topic-icon" aria-hidden="true">火</span>火災</summary>
+        <div class="disaster-topic-content"><ul>
+          <li>周囲へ大声で知らせ、119へ通報します。住所、目印、何が燃えているか、逃げ遅れの有無を落ち着いて伝えます。</li>
+          <li>初期消火は安全にできる範囲だけにし、炎や煙が広がったら消火より避難を優先してください。</li>
+          <li>煙の下を低い姿勢で移動し、可能なら口と鼻を布などで覆います。一度避難した建物へ戻りません。</li>
+          <li>エレベーターは使わず、非常口・階段から避難します。</li>
+        </ul></div>
+      </details>
+
+      <details class="disaster-topic">
+        <summary><span class="disaster-topic-icon" aria-hidden="true">避</span>避難・停電・連絡</summary>
+        <div class="disaster-topic-content"><ul>
+          <li>避難時は動きやすい服と靴を使い、持ち物を最小限にして両手を空けます。可能なら近所で声を掛け合います。</li>
+          <li>停電時は懐中電灯を使い、火災防止のためろうそくの使用は避けます。切れた電線や浸水した電気設備へ近づきません。</li>
+          <li>電話がつながりにくい場合に備え、家族の集合場所、遠方の連絡先、171災害用伝言ダイヤルの使い方を平時に確認してください。</li>
+          <li>乳幼児、高齢者、障害のある人、ペット、服薬・医療機器など、家庭ごとの事情を避難計画へ加えてください。</li>
+        </ul></div>
+      </details>
+
+      <details class="disaster-topic">
+        <summary><span class="disaster-topic-icon" aria-hidden="true">備</span>備蓄・持ち出し品</summary>
+        <div class="disaster-topic-content"><ul>
+          <li>水は1人1日3リットルを目安に、食料などと合わせて最低3日分、できれば1週間分を備蓄します。</li>
+          <li>持ち出し袋には、水、非常食、常備薬・お薬手帳、ライト、携帯ラジオ、電池・充電器、衛生用品、携帯トイレ、現金、身分証の控えなどを準備します。</li>
+          <li>普段使う食品を少し多めに買い、古いものから使って補充するローリングストックを活用します。</li>
+          <li>半年ごと、または生活状況が変わったときに、期限・電池・衣類・家族構成に合っているか確認してください。</li>
+        </ul></div>
+      </details>
+
+      <div class="disaster-section-title">公的な最新情報</div>
+      <a class="disaster-official-link" href="https://www.jma.go.jp/bosai/" target="_blank" rel="noopener noreferrer"><span>気象庁「あなたの街の防災情報」<small>警報・注意報、地震・津波、危険度分布</small></span></a>
+      <a class="disaster-official-link" href="https://disaportal.gsi.go.jp/" target="_blank" rel="noopener noreferrer"><span>国土交通省・国土地理院 ハザードマップ<small>洪水・土砂災害・高潮・津波と地域の避難情報</small></span></a>
+      <a class="disaster-official-link" href="https://www.bousai.go.jp/kyoiku/hokenkyousai/check.html" target="_blank" rel="noopener noreferrer"><span>政府の災害への備え<small>持ち出し品、備蓄、家族の連絡方法</small></span></a>
+      <a class="disaster-official-link" href="https://www.fdma.go.jp/relocation/bousai_manual/index.html" target="_blank" rel="noopener noreferrer"><span>消防庁 地震防災マニュアル<small>地震発生時と平時の備え</small></span></a>
+      <p class="disaster-connection" id="disasterConnectionState">公式リンクを開くにはインターネット接続が必要です。</p>
+
+      <div class="disaster-disclaimer">
+        <strong>重要な注意・免責事項</strong>
+        このマニュアルは、日本国内向けの一般的な備えをまとめた参考情報であり、現在地の危険度、リアルタイムの警報、避難指示、個別の建物・健康状態に応じた安全を判定するものではありません。災害の種類、地域、建物、時間帯によって適切な行動は異なります。緊急時は本アプリだけに依存せず、気象庁、自治体、消防、警察、現地の管理者などの最新情報と指示を優先してください。通信復旧後は公的情報を確認してください。本アプリは緊急通報を代行せず、公式情報の更新を保証しません。
+      </div>
+      <div class="disaster-updated">本文確認日：2026年11月9日</div>
+    </div>
+  </article>
+</div>
+
 <div class="grand-modal" id="policyModal" onclick="closePolicy()">
   <div class="modal-card" style="border:1.5px solid rgba(43,201,204,0.4); border-radius:18px; padding:26px 22px; max-width:min(360px,88vw); max-height:74vh; overflow-y:auto; text-align:left;" onclick="event.stopPropagation()">
     <div style="font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); font-weight:800; margin-bottom:14px;">利用規約・プライバシー</div>
@@ -5741,9 +5938,11 @@
       コピー機能は文章をクリップボードへ入れるだけで、Daily StationからAIへ自動送信しません。貼り付け先と内容はご自身で確認してください。</p>
       <p style="margin-bottom:10px;"><b style="color:var(--ink);">サービスの位置づけ</b><br>
       本アプリは個人の記録を支援するツールであり、医療・診断・緊急通報等の専門サービスではありません。</p>
+      <p style="margin-bottom:10px;"><b style="color:var(--ink);">防災マニュアル</b><br>
+      防災マニュアルは一般的な参考情報であり、リアルタイムの警報・避難指示や、現在地・建物・健康状態に応じた安全判断を提供するものではありません。緊急時は本アプリだけに依存せず、気象庁、自治体、消防、警察、現地管理者等の最新情報と指示を優先してください。本アプリは緊急通報を代行しません。</p>
       <p style="margin-bottom:10px;"><a href="privacy.html" target="_blank" rel="noopener" style="color:var(--cyan);">プライバシーポリシー全文</a><br>
       <a href="terms.html" target="_blank" rel="noopener" style="color:var(--cyan);">利用規約全文</a></p>
-      <p style="color:var(--ink-dim); font-size:11px; margin-top:16px;">最終更新日：2026年9月17日</p>
+      <p style="color:var(--ink-dim); font-size:11px; margin-top:16px;">最終更新日：2026年11月9日</p>
     </div>
     <button class="badge-close-btn" style="margin-top:16px;" data-i18n="btn_close" onclick="closePolicy()">閉じる</button>
   </div>
@@ -15845,6 +16044,27 @@
     window.open('https://github.com/la2001-586/quest-app/issues/new', '_blank', 'noopener,noreferrer');
   }
 
+  function updateDisasterConnectionState() {
+    const status = document.getElementById('disasterConnectionState');
+    if (!status) return;
+    status.textContent = navigator.onLine
+      ? '公式リンクはオンラインで開きます。本文は通信がなくても読めます。'
+      : '現在オフラインです。上の本文は読めますが、公式リンクは接続回復後に開いてください。';
+  }
+  function openDisasterGuide() {
+    playUIClick();
+    const modal = document.getElementById('disasterGuideModal');
+    const card = modal?.querySelector('.disaster-guide-card');
+    updateDisasterConnectionState();
+    if (card) card.scrollTop = 0;
+    modal?.classList.add('show');
+  }
+  function closeDisasterGuide() {
+    document.getElementById('disasterGuideModal')?.classList.remove('show');
+  }
+  window.addEventListener('online', updateDisasterConnectionState);
+  window.addEventListener('offline', updateDisasterConnectionState);
+
   function showPolicy() {
     playUIClick();
     document.getElementById('policyModal').classList.add('show');
@@ -16263,8 +16483,8 @@
 
   initFromStorage();
 
-  // 旧ベータ版の外部プッシュ通知は廃止済み。既存購読があれば、予定を空にしてから
-  // 購読とService Workerを解除する。以後、予定・日記等を通知サーバーへ送信しない。
+  // 旧ベータ版の外部プッシュ通知は廃止済み。既存購読があれば予定を空にして解除する。
+  // Service Worker自体は、防災マニュアルを含むアプリ本体のオフライン利用にだけ使う。
   async function retireLegacyPushNotifications() {
     if (!('serviceWorker' in navigator)) return;
     try {
@@ -16283,14 +16503,22 @@
             await sub.unsubscribe();
           }
         } catch (e) {}
-        await reg.unregister();
       }
       try { await window.storage.delete('quest-notify-prefs-v1'); } catch (e) {}
     } catch (e) {
       console.warn('Legacy notification cleanup was not completed', e);
     }
   }
-  window.addEventListener('load', retireLegacyPushNotifications, { once: true });
+  async function initOfflineSupport() {
+    if (!('serviceWorker' in navigator)) return;
+    await retireLegacyPushNotifications();
+    try {
+      await navigator.serviceWorker.register('./service-worker.js', { scope: './' });
+    } catch (error) {
+      console.warn('Offline support could not be initialized', error);
+    }
+  }
+  window.addEventListener('load', initOfflineSupport, { once: true });
   // ===== Prism Motion UI: presentation-only interaction layer =====
   (function initPrismMotionUI() {
     if (window.__prismMotionUIReady) return;

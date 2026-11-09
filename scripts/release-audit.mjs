@@ -94,8 +94,10 @@ if (privacy.includes('GitHub Issues') || terms.includes('GitHub Issues')) {
 if (privacy.includes('ストア公開前') || terms.includes('ストア公開前')) {
   warn('legal text still says the support route will change before store release');
 }
-if (worker.includes('registration.unregister')) {
-  warn('service worker intentionally unregisters itself; web install works without offline caching');
+if (worker.includes('daily-station-offline-') && worker.includes('caches.open') && worker.includes("request.mode === 'navigate'")) {
+  pass('core app and offline disaster guide are cached for network loss');
+} else {
+  warn('web install has no verified offline shell');
 }
 if (index.length > 900_000) {
   warn(`index.html is ${(index.length / 1024).toFixed(0)} KiB; split assets before a high-traffic launch`);

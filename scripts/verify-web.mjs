@@ -5,6 +5,8 @@ const root = resolve(import.meta.dirname, '..');
 const htmlPath = resolve(root, 'www', 'index.html');
 const html = await readFile(htmlPath, 'utf8');
 const evidence = await readFile(resolve(root, 'www', 'evidence.html'), 'utf8');
+const terms = await readFile(resolve(root, 'www', 'terms.html'), 'utf8');
+const worker = await readFile(resolve(root, 'www', 'service-worker.js'), 'utf8');
 const pkg = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'));
 const requiredFiles = [
   'privacy.html',
@@ -381,6 +383,36 @@ for (const marker of [
   "gestureArbiter.release('pinch-zoom'"
 ]) {
   if (html.includes(marker)) failures.push(`obsolete page zoom handler remains: ${marker}`);
+}
+
+for (const marker of [
+  'V454: OFFLINE DISASTER GUIDE',
+  'id="disasterGuideModal"',
+  'function openDisasterGuide()',
+  '以下の本文は通信がなくても読めます',
+  '危険な場所からの避難は警戒レベル4までに',
+  'https://www.jma.go.jp/bosai/',
+  'https://disaportal.gsi.go.jp/',
+  '重要な注意・免責事項',
+  '本アプリは緊急通報を代行しません'
+]) {
+  if (!html.includes(marker)) failures.push(`offline disaster guide marker is missing: ${marker}`);
+}
+for (const marker of [
+  'daily-station-offline-v454',
+  "'./index.html'",
+  'caches.open(CACHE_NAME)',
+  "request.mode === 'navigate'",
+  "caches.match('./index.html')"
+]) {
+  if (!worker.includes(marker)) failures.push(`offline worker marker is missing: ${marker}`);
+}
+for (const marker of [
+  '6. 防災情報について',
+  'リアルタイムの警報、避難指示',
+  '利用によって避難や通報を遅らせないでください'
+]) {
+  if (!terms.includes(marker)) failures.push(`disaster disclaimer marker is missing: ${marker}`);
 }
 
 for (const marker of [
