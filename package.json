@@ -1,6 +1,6 @@
 {
   "name": "daily-station",
-  "version": "0.4.51",
+  "version": "0.4.52",
   "private": true,
   "description": "Daily Station web app and Capacitor native shells",
   "engines": {

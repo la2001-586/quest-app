@@ -4016,13 +4016,50 @@
   .garden-water-btn:hover,.garden-archive-btn:hover { transform:translateY(-2px); box-shadow:0 12px 25px rgba(55,128,108,.23); }
   .garden-water-btn:disabled { opacity:.42; cursor:default; transform:none; }
   .garden-collection { margin-top:10px; font-size:9.5px; color:rgba(24,53,46,.5); }
+  /* V452: 開花した植物を消さず、育成の積み重ねを温室の棚とアルバムへ残す */
+  .garden-keepsake-notice {
+    position:absolute; z-index:6; left:50%; bottom:12px; width:max-content; max-width:88%;
+    padding:7px 11px; border:1px solid rgba(255,255,255,.9); border-radius:999px;
+    background:rgba(255,255,255,.88); box-shadow:0 8px 24px rgba(39,91,77,.17);
+    color:#28594d; font-size:9.5px; font-weight:800; opacity:0; pointer-events:none;
+    transform:translate(-50%,8px); transition:opacity .24s ease,transform .24s ease;
+  }
+  .garden-keepsake-notice.show { opacity:1; transform:translate(-50%,0); }
+  .garden-shelf { position:relative; z-index:2; margin-top:12px; padding-top:12px; border-top:1px solid rgba(50,104,88,.1); }
+  .garden-shelf-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .garden-shelf-title { font-size:10.5px; font-weight:850; color:#244a40; }
+  .garden-shelf-sub { margin-top:3px; font-size:8.5px; color:rgba(24,53,46,.5); }
+  .garden-shelf-open { flex:0 0 auto; border:0; padding:4px 0; background:none; color:#3e806f; font:800 9.5px/1 inherit; cursor:pointer; }
+  .garden-shelf-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin-top:9px; }
+  .garden-shelf-item {
+    min-width:0; display:flex; align-items:center; gap:6px; padding:7px 8px; border:1px solid rgba(76,136,119,.12);
+    border-radius:13px; background:rgba(255,255,255,.52); color:#1e4138; text-align:left; cursor:pointer;
+  }
+  .garden-shelf-flower { flex:0 0 28px; width:28px; height:28px; }
+  .garden-shelf-name { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:8.8px; font-weight:850; }
+  .garden-shelf-meta { display:block; margin-top:2px; font-size:7.5px; color:rgba(24,53,46,.48); }
+  .garden-shelf-empty { grid-column:1/-1; padding:9px 2px 2px; font-size:9px; color:rgba(24,53,46,.48); }
+  .garden-album-card { width:min(390px,90vw); max-height:78vh; overflow-y:auto; padding:24px 20px 28px; border:1.5px solid rgba(105,213,178,.58); border-radius:22px; text-align:left; }
+  .garden-album-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .garden-album-title { font-size:17px; font-weight:900; color:var(--ink); }
+  .garden-album-summary { margin-top:4px; font-size:10px; color:var(--ink-dim); }
+  .garden-album-close { border:0; background:none; color:var(--ink-dim); font-size:18px; cursor:pointer; }
+  .garden-album-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin-top:18px; }
+  .garden-album-item { min-width:0; padding:12px 10px; border:1px solid rgba(105,160,142,.15); border-radius:16px; background:rgba(255,255,255,.46); text-align:center; }
+  .garden-album-item .garden-bloom-badge { width:56px; height:56px; margin:0 auto 6px; filter:drop-shadow(0 7px 8px rgba(44,99,83,.12)); }
+  .garden-album-number { font-size:8px; font-weight:850; letter-spacing:.08em; color:var(--ink-dim); }
+  .garden-album-name { margin-top:3px; overflow-wrap:anywhere; font-size:11px; font-weight:900; color:var(--ink); }
+  .garden-album-date { margin-top:3px; font-size:8.5px; color:var(--ink-dim); }
+  .garden-album-effort { margin-top:7px; padding-top:7px; border-top:1px solid rgba(105,160,142,.1); font-size:8px; line-height:1.55; color:var(--ink-dim); }
   .garden-reward-pop { position:absolute; z-index:5; left:50%; top:45%; opacity:0; pointer-events:none; font-size:12px; font-weight:900; color:#337e6b; text-shadow:0 1px 0 #fff; }
   .garden-card.rewarding .garden-reward-pop { animation:gardenRewardPop 1.2s ease-out both; }
   .garden-card.watering .garden-plant { animation:gardenWaterPulse .75s cubic-bezier(.2,.8,.2,1); }
   .garden-card.watering .garden-scene::after { content:""; position:absolute; inset:30px; border-radius:50%; border:1px solid rgba(92,190,165,.45); animation:gardenRipple .8s ease-out both; }
   body.theme-dark .garden-card { color:#e9fff8; border-color:rgba(111,224,192,.28); background:radial-gradient(circle at 82% 16%,rgba(65,135,180,.2),transparent 38%),linear-gradient(145deg,rgba(25,47,42,.91),rgba(20,35,34,.78)); }
-  body.theme-dark .garden-kicker,body.theme-dark .garden-stage-label,body.theme-dark .garden-copy,body.theme-dark .garden-progress-head,body.theme-dark .garden-collection { color:rgba(230,255,248,.58); }
+  body.theme-dark .garden-kicker,body.theme-dark .garden-stage-label,body.theme-dark .garden-copy,body.theme-dark .garden-progress-head,body.theme-dark .garden-collection,body.theme-dark .garden-shelf-sub,body.theme-dark .garden-shelf-meta,body.theme-dark .garden-shelf-empty { color:rgba(230,255,248,.58); }
   body.theme-dark .garden-wallet { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.15); }
+  body.theme-dark .garden-shelf-title,body.theme-dark .garden-shelf-item { color:#e9fff8; }
+  body.theme-dark .garden-shelf-item,body.theme-dark .garden-album-item { background:rgba(255,255,255,.06); }
   body.prism-motion-ui .garden-card { border-color:rgba(255,255,255,.86); background:radial-gradient(circle at 92% 10%,rgba(116,205,255,.22),transparent 38%),radial-gradient(circle at 4% 86%,rgba(255,184,218,.16),transparent 36%),linear-gradient(145deg,rgba(255,255,255,.72),rgba(226,248,242,.42)); backdrop-filter:blur(22px) saturate(1.25); }
   @keyframes gardenGlassSweep { 0%,70%{transform:translateX(-120%)} 88%,100%{transform:translateX(120%)} }
   @keyframes gardenOrbit { to{transform:rotate(360deg)} }
@@ -4031,7 +4068,7 @@
   @keyframes gardenRewardPop { 0%{opacity:0;transform:translate(-50%,10px) scale(.7)} 25%{opacity:1;transform:translate(-50%,0) scale(1.08)} 100%{opacity:0;transform:translate(-50%,-34px) scale(.94)} }
   @keyframes gardenWaterPulse { 0%,100%{transform:scale(1)} 45%{transform:translateY(-5px) scale(1.055)} }
   @keyframes gardenRipple { from{opacity:.8;transform:scale(.55)} to{opacity:0;transform:scale(1.25)} }
-  @media(max-width:560px){ .garden-card{padding:15px;border-radius:24px}.garden-body{grid-template-columns:132px 1fr;gap:8px}.garden-scene{min-height:190px}.garden-plant{width:132px;height:176px}.garden-orbit{width:142px;height:142px}.garden-name{font-size:16px}.garden-copy{font-size:10px}.garden-actions{flex-direction:column} }
+  @media(max-width:560px){ .garden-card{padding:15px;border-radius:24px}.garden-body{grid-template-columns:132px 1fr;gap:8px}.garden-scene{min-height:190px}.garden-plant{width:132px;height:176px}.garden-orbit{width:142px;height:142px}.garden-name{font-size:16px}.garden-copy{font-size:10px}.garden-actions{flex-direction:column}.garden-shelf-item{padding:6px}.garden-shelf-flower{flex-basis:24px;width:24px;height:24px}.garden-album-card{width:min(360px,88vw);padding:22px 16px 26px} }
   @media(prefers-reduced-motion:reduce){ .garden-card::before,.garden-orbit,.garden-plant .leaf,.garden-plant .flower,.garden-plant .bud{animation:none!important} }
   body.prism-motion-ui .home-tab[data-group="group_calendar"].active::before { background: linear-gradient(145deg, rgba(91,190,244,.30), rgba(255,255,255,.6)); }
   body.prism-motion-ui .home-tab[data-group="group_task"].active::before { background: linear-gradient(145deg, rgba(240,144,107,.29), rgba(255,255,255,.62), rgba(var(--prism-violet),.12)); }
@@ -5087,7 +5124,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.51</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.52</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5467,6 +5504,7 @@
         <div class="garden-orbit"></div>
         <div id="gardenPlantVisual"></div>
         <span class="garden-reward-pop" id="gardenRewardPop">＋3 しずく</span>
+        <span class="garden-keepsake-notice" id="gardenKeepsakeNotice"></span>
       </div>
       <div class="garden-info">
         <div class="garden-stage-label"><span class="garden-stage-dot"></span><span id="gardenStageLabel">種の時間</span></div>
@@ -5480,6 +5518,13 @@
         </div>
         <div class="garden-collection" id="gardenCollection">開花コレクション 0輪 · 植物は枯れません</div>
       </div>
+    </div>
+    <div class="garden-shelf" id="gardenShelf">
+      <div class="garden-shelf-head">
+        <div><div class="garden-shelf-title">これまで育てた植物</div><div class="garden-shelf-sub" id="gardenCycleTrace">今の一鉢を育て始めました</div></div>
+        <button class="garden-shelf-open" id="gardenShelfOpen" onclick="openGardenAlbum()">すべて見る</button>
+      </div>
+      <div class="garden-shelf-list" id="gardenShelfList"></div>
     </div>
   </section>
   <div class="settings-group" id="otherWrapFocus">
@@ -5498,6 +5543,16 @@
     <button class="add-task-btn" onclick="openAddMemento()">＋</button>
   </div>
 
+</div>
+
+<div class="grand-modal" id="gardenAlbumModal" onclick="closeGardenAlbum()">
+  <div class="modal-card garden-album-card" onclick="event.stopPropagation()">
+    <div class="garden-album-head">
+      <div><div class="garden-album-title">温室のアルバム</div><div class="garden-album-summary" id="gardenAlbumSummary">育てた植物の記録</div></div>
+      <button class="garden-album-close" aria-label="閉じる" onclick="closeGardenAlbum()">✕</button>
+    </div>
+    <div class="garden-album-grid" id="gardenAlbumGrid"></div>
+  </div>
 </div>
 
 <div class="grand-modal" id="diaryHistoryModal" onclick="closeDiaryHistory()">
@@ -10351,20 +10406,59 @@
     { name:'虹葉フィカス', a:'#69c6e9', b:'#a58de4', c:'#f3a9b7', copy:['次の種に、前の花の記憶が宿っています。','透明な芽が、やわらかな色を帯びました。','虹色の葉が一枚ずつ広がっています。','光をためたつぼみが、もうすぐほどけます。','毎日の行動から、虹色の葉が咲きました。'] },
     { name:'星灯りミント', a:'#7bd0b0', b:'#f0bd78', c:'#78b8ed', copy:['星のように小さな種を植えました。','新しい芽が、温室に灯りをともしました。','香る葉が増え、温室が少し賑やかです。','つぼみが静かに、開く時を待っています。','続けた日々が、星の灯りになりました。'] }
   ];
-  let prismGarden = { drops:0, growth:0, blooms:0, speciesIndex:0, ledger:{}, history:[] };
+  let prismGarden = { drops:0, growth:0, blooms:0, speciesIndex:0, ledger:{}, history:[], collection:[], cycle:{ startedAt:Date.now(), taskCount:0, earnedDrops:0, waterings:0 } };
+
+  function sanitizeGardenCycle(value) {
+    const src = value && typeof value === 'object' ? value : {};
+    return {
+      startedAt: Math.max(0, Number(src.startedAt) || Date.now()),
+      taskCount: Math.max(0, Math.min(99999, Math.floor(Number(src.taskCount) || 0))),
+      earnedDrops: Math.max(0, Math.min(999999, Math.floor(Number(src.earnedDrops) || 0))),
+      waterings: Math.max(0, Math.min(99999, Math.floor(Number(src.waterings) || 0))),
+    };
+  }
+  function sanitizeGardenBloom(value, fallbackNumber) {
+    const src = value && typeof value === 'object' ? value : {};
+    const bloomNumber = Math.max(1, Math.min(9999, Math.floor(Number(src.bloomNumber) || fallbackNumber || 1)));
+    return {
+      id: safeRecordId(src.id || `bloom_${bloomNumber}`, 'bloom'),
+      bloomNumber,
+      speciesIndex: Math.max(0, Math.floor(Number(src.speciesIndex) || 0)) % GARDEN_SPECIES.length,
+      bloomedAt: Math.max(0, Number(src.bloomedAt) || 0),
+      startedAt: Math.max(0, Number(src.startedAt) || 0),
+      taskCount: Math.max(0, Math.min(99999, Math.floor(Number(src.taskCount) || 0))),
+      earnedDrops: Math.max(0, Math.min(999999, Math.floor(Number(src.earnedDrops) || 0))),
+      waterings: Math.max(0, Math.min(99999, Math.floor(Number(src.waterings) || 0))),
+      legacy: !!src.legacy,
+    };
+  }
 
   function sanitizePrismGarden(value) {
     const src = value && typeof value === 'object' ? value : {};
     const ledger = src.ledger && typeof src.ledger === 'object' && !Array.isArray(src.ledger) ? src.ledger : {};
     const safeLedger = {};
     Object.entries(ledger).slice(-2500).forEach(([key, stamp]) => { if (typeof key === 'string' && key.length < 180) safeLedger[key] = Number(stamp) || Date.now(); });
+    const storedBlooms = Math.max(0, Math.min(9999, Math.floor(Number(src.blooms) || 0)));
+    const collection = Array.isArray(src.collection)
+      ? src.collection.slice(0, 9999).map((record, index) => sanitizeGardenBloom(record, storedBlooms - index))
+      : [];
+    const blooms = Math.max(storedBlooms, ...collection.map(record => record.bloomNumber), 0);
+    const recordedNumbers = new Set(collection.map(record => record.bloomNumber));
+    // 旧版は総数だけを保存していたため、種類の既存ローテーションから過去分を復元する。
+    for (let number = blooms; number >= 1; number--) {
+      if (recordedNumbers.has(number)) continue;
+      collection.push(sanitizeGardenBloom({ id:`legacy_bloom_${number}`, bloomNumber:number, speciesIndex:(number - 1) % GARDEN_SPECIES.length, legacy:true }, number));
+    }
+    collection.sort((a, b) => b.bloomNumber - a.bloomNumber);
     return {
       drops: Math.max(0, Math.min(99999, Math.floor(Number(src.drops) || 0))),
       growth: Math.max(0, Math.min(GARDEN_STAGE_STARTS[4], Math.floor(Number(src.growth) || 0))),
-      blooms: Math.max(0, Math.min(9999, Math.floor(Number(src.blooms) || 0))),
+      blooms,
       speciesIndex: Math.max(0, Math.floor(Number(src.speciesIndex) || 0)) % GARDEN_SPECIES.length,
       ledger: safeLedger,
       history: Array.isArray(src.history) ? src.history.slice(0, 40).map(h => ({ label:String(h.label || '').slice(0,80), amount:Math.max(1,Math.min(9,Number(h.amount)||1)), at:Number(h.at)||Date.now() })) : [],
+      collection,
+      cycle: sanitizeGardenCycle(src.cycle),
     };
   }
   async function loadPrismGarden() {
@@ -10372,6 +10466,7 @@
       const saved = await window.storage.get(PRISM_GARDEN_KEY);
       prismGarden = sanitizePrismGarden(saved && saved.value ? JSON.parse(saved.value) : null);
     } catch (e) { prismGarden = sanitizePrismGarden(null); }
+    await savePrismGarden();
     renderPrismGarden();
   }
   async function savePrismGarden() {
@@ -10408,6 +10503,74 @@
       </g>
     </svg>`;
   }
+  function gardenBloomBadgeSvg(species, extraClass) {
+    return `<svg class="garden-bloom-badge ${extraClass || ''}" viewBox="0 0 64 64" aria-hidden="true">
+      <ellipse cx="32" cy="57" rx="19" ry="4" fill="rgba(34,80,68,.10)"/>
+      <path d="M24 43h16l-3 14H27z" fill="rgba(255,255,255,.88)" stroke="${species.a}" stroke-opacity=".32"/>
+      <path d="M32 44V24" stroke="${species.a}" stroke-width="3" stroke-linecap="round"/>
+      <path d="M31 35c-8-7-13-4-14 1 6 4 10 4 14-1Z" fill="${species.a}" opacity=".9"/>
+      <path d="M33 31c7-7 13-4 14 1-5 5-10 5-14-1Z" fill="${species.b}" opacity=".92"/>
+      <g transform="translate(32 18)"><ellipse rx="5" ry="11" fill="${species.c}"/><ellipse rx="5" ry="11" transform="rotate(72)" fill="${species.b}"/><ellipse rx="5" ry="11" transform="rotate(144)" fill="${species.c}"/><ellipse rx="5" ry="11" transform="rotate(216)" fill="${species.b}"/><ellipse rx="5" ry="11" transform="rotate(288)" fill="${species.c}"/><circle r="4" fill="#fff"/></g>
+    </svg>`;
+  }
+  function formatGardenBloomDate(timestamp) {
+    if (!timestamp) return '以前の開花';
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return '以前の開花';
+    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+  }
+  function renderGardenShelf() {
+    const list = document.getElementById('gardenShelfList');
+    const trace = document.getElementById('gardenCycleTrace');
+    const open = document.getElementById('gardenShelfOpen');
+    if (!list || !trace || !open) return;
+    const cycle = sanitizeGardenCycle(prismGarden.cycle);
+    trace.textContent = cycle.taskCount || cycle.waterings
+      ? `今の一鉢：達成 ${cycle.taskCount}件・水やり ${cycle.waterings}回`
+      : '今の一鉢を育て始めました';
+    open.textContent = prismGarden.collection.length ? `${prismGarden.collection.length}輪をすべて見る` : 'アルバムを見る';
+    const recent = prismGarden.collection.slice(0, 3);
+    if (!recent.length) {
+      list.innerHTML = '<div class="garden-shelf-empty">最初の花が咲いたら、ここにずっと残ります。</div>';
+      return;
+    }
+    list.innerHTML = recent.map(record => {
+      const species = GARDEN_SPECIES[record.speciesIndex] || GARDEN_SPECIES[0];
+      return `<button class="garden-shelf-item" onclick="openGardenAlbum()">
+        ${gardenBloomBadgeSvg(species, 'garden-shelf-flower')}
+        <span style="min-width:0"><span class="garden-shelf-name">${escapeHtml(species.name)}</span><span class="garden-shelf-meta">${record.bloomNumber}輪目</span></span>
+      </button>`;
+    }).join('');
+  }
+  function renderGardenAlbum() {
+    const summary = document.getElementById('gardenAlbumSummary');
+    const grid = document.getElementById('gardenAlbumGrid');
+    if (!summary || !grid) return;
+    summary.textContent = `${prismGarden.collection.length}輪の花が、この温室に残っています`;
+    if (!prismGarden.collection.length) {
+      grid.innerHTML = '<div class="garden-shelf-empty">まだ開花記録はありません。最初の一輪を育ててみましょう。</div>';
+      return;
+    }
+    grid.innerHTML = prismGarden.collection.map(record => {
+      const species = GARDEN_SPECIES[record.speciesIndex] || GARDEN_SPECIES[0];
+      const effort = record.legacy
+        ? '以前の開花記録'
+        : `達成 ${record.taskCount}件<br>水やり ${record.waterings}回・${record.earnedDrops}しずく`;
+      return `<article class="garden-album-item">
+        ${gardenBloomBadgeSvg(species, '')}
+        <div class="garden-album-number">BLOOM ${record.bloomNumber}</div>
+        <div class="garden-album-name">${escapeHtml(species.name)}</div>
+        <div class="garden-album-date">${escapeHtml(formatGardenBloomDate(record.bloomedAt))}</div>
+        <div class="garden-album-effort">${effort}</div>
+      </article>`;
+    }).join('');
+  }
+  function openGardenAlbum() {
+    renderGardenAlbum();
+    document.getElementById('gardenAlbumModal')?.classList.add('show');
+    playUIClick();
+  }
+  function closeGardenAlbum() { document.getElementById('gardenAlbumModal')?.classList.remove('show'); }
   function renderPrismGarden() {
     const card = document.getElementById('prismGardenCard');
     if (!card) return;
@@ -10436,6 +10599,7 @@
     waterBtn.textContent = prismGarden.drops < GARDEN_WATER_COST ? `あと ${GARDEN_WATER_COST - prismGarden.drops}しずく` : `しずく ${GARDEN_WATER_COST}個で水やり`;
     archiveBtn.style.display = finalStage ? 'block' : 'none';
     document.getElementById('gardenCollection').textContent = `開花コレクション ${prismGarden.blooms}輪 · 植物は枯れません`;
+    renderGardenShelf();
   }
   function gardenRewardLedgerKey(kind, id, occurrenceKey) { return `${kind}:${String(id).slice(0,90)}:${occurrenceKey || logicalDateKey(trustedNow)}`; }
   function awardGardenDrops(kind, id, label, amount, occurrenceKey) {
@@ -10443,6 +10607,9 @@
     if (prismGarden.ledger[ledgerKey]) return false;
     prismGarden.ledger[ledgerKey] = Date.now();
     prismGarden.drops = Math.min(99999, prismGarden.drops + amount);
+    prismGarden.cycle = sanitizeGardenCycle(prismGarden.cycle);
+    prismGarden.cycle.taskCount = Math.min(99999, prismGarden.cycle.taskCount + 1);
+    prismGarden.cycle.earnedDrops = Math.min(999999, prismGarden.cycle.earnedDrops + amount);
     prismGarden.history.unshift({ label:String(label || '').slice(0,80), amount, at:Date.now() });
     prismGarden.history = prismGarden.history.slice(0,40);
     savePrismGarden(); renderPrismGarden();
@@ -10459,6 +10626,8 @@
     const oldStage = gardenStageForGrowth(prismGarden.growth);
     prismGarden.drops -= GARDEN_WATER_COST;
     prismGarden.growth = Math.min(GARDEN_STAGE_STARTS[4], prismGarden.growth + GARDEN_WATER_GROWTH);
+    prismGarden.cycle = sanitizeGardenCycle(prismGarden.cycle);
+    prismGarden.cycle.waterings = Math.min(99999, prismGarden.cycle.waterings + 1);
     savePrismGarden(); renderPrismGarden();
     const card = document.getElementById('prismGardenCard');
     if (card) { card.classList.add('watering'); setTimeout(() => card.classList.remove('watering'),850); }
@@ -10468,11 +10637,33 @@
   }
   function archivePrismBloom() {
     if (prismGarden.growth < GARDEN_STAGE_STARTS[4]) return;
-    prismGarden.blooms += 1;
+    const completedAt = Date.now();
+    const speciesIndex = prismGarden.speciesIndex;
+    const species = GARDEN_SPECIES[speciesIndex] || GARDEN_SPECIES[0];
+    const cycle = sanitizeGardenCycle(prismGarden.cycle);
+    const bloomNumber = prismGarden.blooms + 1;
+    prismGarden.collection.unshift(sanitizeGardenBloom({
+      id:`bloom_${completedAt}_${bloomNumber}`,
+      bloomNumber,
+      speciesIndex,
+      bloomedAt:completedAt,
+      startedAt:cycle.startedAt,
+      taskCount:cycle.taskCount,
+      earnedDrops:cycle.earnedDrops,
+      waterings:cycle.waterings,
+    }, bloomNumber));
+    prismGarden.blooms = bloomNumber;
     prismGarden.growth = 0;
     prismGarden.speciesIndex = (prismGarden.speciesIndex + 1) % GARDEN_SPECIES.length;
+    prismGarden.cycle = { startedAt:completedAt, taskCount:0, earnedDrops:0, waterings:0 };
     savePrismGarden(); renderPrismGarden(); playUIClick();
-    showToast(`開花を記録しました · ${prismGarden.blooms}輪目`);
+    const notice = document.getElementById('gardenKeepsakeNotice');
+    if (notice) {
+      notice.textContent = `${species.name}を温室の棚に飾りました`;
+      notice.classList.remove('show'); void notice.offsetWidth; notice.classList.add('show');
+      setTimeout(() => notice.classList.remove('show'), 3200);
+    }
+    showToast(`開花を保存しました · ${prismGarden.blooms}輪目`);
   }
 
   async function initFromStorage() {

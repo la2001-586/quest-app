@@ -350,6 +350,20 @@ for (const marker of [
 }
 
 for (const marker of [
+  'V452: 開花した植物を消さず',
+  'id="gardenShelfList"',
+  'id="gardenAlbumModal"',
+  'function sanitizeGardenBloom(',
+  'function renderGardenShelf()',
+  'function renderGardenAlbum()',
+  '以前の開花記録',
+  'taskCount:cycle.taskCount',
+  '温室の棚に飾りました'
+]) {
+  if (!html.includes(marker)) failures.push(`persistent garden collection marker is missing: ${marker}`);
+}
+
+for (const marker of [
   'V435: タスクを日付の濃いバーで分け',
   'task-date-group',
   'task-date-bar',
