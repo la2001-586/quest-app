@@ -399,7 +399,7 @@ for (const marker of [
   if (!html.includes(marker)) failures.push(`offline disaster guide marker is missing: ${marker}`);
 }
 for (const marker of [
-  'daily-station-offline-v454',
+  'daily-station-offline-v455',
   "'./index.html'",
   'caches.open(CACHE_NAME)',
   "request.mode === 'navigate'",
@@ -413,6 +413,20 @@ for (const marker of [
   '利用によって避難や通報を遅らせないでください'
 ]) {
   if (!terms.includes(marker)) failures.push(`disaster disclaimer marker is missing: ${marker}`);
+}
+
+for (const marker of [
+  'V455: ACCURATE DAILY ROUTINE RATE CHART',
+  'id="routineRateChartBars"',
+  'function routineCompletionSnapshot()',
+  'function renderRoutineRateChart()',
+  'lastRoutineDone: routineSnapshot.done',
+  'lastRoutineTotal: routineSnapshot.total',
+  'routineDone: routineSnapshotAtSwitch.done',
+  'routineTotal: routineSnapshotAtSwitch.total',
+  '「—」は、その日の日課総数が保存されていない記録です。'
+]) {
+  if (!html.includes(marker)) failures.push(`accurate routine rate chart marker is missing: ${marker}`);
 }
 
 for (const marker of [

@@ -1,5 +1,5 @@
-// V454 offline shell: the disaster guide and core app remain readable without a network.
-const CACHE_NAME = 'daily-station-offline-v454';
+// V455 offline shell: the disaster guide and core app remain readable without a network.
+const CACHE_NAME = 'daily-station-offline-v455';
 const CORE_ASSETS = [
   './',
   './index.html',

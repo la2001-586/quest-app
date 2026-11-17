@@ -4797,6 +4797,59 @@
   body.theme-simple.theme-dark .disaster-disclaimer,
   body.theme-dark .disaster-disclaimer { background: rgba(185,142,72,.10); color: #d8c9aa; }
 
+  /* ================= V455: ACCURATE DAILY ROUTINE RATE CHART =================
+     分母が保存されている日だけを達成率として描画し、過去の不明日は0%に偽装しない。 */
+  .routine-rate-chart {
+    margin-top: 14px;
+    padding: 14px 3px 2px;
+    border-top: 1px solid rgba(55,105,87,.10);
+  }
+  .routine-rate-chart-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    margin-bottom: 12px; padding-right: 20px;
+  }
+  .routine-rate-chart-title { color: var(--ink); font-size: 12px; font-weight: 750; }
+  .routine-rate-chart-average { color: #55766a; font-size: 10px; font-variant-numeric: tabular-nums; }
+  .routine-rate-bars {
+    height: 116px;
+    display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 7px;
+    align-items: end;
+  }
+  .routine-rate-day {
+    min-width: 0; height: 116px;
+    display: grid; grid-template-rows: 18px 1fr 17px; gap: 4px;
+    text-align: center;
+  }
+  .routine-rate-value {
+    color: #71827c; font-size: 8.5px; font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .routine-rate-track {
+    position: relative; align-self: stretch; width: min(22px, 72%); margin: 0 auto;
+    overflow: hidden; border-radius: 8px;
+    background: rgba(76,129,110,.08);
+  }
+  .routine-rate-fill {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    min-height: 2px; border-radius: 8px;
+    background: linear-gradient(180deg, #86ceb4, #4b9a7f);
+    transition: height .42s cubic-bezier(.2,.8,.3,1);
+  }
+  .routine-rate-day.is-today .routine-rate-track { box-shadow: 0 0 0 1.5px rgba(67,151,121,.30); }
+  .routine-rate-day.is-today .routine-rate-fill { background: linear-gradient(180deg, #78d8b6, #2f9874); }
+  .routine-rate-label { color: var(--ink-dim); font-size: 8.5px; white-space: nowrap; }
+  .routine-rate-day.is-today .routine-rate-label { color: #34755f; font-weight: 750; }
+  .routine-rate-day.is-unknown .routine-rate-track {
+    border: 1px dashed rgba(104,126,118,.22); background: transparent;
+  }
+  .routine-rate-chart-note { margin-top: 9px; color: var(--ink-dim); font-size: 8.5px; line-height: 1.55; }
+  body.theme-simple.theme-dark .routine-rate-track,
+  body.theme-dark .routine-rate-track { background: rgba(134,206,180,.10); }
+  body.theme-simple.theme-dark .routine-rate-chart-average,
+  body.theme-dark .routine-rate-chart-average,
+  body.theme-simple.theme-dark .routine-rate-day.is-today .routine-rate-label,
+  body.theme-dark .routine-rate-day.is-today .routine-rate-label { color: #84cbb2; }
+
   /* V435: タスクを日付の濃いバーで分け、古い日から将来まで一本の時系列にする */
   .task-date-group { position: relative; }
   .task-date-group + .task-date-group { margin-top: 0; }
@@ -5225,7 +5278,7 @@
 <div id="safeAreaFill"></div>
 <div id="stickyTopBar" data-g="group_task">
   <div class="stb-bar"></div>
-  <div id="buildTag" class="stb-version">BUILD v0.4.54</div>
+  <div id="buildTag" class="stb-version">BUILD v0.4.55</div>
 </div>
 
 <div class="wrap page show" id="page-task">
@@ -5504,6 +5557,14 @@
   </div>
   </div>
   <div class="combo-hint" id="comboHint-routine"></div>
+  <section class="routine-rate-chart" aria-labelledby="routineRateChartTitle">
+    <div class="routine-rate-chart-head">
+      <div class="routine-rate-chart-title" id="routineRateChartTitle">7日間の達成率</div>
+      <div class="routine-rate-chart-average" id="routineRateChartAverage">平均 —</div>
+    </div>
+    <div class="routine-rate-bars" id="routineRateChartBars"></div>
+    <div class="routine-rate-chart-note" id="routineRateChartNote">正確な日課総数を記録した日から表示します。</div>
+  </section>
   </div>
   </div>
   </div>
@@ -9310,11 +9371,16 @@
 
     // ①選んだ日課を履歴に確定する
     const prevPicked = [...picked];
-    if (prevPicked.length > 0) {
+    const prevRoutineSnapshot = routineCompletionSnapshot();
+    if (prevPicked.length > 0 || prevRoutineSnapshot.total > 0) {
+      const existingRecord = dailyHistory[closingKey] || {};
       dailyHistory[closingKey] = {
+        ...existingRecord,
         count: prevPicked.length,
         exp: currentTodayExp || 0,
         items: prevPicked.map(routineLabelFromKey),
+        routineDone: prevRoutineSnapshot.done,
+        routineTotal: prevRoutineSnapshot.total,
       };
     }
     bankedExp = (bankedExp || 0) + (currentTodayExp || 0);
@@ -9366,12 +9432,18 @@
           // 論理上の日付が変わっていた: 前回分の選択を履歴として確定し、選択状態はリセット
           dayBoundaryCrossedAtStartup = true;
           const prevPicked = Array.isArray(data.pickedToday) ? data.pickedToday : [];
-          if (prevPicked.length > 0 && data.lastLogicalDate) {
+          const prevRoutineTotal = Math.max(0, Number(data.lastRoutineTotal) || 0);
+          const prevRoutineDone = Math.max(0, Math.min(prevRoutineTotal, Number(data.lastRoutineDone) || 0));
+          if (data.lastLogicalDate && (prevPicked.length > 0 || prevRoutineTotal > 0)) {
             const prevExp = data.lastTodayExp || 0;
+            const existingRecord = dailyHistory[data.lastLogicalDate] || {};
             dailyHistory[data.lastLogicalDate] = {
+              ...existingRecord,
               count: prevPicked.length,
               exp: prevExp,
               items: prevPicked.map(routineLabelFromKey),
+              routineDone: prevRoutineDone,
+              routineTotal: prevRoutineTotal,
             };
           }
           bankedExp = (data.bankedExp || 0) + (data.lastTodayExp || 0);
@@ -9401,6 +9473,7 @@
   async function saveProgress(todayExp) {
     if (isInitializing) return; // 初期化が完全に終わるまで、意図しない上書き保存を防ぐ(既存のisInitializingフラグを流用)
     try {
+      const routineSnapshot = routineCompletionSnapshot();
       const result = await window.storage.set('quest-progress-v2', JSON.stringify({
         bankedExp,
         lastLogicalDate: logicalDateKey(trustedNow),
@@ -9409,6 +9482,8 @@
         pickedToday: [...picked],
         routineCompletedAt,
         lastTodayExp: todayExp || 0,
+        lastRoutineDone: routineSnapshot.done,
+        lastRoutineTotal: routineSnapshot.total,
         dailyHistory,
       }));
       if (!result) {
@@ -9536,6 +9611,80 @@
     });
   }
 
+  function activeRoutineKeys() {
+    return taskList.filter(task => task.active !== false).map(task => routineKey(task.label));
+  }
+
+  function routineCompletionSnapshot() {
+    const activeKeys = activeRoutineKeys();
+    return {
+      done: activeKeys.filter(key => picked.has(key)).length,
+      total: activeKeys.length,
+    };
+  }
+
+  function renderRoutineRateChart() {
+    const bars = document.getElementById('routineRateChartBars');
+    const average = document.getElementById('routineRateChartAverage');
+    const title = document.getElementById('routineRateChartTitle');
+    const note = document.getElementById('routineRateChartNote');
+    if (!bars || !average || !title || !note) return;
+
+    const currentKey = logicalDateKey(trustedNow);
+    const currentDate = dateFromKey(currentKey);
+    const todaySnapshot = routineCompletionSnapshot();
+    const weekdayLabels = currentLang === 'en'
+      ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+      : ['日','月','火','水','木','金','土'];
+    const days = [];
+    for (let offset = 6; offset >= 0; offset--) {
+      const date = new Date(currentDate);
+      date.setDate(currentDate.getDate() - offset);
+      const key = dateKeyOf(date);
+      const isToday = key === currentKey;
+      const record = dailyHistory[key];
+      let done = null;
+      let total = null;
+      if (isToday && todaySnapshot.total > 0) {
+        done = todaySnapshot.done;
+        total = todaySnapshot.total;
+      } else if (record && Number(record.routineTotal) > 0 && Number.isFinite(Number(record.routineDone))) {
+        total = Math.max(1, Number(record.routineTotal));
+        done = Math.max(0, Math.min(total, Number(record.routineDone)));
+      }
+      const percent = total === null ? null : Math.round(done / total * 100);
+      days.push({ date, key, isToday, done, total, percent });
+    }
+
+    const known = days.filter(day => day.percent !== null);
+    const averagePercent = known.length
+      ? Math.round(known.reduce((sum, day) => sum + day.percent, 0) / known.length)
+      : null;
+    title.textContent = currentLang === 'en' ? '7-day completion rate' : '7日間の達成率';
+    average.textContent = averagePercent === null
+      ? (currentLang === 'en' ? 'Average —' : '平均 —')
+      : (currentLang === 'en' ? `Average ${averagePercent}%` : `平均 ${averagePercent}%`);
+    bars.innerHTML = days.map(day => {
+      const knownDay = day.percent !== null;
+      const value = knownDay ? `${day.percent}%` : '—';
+      const label = day.isToday
+        ? (currentLang === 'en' ? 'Today' : '今日')
+        : weekdayLabels[day.date.getDay()];
+      const accessible = knownDay
+        ? `${day.date.getMonth() + 1}/${day.date.getDate()} ${day.done}/${day.total} ${day.percent}%`
+        : `${day.date.getMonth() + 1}/${day.date.getDate()} ${currentLang === 'en' ? 'no denominator recorded' : '日課総数の記録なし'}`;
+      return `<div class="routine-rate-day${day.isToday ? ' is-today' : ''}${knownDay ? '' : ' is-unknown'}" role="img" aria-label="${escapeHtml(accessible)}">
+        <div class="routine-rate-value">${value}</div>
+        <div class="routine-rate-track">${knownDay ? `<div class="routine-rate-fill" style="height:${Math.max(2, day.percent)}%"></div>` : ''}</div>
+        <div class="routine-rate-label">${label}</div>
+      </div>`;
+    }).join('');
+    const unknownCount = days.length - known.length;
+    note.textContent = unknownCount > 0
+      ? (currentLang === 'en' ? '— means that day predates accurate total tracking.' : '「—」は、その日の日課総数が保存されていない記録です。')
+      : (currentLang === 'en' ? 'Calculated from completed routines ÷ routines available that day.' : '完了した日課 ÷ その日に表示されていた日課で計算しています。');
+  }
+
   function renderRoutineProgress() {
     const ring = document.getElementById('routineProgressRing');
     const glass = document.getElementById('routineProgressGlass');
@@ -9544,9 +9693,9 @@
     const detail = document.getElementById('routineProgressDetail');
     const title = document.getElementById('routineProgressTitle');
     if (!ring || !value || !detail || !title) return;
-    const activeKeys = taskList.filter(task => task.active !== false).map(task => routineKey(task.label));
-    const doneCount = activeKeys.filter(key => picked.has(key)).length;
-    const total = activeKeys.length;
+    const snapshot = routineCompletionSnapshot();
+    const doneCount = snapshot.done;
+    const total = snapshot.total;
     const percent = total > 0 ? Math.round(doneCount / total * 100) : 0;
     const previousPercent = Number(ring.dataset.percent);
     ring.style.setProperty('--routine-ring-offset', String(100 - percent));
@@ -9576,6 +9725,7 @@
     }
     title.textContent = currentLang === 'en' ? "Today's progress" : '今日の進捗';
     detail.textContent = currentLang === 'en' ? `${doneCount} / ${total} complete` : `${doneCount} / ${total} 完了`;
+    renderRoutineRateChart();
   }
 
   function animateRoutinePercent(el, fromValue, toValue) {
@@ -10992,16 +11142,23 @@
       const currentLogicalDate = logicalDateKey(trustedNow);
       if (currentLogicalDate !== lastKnownLogicalDate) {
         // 論理上の日付が変わった: 今日の分を履歴として確定し、選択状態をリセットする
+        const routineSnapshotAtSwitch = routineCompletionSnapshot();
         let todayExpAtSwitch = 0;
         picked.forEach(key => { todayExpAtSwitch += wobbleFor(key, EXP_BASE.routine); });
         if (picked.size > 2) todayExpAtSwitch = Math.round(todayExpAtSwitch * (1 + (picked.size - 2) * 0.08));
 
-        if (picked.size > 0) {
+        if (picked.size > 0 || routineSnapshotAtSwitch.total > 0) {
+          const existingRecord = dailyHistory[lastKnownLogicalDate] || {};
           dailyHistory[lastKnownLogicalDate] = {
+            ...existingRecord,
             count: picked.size,
             exp: todayExpAtSwitch,
             items: [...picked].map(routineLabelFromKey),
+            routineDone: routineSnapshotAtSwitch.done,
+            routineTotal: routineSnapshotAtSwitch.total,
           };
+        }
+        if (picked.size > 0) {
           bankedExp += todayExpAtSwitch;
         }
         picked.clear();
